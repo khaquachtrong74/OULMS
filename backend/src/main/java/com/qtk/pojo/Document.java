@@ -6,15 +6,20 @@ package com.qtk.pojo;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 /**
  *
  * @author lossrunner
  */
+
+@Entity
+@Table(name = "document")
 public class Document extends BaseEntity{
 
     @Basic(optional = false)

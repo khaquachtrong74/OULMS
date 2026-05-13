@@ -57,7 +57,16 @@
             <version>1.39.0</version>
             <scope>compile</scope>
         </dependency>
-    </dependencies>
+        <!-- for swagger -->
+        <!-- Source: https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.8.17</version>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies> 
     
     <build>
         <plugins>
