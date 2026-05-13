@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "level")
-public class Level {
+public class Level extends BaseEntity{
     @Basic(optional = false)
     @Column(name = "name", length = 45)
     private String name;

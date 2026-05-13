@@ -27,7 +27,7 @@ public class StudentAnswer extends BaseEntity{
 
     @Basic(optional = false)
     @Column(name = "is_correct")
-    private Boolean is_correct;
+    private Boolean isCorrect;
     
 //    question_id
 //    student_id
