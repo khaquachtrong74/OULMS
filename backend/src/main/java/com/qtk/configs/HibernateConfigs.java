@@ -15,6 +15,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import static org.hibernate.cfg.JdbcSettings.DIALECT;
 import static org.hibernate.cfg.JdbcSettings.SHOW_SQL;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 
 /**
  *
@@ -31,6 +32,9 @@ public class HibernateConfigs {
     @Bean
     public LocalSessionFactoryBean getSessionFactory(){
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        
+        sessionFactory.setDataSource(dataSource());
+        sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
     
@@ -47,8 +51,16 @@ public class HibernateConfigs {
     @Bean
     public Properties hibernateProperties(){
         Properties props = new Properties();
-        props.setProperty(DIALECT, "hibernate.dialect");
-        props.setProperty(SHOW_SQL, "hibernate.showSql");
+        props.put(DIALECT,  env.getProperty("hibernate.dialect"));
+        props.put(SHOW_SQL, env.getProperty("hibernate.showSql"));
         return props;
+    }
+    
+    @Bean
+    public HibernateTransactionManager transactionManager(){
+        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+        transactionManager.setSessionFactory(getSessionFactory().getObject());
+        
+        return transactionManager;
     }
 }
