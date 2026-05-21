@@ -5,6 +5,8 @@
 package com.qtk.configs;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
@@ -16,7 +18,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * @author lossrunner
  */
-
+@Configuration
+@ComponentScan(
+        basePackages = {
+            "com.qtk.controllers"
+        }
+)
 @EnableWebMvc
 @EnableTransactionManagement
 public class WebAppContextConfigs implements WebMvcConfigurer{
