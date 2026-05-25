@@ -7,32 +7,144 @@ package com.qtk.pojo;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
- * @author lossrunner
+ * @author ngodo
  */
-
 @Entity
 @Table(name = "forum_comment")
-public class ForumComment extends BaseEntity{
-    
-//    post_id FK(Post)
-//    user_id FK(User)
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "ForumComment.findAll", query = "SELECT f FROM ForumComment f"),
+    @NamedQuery(name = "ForumComment.findById", query = "SELECT f FROM ForumComment f WHERE f.id = :id"),
+    @NamedQuery(name = "ForumComment.findByContent", query = "SELECT f FROM ForumComment f WHERE f.content = :content"),
+    @NamedQuery(name = "ForumComment.findByCreatedAt", query = "SELECT f FROM ForumComment f WHERE f.createdAt = :createdAt"),
+    @NamedQuery(name = "ForumComment.findByUpdatedAt", query = "SELECT f FROM ForumComment f WHERE f.updatedAt = :updatedAt")})
+public class ForumComment implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "content", length = 100)
+    @Column(name = "id")
+    private Integer id;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
+    @Column(name = "content")
     private String content;
-    
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Post postId;
-    
+    private ForumPost postId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User userId;
-    
+
+    public ForumComment() {
+    }
+
+    public ForumComment(Integer id) {
+        this.id = id;
+    }
+
+    public ForumComment(Integer id, String content) {
+        this.id = id;
+        this.content = content;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public ForumPost getPostId() {
+        return postId;
+    }
+
+    public void setPostId(ForumPost postId) {
+        this.postId = postId;
+    }
+
+    public User getUserId() {
+        return userId;
+    }
+
+    public void setUserId(User userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof ForumComment)) {
+            return false;
+        }
+        ForumComment other = (ForumComment) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "com.qtk.pojo.ForumComment[ id=" + id + " ]";
+    }
     
 }
