@@ -58,13 +58,25 @@
             <scope>compile</scope>
         </dependency>
         <!-- for swagger -->
-        <!-- Source: https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
+       <!-- Dành cho dự án Spring MVC 6 truyền thống (Không dùng Spring Boot) -->
+<!--        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
+         Giao diện Swagger UI tương thích 
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>swagger-ui</artifactId>
+            <version>5.17.14</version>
+        </dependency>-->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.17</version>
-            <scope>compile</scope>
+            <version>2.5.0</version>
         </dependency>
+
 
     </dependencies> 
     
