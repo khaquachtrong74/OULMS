@@ -23,5 +23,6 @@
 hs_err_pid*
 replay_pid*
 /backend/target/
-/backend/src/main/resources/.env
+/backend/src/main/resources/databases.properties
+/backend/src/main/resources/cloudinary.properties
 /TestingThreads/target/
