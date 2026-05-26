@@ -6,7 +6,7 @@
 
 # BlueJ files
 *.ctxt
-
+*.env
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
@@ -23,3 +23,5 @@
 hs_err_pid*
 replay_pid*
 /backend/target/
+/backend/src/main/resources/.env
+/TestingThreads/target/
