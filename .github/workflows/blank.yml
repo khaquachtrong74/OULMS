@@ -33,6 +33,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build and Test with maven
+        working-directory: ./backend
         run: mvn clean install
 
       
