@@ -5,7 +5,6 @@
 package com.qtk.pojo;
 
 import jakarta.persistence.Basic;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -61,12 +60,10 @@ public class Subject implements Serializable {
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "subjectId")
-    private Set<Document> documentSet;
     @OneToMany(mappedBy = "subjectId")
     private Set<Course> courseSet;
     @OneToMany(mappedBy = "subjectId")
-    private Set<Tag> tagSet;
+    private Set<Topic> topicSet;
 
     public Subject() {
     }
@@ -121,15 +118,6 @@ public class Subject implements Serializable {
     }
 
     @XmlTransient
-    public Set<Document> getDocumentSet() {
-        return documentSet;
-    }
-
-    public void setDocumentSet(Set<Document> documentSet) {
-        this.documentSet = documentSet;
-    }
-
-    @XmlTransient
     public Set<Course> getCourseSet() {
         return courseSet;
     }
@@ -139,12 +127,12 @@ public class Subject implements Serializable {
     }
 
     @XmlTransient
-    public Set<Tag> getTagSet() {
-        return tagSet;
+    public Set<Topic> getTopicSet() {
+        return topicSet;
     }
 
-    public void setTagSet(Set<Tag> tagSet) {
-        this.tagSet = tagSet;
+    public void setTopicSet(Set<Topic> topicSet) {
+        this.topicSet = topicSet;
     }
 
     @Override

@@ -10,9 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
@@ -60,9 +58,6 @@ public class Tag implements Serializable {
     private Date updatedAt;
     @ManyToMany(mappedBy = "tagSet")
     private Set<Document> documentSet;
-    @JoinColumn(name = "subject_id", referencedColumnName = "id")
-    @ManyToOne
-    private Subject subjectId;
 
     public Tag() {
     }
@@ -115,14 +110,6 @@ public class Tag implements Serializable {
 
     public void setDocumentSet(Set<Document> documentSet) {
         this.documentSet = documentSet;
-    }
-
-    public Subject getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(Subject subjectId) {
-        this.subjectId = subjectId;
     }
 
     @Override

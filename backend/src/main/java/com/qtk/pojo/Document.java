@@ -86,9 +86,6 @@ public class Document implements Serializable {
     @JoinColumn(name = "level_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Level levelId;
-    @JoinColumn(name = "subject_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Subject subjectId;
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Topic topicId;
@@ -191,14 +188,6 @@ public class Document implements Serializable {
 
     public void setLevelId(Level levelId) {
         this.levelId = levelId;
-    }
-
-    public Subject getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(Subject subjectId) {
-        this.subjectId = subjectId;
     }
 
     public Topic getTopicId() {
