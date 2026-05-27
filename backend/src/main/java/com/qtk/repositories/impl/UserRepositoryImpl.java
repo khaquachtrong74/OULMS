@@ -58,4 +58,17 @@ public class UserRepositoryImpl implements UserRepository{
 
         return (User) query.getSingleResult();
     }
+
+    @Override
+    public void deleteUser(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        
+        try {
+            User userProxy = s.getReference(User.class, id);
+            s.remove(userProxy);
+        } catch (Exception e) {
+            
+        }
+        
+    }
 }

@@ -17,9 +17,7 @@ import com.nimbusds.jwt.SignedJWT;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+
 
 /**
  *
@@ -65,14 +63,14 @@ public class JwtUtils {
         return signedJWT.serialize();
     }
     
-    public static String validateTokenAndGetUsername(String token) throws Exception{
+    public static JWTClaimsSet validateTokenAndGetClaims(String token) throws Exception{
         SignedJWT signedJWT = SignedJWT.parse(token);
         JWSVerifier verifier = new MACVerifier(SECRET);
         
         if(signedJWT.verify(verifier)){
             Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime();
             if(expiration.after(new Date())){
-                return signedJWT.getJWTClaimsSet().getSubject();
+                return signedJWT.getJWTClaimsSet();
             }
         }
         throw new Exception("Token đã hết hạn hoặc chữ ký không hợp lệ");

@@ -1,5 +1,6 @@
 package com.qtk.controllers;
 
+import com.nimbusds.jose.JOSEException;
 import com.qtk.pojo.User;
 import com.qtk.services.UserService;
 import com.qtk.utils.JwtUtils;
@@ -8,11 +9,13 @@ import java.util.Collections;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,7 +61,7 @@ public class ApiUserController {
                 String token = JwtUtils.generateToken(userDetailed.getEmail(), userDetailed.getRole());
           
             return ResponseEntity.ok().body(Collections.singletonMap("token", token));
-            } catch (Exception e) {
+            } catch (JOSEException e) {
                 return ResponseEntity.status(500).body("Error when create JWT");
             }
             
@@ -67,10 +70,17 @@ public class ApiUserController {
     }
     
     @GetMapping("/secure/profile")
+    @PreAuthorize("isAuthenticated()")
     @ResponseBody
     public ResponseEntity<User> getProfile(Principal principal){
-        return new ResponseEntity<User>(this.userService.getUserByUserEmail(principal.getName()), HttpStatus.OK);
+        return new ResponseEntity<>(this.userService.getUserByUserEmail(principal.getName()), HttpStatus.OK);
     }
     
+    @DeleteMapping("/secure/users/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> deleteUser(@PathVariable int id){
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
     
 }

@@ -41,9 +41,10 @@ public class JwtFilter implements Filter{
             }else{
                 String token = header.substring(7);
                 try {
-                    String username = JwtUtils.validateTokenAndGetUsername(token);
+                    JWTClaimsSet claimset = JwtUtils.validateTokenAndGetClaims(token);
              
-                    String role = "ADMIN";
+                    String username = claimset.getSubject();
+                    String role = claimset.getStringClaim("role");
                     
                     if(username != null){
                         httpRequest.setAttribute("username", username);
