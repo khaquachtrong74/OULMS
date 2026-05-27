@@ -46,13 +46,14 @@ public class JwtUtils {
         }
     }
     
-    public static String generateToken(String username) throws KeyLengthException, JOSEException{
+    public static String generateToken(String username, String role) throws KeyLengthException, JOSEException{
         JWSSigner signer = new MACSigner(SECRET);
         
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(username)
                 .expirationTime(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .issueTime(new Date())
+                .claim("role", role)
                 .build();
         
         SignedJWT signedJWT = new SignedJWT(
@@ -74,7 +75,7 @@ public class JwtUtils {
                 return signedJWT.getJWTClaimsSet().getSubject();
             }
         }
-        return null;
+        throw new Exception("Token đã hết hạn hoặc chữ ký không hợp lệ");
     }
     
 }
