@@ -51,8 +51,11 @@ public class HibernateConfigs {
     @Bean
     public Properties hibernateProperties(){
         Properties props = new Properties();
-        props.put(DIALECT,  env.getProperty("hibernate.dialect"));
+//        props.put(DIALECT,  env.getProperty("hibernate.dialect"));
         props.put(SHOW_SQL, env.getProperty("hibernate.showSql"));
+        
+        System.out.println(env.getProperty("jdbc.username"));
+        System.out.println(env.getProperty("jdbc.password"));
         return props;
     }
     
