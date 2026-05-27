@@ -43,18 +43,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUsername(String username) {
-//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         return this.userRepo.getUserByUsername(username);
     }
 
     @Override
     public User addUser(Map<String, String> info, MultipartFile avatar) {
-//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         User u = new User();
         u.setFirstName(info.get("firstName"));
         u.setLastName(info.get("lastName"));
         u.setEmail(info.get("email"));
-        u.setRole("ADMIN");
+        u.setRole(info.get("role"));
         u.setPassword(this.passwordEncoder.encode(info.get("password")));
         
         if(!avatar.isEmpty()){
@@ -70,16 +68,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean authenticate(String username, String password) {
-//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        return this.userRepo.authenticate(username, password);
+    public boolean authenticate(String userEmail, String password) {
+        return this.userRepo.authenticate(userEmail, password);
     }
 
 //  Adapter pattern tuan thu nguyen tac Dependency Inversion
 //    Chuyen dinh dang User thanh UserDetails - Spring Security co the hieu
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         User user = this.getUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("Invalid username!");
@@ -90,6 +86,11 @@ public class UserServiceImpl implements UserService {
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(), user.getPassword(), authorities);
+    }
+
+    @Override
+    public User getUserByUserEmail(String userEmail) {
+        return this.userRepo.getUserByUserEmail(userEmail);
     }
     
 }

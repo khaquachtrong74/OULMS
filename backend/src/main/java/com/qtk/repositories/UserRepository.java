@@ -12,6 +12,7 @@ import com.qtk.pojo.User;
  */
 public interface UserRepository {
     public User getUserByUsername(String username);
+    public User getUserByUserEmail(String userEmail);
     public User addUser(User u);
-    public boolean authenticate(String username, String password);
+    public boolean authenticate(String userEmail, String password);
 }
