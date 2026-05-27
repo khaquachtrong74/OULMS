@@ -8,6 +8,7 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -84,13 +85,13 @@ public class Document implements Serializable {
     @ManyToMany
     private Set<Tag> tagSet;
     @JoinColumn(name = "level_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Level levelId;
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Topic topicId;
     @JoinColumn(name = "uploaded_by", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User uploadedBy;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "documentId")
     private Progress progress;

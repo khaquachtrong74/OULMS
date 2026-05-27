@@ -8,6 +8,7 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -99,7 +100,7 @@ public class User implements Serializable {
     private Set<Chat> chatSet1;
     @OneToMany(mappedBy = "lecturerId")
     private Set<Course> courseSet;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "userId")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "userId",fetch = FetchType.LAZY)
     private Progress progress;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Set<Comment> commentSet;
@@ -107,7 +108,7 @@ public class User implements Serializable {
     private Set<ForumComment> forumCommentSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Set<Transaction> transactionSet;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "studentId")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "studentId",fetch = FetchType.LAZY)
     private CourseStudent courseStudent;
 
     public User() {

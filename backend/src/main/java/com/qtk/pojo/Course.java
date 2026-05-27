@@ -8,6 +8,7 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -70,10 +71,10 @@ public class Course implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     @JoinColumn(name = "subject_id", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Subject subjectId;
     @JoinColumn(name = "lecturer_id", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User lecturerId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseId")
     private Set<Quizzes> quizzesSet;
