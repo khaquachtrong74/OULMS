@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 /**
  *
@@ -42,6 +43,11 @@ public class SpringSecurityConfigs {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
+        return new HandlerMappingIntrospector();
     }
     
     @Bean
