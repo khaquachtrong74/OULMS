@@ -23,6 +23,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(
         basePackages = {
             "com.qtk.controllers",
+            "com.qtk.repositories",
+            "com.qtk.services",
             "org.springdoc"
         }
 )
