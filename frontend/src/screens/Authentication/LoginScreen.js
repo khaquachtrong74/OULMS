@@ -1,37 +1,68 @@
-import { Activity, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import Apis, { endpoints } from "../../configs/Apis";
 import { ACTION_TYPE, COOKIE_KEYS } from "../../configs/constants";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MyUserContext } from "../../configs/Contexts";
 import cookies from "react-cookies";
-import { Alert, Button, Form } from "react-bootstrap";
+import { Alert, Button, Form, Spinner } from "react-bootstrap";
 import { HttpStatusCode } from "axios";
 
-const LoginPage = () => {
-    const userInfo = [{
-        field: "email",
-        label: "Email đăng nhập",
-        type: "text"
-    }, {
-        field: "password",
-        label: "Mật khẩu",
-        type: "password"
-    }];
+import "./LoginPage.css";
 
-    const [user, setUser] = useState({})
+const LoginPage = () => {
+
+    const userInfo = [
+        {
+            field: "email",
+            label: "Email đăng nhập",
+            type: "text",
+        },
+        {
+            field: "password",
+            label: "Mật khẩu",
+            type: "password",
+        },
+    ];
+
+    const [user, setUser] = useState({});
     const [err, setErr] = useState("");
     const [loading, setLoading] = useState(false);
+
     const [, dispatch] = useContext(MyUserContext);
     const [q] = useSearchParams();
 
     const nav = useNavigate();
 
-
-
     const validate = () => {
 
+        if (!user.email?.trim()) {
+            setErr("Vui lòng nhập email!");
+            return false;
+        }
+
+        const emailRegex =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(user.email)) {
+            setErr("Email không hợp lệ!");
+            return false;
+        }
+
+        if (!user.password?.trim()) {
+            setErr("Vui lòng nhập mật khẩu!");
+            return false;
+        }
+
+        if (user.password.length < 6) {
+            setErr(
+                "Mật khẩu phải có ít nhất 6 ký tự!"
+            );
+            return false;
+        }
+
+        setErr("");
         return true;
-    }
+    };
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -40,77 +71,123 @@ const LoginPage = () => {
             try {
                 setLoading(true);
 
-                let res = await Apis.post(endpoints['login'], { ...user });
+                let res = await Apis.post(endpoints["login"], {
+                    ...user,
+                });
+
                 if (res.status === HttpStatusCode.Ok) {
-                    setTimeout(async () => {
-                        let userProfile = await Apis.get(endpoints['profile']);
-                        cookies.save(COOKIE_KEYS.USER, userProfile.data);
 
-                        dispatch({
-                            "type": ACTION_TYPE.LOGIN,
-                            "payload": userProfile.data
-                        })
-                        let next = q.get('next')
-                        if (next)
-                            nav(next);
-                        else
-                            nav('/');
+                    let userProfile = await Apis.get(
+                        endpoints["profile"]
+                    );
 
-                    }, 500)
+                    cookies.save(
+                        COOKIE_KEYS.USER,
+                        userProfile.data
+                    );
+
+                    dispatch({
+                        type: ACTION_TYPE.LOGIN,
+                        payload: userProfile.data,
+                    });
+
+                    let next = q.get("next");
+
+                    if (next)
+                        nav(next);
+                    else
+                        nav("/");
                 }
+
             } catch (ex) {
                 console.error(ex);
-                setErr(ex);
+                setErr("Sai email hoặc mật khẩu!");
             } finally {
                 setLoading(false);
             }
         }
-    }
+    };
 
     return (
-        // <div className="min-h-screen bg-slate-50 flex flex-col">
-        //     <div className="flex-grow flex items-center justify-center p-6">
-        //         <div className="w-full max-w-md bg-white p-10 rounded-3xl shadow-sm border border-slate-100">
-        //             <div className="text-center mb-10">
-        //                 <h1 className="text-4xl font-bold text-slate-900 mb-2">Chào mừng trở lại</h1>
-        //                 <p className="text-slate-500">Đăng nhập vào hệ thống OULMS</p>
-        //             </div>
-        //             <form className="space-y-6" onSubmit={handleLogin}>
-        //                 <div>
-        //                     <label className="block text-sm font-semibold text-slate-700 mb-2">Tên đăng nhập</label>
-        //                     <input type="text" placeholder="Nhập tên đăng nhập của bạn" 
-        //                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-700 transition-colors" />
-        //                 </div>
-        //                 <div>
-        //                     <label className="block text-sm font-semibold text-slate-700 mb-2">Mật khẩu</label>
-        //                     <input type="password" placeholder="Nhập mật khẩu" 
-        //                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-700 transition-colors" />
-        //                 </div>
-        //                 <button className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-md transition-all active:scale-[0.98]">
-        //                     Đăng nhập →
-        //                 </button>
-        //             </form>
-        //         </div>
-        //     </div>
-        // </div>
-        <>
-            <h1 className="text-center text-success mt-1">ĐĂNG NHẬP NGƯỜI DÙNG</h1>
+        <div className="login-page">
+            <div className="login-card">
 
-            {err && <Alert variant="danger">{err}</Alert>}
+                <div className="login-header">
+                    <div className="login-logo">
+                        O
+                    </div>
 
-            <Form onSubmit={handleLogin}>
-                {userInfo.map(u => <Form.Group key={u.field} className="mb-3" controlId={u.field}>
-                    <Form.Label>{u.label}</Form.Label>
-                    <Form.Control type={u.type} placeholder={u.label} value={user[u.field]} onChange={e => setUser({ ...user, [u.field]: e.target.value })} required />
-                </Form.Group>)}
+                    <h1>
+                        Chào mừng trở lại
+                    </h1>
 
-                <Form.Group className="mb-3">
-                    {loading === true ? <Activity /> : <Button variant="success" type="submit">Đăng nhập</Button>}
-                </Form.Group>
-            </Form>
-        </>
-    )
+                    <p>
+                        Đăng nhập để tiếp tục sử dụng hệ thống
+                    </p>
+                </div>
 
+                {err && (
+                    <Alert variant="danger">
+                        {err}
+                    </Alert>
+                )}
+
+                <Form onSubmit={handleLogin}>
+
+                    {userInfo.map((u) => (
+                        <Form.Group
+                            className="mb-4"
+                            key={u.field}
+                        >
+                            <Form.Label>
+                                {u.label}
+                            </Form.Label>
+
+                            <Form.Control
+                                type={u.type}
+                                placeholder={u.label}
+                                value={user[u.field] || ""}
+                                onChange={(e) =>
+                                    setUser({
+                                        ...user,
+                                        [u.field]:
+                                            e.target.value,
+                                    })
+                                }
+                                required
+                            />
+                        </Form.Group>
+                    ))}
+
+                    <div className="forgot-password">
+                        <a href="#">
+                            Quên mật khẩu?
+                        </a>
+                    </div>
+
+                    <Button
+                        type="submit"
+                        className="login-btn"
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <>
+                                <Spinner
+                                    animation="border"
+                                    size="sm"
+                                />
+                                <span className="ms-2">
+                                    Đang đăng nhập...
+                                </span>
+                            </>
+                        ) : (
+                            "Đăng nhập"
+                        )}
+                    </Button>
+                </Form>
+            </div>
+        </div>
+    );
 };
 
 export default LoginPage;

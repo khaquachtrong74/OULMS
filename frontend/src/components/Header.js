@@ -1,11 +1,25 @@
 import React, { useContext } from 'react';
-import { Navbar, Container, Nav, Image } from 'react-bootstrap';
+import { Navbar, Container, Nav, Image, Button } from 'react-bootstrap';
 import { BookHalf } from 'react-bootstrap-icons';
 import { MyUserContext } from '../configs/Contexts';
+import Apis, { endpoints } from '../configs/Apis';
+import { ACTION_TYPE } from '../configs/constants';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
-  const [user] = useContext(MyUserContext);
-  
+  const [user, dispatch] = useContext(MyUserContext);
+  const nav = useNavigate();
+  const handleLogout = async () => {
+    try {
+        await Apis.post(endpoints['logout']); 
+        
+        dispatch({ type: ACTION_TYPE.LOGOUT});
+        
+        nav('/login');
+    } catch (error) {
+        console.error("Logout failed:", error);
+    }
+};
   return (
     <Navbar bg="white" sticky="top" className="border-bottom py-3" expand="md" style={{ zIndex: 1050 }}>
       <Container>
@@ -30,7 +44,7 @@ const Header = () => {
             <Nav.Link href="#" className="fw-medium text-secondary">Tài liệu</Nav.Link>
             
             {/* Khu vực Profile người dùng */}
-            {user && (
+            {user ? (
               <div className="d-flex align-items-center gap-2 ms-md-3 mt-3 mt-md-0 ps-md-4 border-start border-2">
                 {/* Hiển thị tên: Lấy từ user.name, nếu không có thì lấy phần đầu của email */}
                 <span className="fw-bold text-dark">
@@ -47,7 +61,14 @@ const Header = () => {
                   alt="User Avatar"
                   style={{ cursor: 'pointer' }}
                 />
+                <Button onClick={handleLogout}>Đăng xuất</Button>
               </div>
+            ):(
+                <Button onClick={()=>{
+                  nav('/login')
+                }
+                }>Đăng nhập</Button>
+
             )}
             
           </Nav>
