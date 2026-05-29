@@ -34,19 +34,19 @@ public class SubjectController {
         return "subject";
     }
     
-    @GetMapping("/subject/create")
+    @GetMapping("/subject/created")
     public String createView(Model model) {
         model.addAttribute("subject", new Subject());
         return "subjectCreate";
     }
     
-    @PostMapping("/subject/create")
-    public String create( @ModelAttribute(value = "subject") Subject s) {
+    @PostMapping("/subject/created")
+    public String create(@ModelAttribute(value = "subject") Subject s) {
         this.subService.addOrUpdateSubject(s);
-        return "redirect:/subject";
+        return "redirect:/admin/subject";
     }
     
-    @GetMapping("/subject/create/{subjectId}")
+    @GetMapping("/subject/created/{subjectId}")
     public String updateView(Model model, @PathVariable(value = "subjectId") int id) {
         model.addAttribute("subject", this.subService.getSubjectById(id));
         return "subjectCreate";
