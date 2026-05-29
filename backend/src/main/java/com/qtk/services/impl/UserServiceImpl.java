@@ -6,6 +6,9 @@ package com.qtk.services.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.qtk.dto.UserCreateRequestDTO;
+import com.qtk.dto.UserResponseDTO;
+import com.qtk.enums.UserRole;
 import com.qtk.pojo.User;
 import com.qtk.repositories.UserRepository;
 import com.qtk.services.UserService;
@@ -42,28 +45,26 @@ public class UserServiceImpl implements UserService {
     private Cloudinary cloudinary;
 
     @Override
-    public User getUserByUsername(String username) {
-        return this.userRepo.getUserByUsername(username);
+    public UserResponseDTO getUserByUsername(String username) {
+        User user = this.userRepo.getUserByUsername(username);
+        return mapToResponseDTO(user);
     }
 
     @Override
-    public User addUser(Map<String, String> info, MultipartFile avatar) {
-        User u = new User();
-        u.setFirstName(info.get("firstName"));
-        u.setLastName(info.get("lastName"));
-        u.setEmail(info.get("email"));
-        u.setRole(info.get("role"));
-        u.setPassword(this.passwordEncoder.encode(info.get("password")));
-        
-        if(!avatar.isEmpty()){
+    public UserResponseDTO addUser(UserCreateRequestDTO dto) {
+        User u = mapToEntity(dto);
+        u.setRole(UserRole.STUDENT);
+        if (dto.getAvatar() != null && !dto.getAvatar().isEmpty()) {
             try {
-                Map res = this.cloudinary.uploader().upload(avatar.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
+                Map res = this.cloudinary.uploader().upload(dto.getAvatar().getBytes(), ObjectUtils.asMap("resource_type", "auto"));
                 u.setAvatar(res.get("secure_url").toString());
             } catch (IOException e) {
-                Logger.getLogger("");
+                throw new RuntimeException("Lỗi tải ảnh lên hệ thống. Vui lòng thử lại sau!", e);
             }
         }
-        return this.userRepo.addUser(u);
+        
+        User savedUser = this.userRepo.addUser(u);
+        return mapToResponseDTO(savedUser);
         
     }
 
@@ -76,21 +77,22 @@ public class UserServiceImpl implements UserService {
 //    Chuyen dinh dang User thanh UserDetails - Spring Security co the hieu
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = this.getUserByUsername(username);
+        User user = this.userRepo.getUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("Invalid username!");
         }
 
         Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole()));
+        authorities.add(new SimpleGrantedAuthority(user.getRole().getAuthority()));
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(), user.getPassword(), authorities);
     }
 
     @Override
-    public User getUserByUserEmail(String userEmail) {
-        return this.userRepo.getUserByUserEmail(userEmail);
+    public UserResponseDTO getUserByUserEmail(String userEmail) {
+        User user = this.userRepo.getUserByUserEmail(userEmail);
+        return mapToResponseDTO(user);
     }
 
     @Override
@@ -98,4 +100,22 @@ public class UserServiceImpl implements UserService {
         this.userRepo.deleteUser(id);
     }
     
+    private User mapToEntity(UserCreateRequestDTO dto) {
+        User u = new User();
+        u.setFirstName(dto.getFirstName());
+        u.setLastName(dto.getLastName());
+        u.setEmail(dto.getEmail());
+        u.setPassword(this.passwordEncoder.encode(dto.getPassword()));
+        return u;
+    }
+
+    private UserResponseDTO mapToResponseDTO(User user) {
+        if (user == null) return null;
+        
+        UserResponseDTO responseDTO = new UserResponseDTO();
+        responseDTO.setId(user.getId());
+        responseDTO.setEmail(user.getEmail());
+        responseDTO.setRole(user.getRole().getAuthority());
+        return responseDTO;
+    }
 }

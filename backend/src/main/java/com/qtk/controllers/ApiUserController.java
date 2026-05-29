@@ -10,6 +10,7 @@ import com.qtk.utils.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,15 +51,6 @@ public class ApiUserController {
     private UserService userService;
     
     
-    private UserResponseDTO convertToDTO(User entity) {
-        if (entity == null) return null;
-        return new UserResponseDTO(
-            entity.getId(), 
-            entity.getEmail(), 
-            entity.getRole()
-        );
-    }
-    
     
     @PostMapping(path = "/users", 
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE, 
@@ -67,29 +61,26 @@ public class ApiUserController {
             schema = @Schema(implementation = UserCreateRequestDTO.class)
         )
     )
-    public ResponseEntity<UserResponseDTO> create( @ModelAttribute UserCreateRequestDTO requestDTO) {
+    public ResponseEntity<?> create(@Valid @ModelAttribute 
+            UserCreateRequestDTO requestDTO, BindingResult bindingResult) {
         
-        Map<String, String> params = new HashMap<>();
-        params.put("firstName", requestDTO.getFirstName());
-        params.put("lastName", requestDTO.getLastName());
-        params.put("email", requestDTO.getEmail());
-        params.put("role", requestDTO.getRole());
-        params.put("password", requestDTO.getPassword());
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
         
-        User u = this.userService.addUser(params, requestDTO.getAvatar());
-        
-        UserResponseDTO responseDTO = new UserResponseDTO();
-        responseDTO.setId(u.getId());
-        responseDTO.setEmail(u.getEmail());
-        responseDTO.setRole(u.getRole());
-        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+        UserResponseDTO u = this.userService.addUser(requestDTO);
+        return new ResponseEntity<>(u, HttpStatus.CREATED);
     }
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginRequestDTO u){
         if(this.userService.authenticate(u.getEmail(), u.getPassword())){
             try {
-                User userDetailed = this.userService.getUserByUserEmail(u.getEmail());
+                UserResponseDTO userDetailed = this.userService.getUserByUserEmail(u.getEmail());
                 String token = JwtUtils.generateToken(userDetailed.getEmail(), userDetailed.getRole());
           
             return ResponseEntity.ok().body(Collections.singletonMap("token", token));
@@ -105,9 +96,8 @@ public class ApiUserController {
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
     public ResponseEntity<UserResponseDTO> getProfile(Principal principal){
-        User userEntity = this.userService.getUserByUserEmail(principal.getName());
-        UserResponseDTO responseDTO = convertToDTO(userEntity);
-        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+        UserResponseDTO userEntity = this.userService.getUserByUserEmail(principal.getName());
+        return new ResponseEntity<>(userEntity, HttpStatus.OK);
     }
     
     @DeleteMapping("/secure/users/{id}")

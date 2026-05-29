@@ -4,6 +4,8 @@
  */
 package com.qtk.services;
 
+import com.qtk.dto.UserCreateRequestDTO;
+import com.qtk.dto.UserResponseDTO;
 import com.qtk.pojo.User;
 import java.util.Map;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,9 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
  * @author lossrunner
  */
 public interface UserService extends UserDetailsService{
-    User getUserByUsername(String username);
-    User getUserByUserEmail(String userEmail);
-    User addUser(Map<String, String> info, MultipartFile avatar);
+    UserResponseDTO getUserByUsername(String username);
+    UserResponseDTO getUserByUserEmail(String userEmail);
+    UserResponseDTO addUser(UserCreateRequestDTO dto);
     void deleteUser(int id);
     boolean authenticate(String userEmail, String password);
 }
