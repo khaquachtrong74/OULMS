@@ -105,6 +105,21 @@ public class ApiUserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong info login");
     }
     
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        ResponseCookie clearCookie = ResponseCookie.from("jwtToken", "")
+                .httpOnly(true)
+                .secure(false) 
+                .path("/")
+                .maxAge(0) 
+                .sameSite("Lax")
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, clearCookie.toString())
+                .body("Logged out successfully");
+    }
+    
     @GetMapping("/secure/profile")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
