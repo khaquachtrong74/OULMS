@@ -22,4 +22,7 @@ public class UserResponseDTO {
     private int id;
     private String email;
     private String role;
+    private String firstName;
+    private String lastName;
+    private String avatar;
 }

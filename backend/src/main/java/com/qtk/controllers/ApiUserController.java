@@ -16,8 +16,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -83,7 +85,18 @@ public class ApiUserController {
                 UserResponseDTO userDetailed = this.userService.getUserByUserEmail(u.getEmail());
                 String token = JwtUtils.generateToken(userDetailed.getEmail(), userDetailed.getRole());
           
-            return ResponseEntity.ok().body(Collections.singletonMap("token", token));
+                ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", token)
+                        .httpOnly(true)
+                        .secure(false)
+                        .path("/")
+                        .maxAge(24*60*60)
+                        .sameSite("Lax")
+                        .build();
+                
+                
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .body(userDetailed);
             } catch (JOSEException e) {
                 return ResponseEntity.status(500).body("Error when create JWT");
             }
