@@ -31,25 +31,25 @@ public class SubjectController {
     @RequestMapping("/subject")
     public String subjectView(Model model, @RequestParam Map<String, String> params) {
         model.addAttribute("subjects", subService.getSubject(params));
-        return "subjectView";
+        return "subject";
     }
     
     @GetMapping("/subject/create")
     public String createView(Model model) {
-        model.addAttribute("product", new Subject());
-        return "subject";
+        model.addAttribute("subject", new Subject());
+        return "subjectCreate";
     }
     
     @PostMapping("/subject/create")
-    public String create( @ModelAttribute(value = "product") Subject s) {
+    public String create( @ModelAttribute(value = "subject") Subject s) {
         this.subService.addOrUpdateSubject(s);
         return "redirect:/subject";
     }
     
     @GetMapping("/subject/create/{subjectId}")
     public String updateView(Model model, @PathVariable(value = "subjectId") int id) {
-        model.addAttribute("product", this.subService.getSubjectById(id));
-        return "subject";
+        model.addAttribute("subject", this.subService.getSubjectById(id));
+        return "subjectCreate";
     }
 }
 
