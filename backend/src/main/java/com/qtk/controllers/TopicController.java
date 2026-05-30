@@ -46,7 +46,7 @@ public class TopicController {
         return "redirect:/admin/topics";
     }
     
-    @GetMapping("/topic/{topicId}")
+    @GetMapping("/topics/{topicId}")
     public String updateView(Model model, @PathVariable(value = "topicId") int id) {
         model.addAttribute("topic", topicService.getTopicById(id));
         return "topicCreate";

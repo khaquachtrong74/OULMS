@@ -28,25 +28,25 @@ public class SubjectController {
     @Autowired
     private SubjectService subService;
     
-    @RequestMapping("/subject")
+    @RequestMapping("/subjects")
     public String subjectView(Model model, @RequestParam Map<String, String> params) {
         model.addAttribute("subjects", subService.getSubject(params));
         return "subject";
     }
     
-    @GetMapping("/subject/created")
+    @GetMapping("/subject")
     public String createView(Model model) {
         model.addAttribute("subject", new Subject());
         return "subjectCreate";
     }
     
-    @PostMapping("/subject/created")
+    @PostMapping("/subject")
     public String create(@ModelAttribute(value = "subject") Subject s) {
         this.subService.addOrUpdateSubject(s);
-        return "redirect:/admin/subject";
+        return "redirect:/admin/subjects";
     }
     
-    @GetMapping("/subject/created/{subjectId}")
+    @GetMapping("/subjects/{subjectId}")
     public String updateView(Model model, @PathVariable(value = "subjectId") int id) {
         model.addAttribute("subject", this.subService.getSubjectById(id));
         return "subjectCreate";

@@ -32,12 +32,12 @@ public class ApiSubjectController {
     @Autowired
     private SubjectService subService;
     
-    @GetMapping("/subject")
-    public ResponseEntity<List<Subject>> list (@RequestParam Map<String, String> params) {
+    @GetMapping("/subjects")
+    public ResponseEntity<List<Subject>> list(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.subService.getSubject(params), HttpStatus.OK);
     }
     
-    @DeleteMapping("/subject/{subjectId}")
+    @DeleteMapping("/subjects/{subjectId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable(value = "subjectId") int id) {
         this.subService.deleteSubject(id);
