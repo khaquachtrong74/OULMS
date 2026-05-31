@@ -4,6 +4,7 @@
  */
 package com.qtk.controllers;
 
+import com.qtk.services.LevelService;
 import com.qtk.services.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,9 +24,17 @@ public class HomeController {
     @Autowired
     private SubjectService subService;
     
+    @Autowired
+    private LevelService levelService;
+    
     @ModelAttribute
     public void subjectView(Model model) {
         model.addAttribute("subjects", subService.getSubject(null));
+    }
+    
+    @ModelAttribute
+    public void levelView(Model model) {
+        model.addAttribute("levels", levelService.getLevel(null));
     }
     
     @RequestMapping("/")
