@@ -19,6 +19,7 @@ public interface UserService extends UserDetailsService{
     UserResponseDTO getUserByUsername(String username);
     UserResponseDTO getUserByUserEmail(String userEmail);
     UserResponseDTO addUser(UserCreateRequestDTO dto);
+    UserResponseDTO addOAuth2User(String email, String name, String avatarUrl);
     void deleteUser(int id);
     boolean authenticate(String userEmail, String password);
 }

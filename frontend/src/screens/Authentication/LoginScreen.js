@@ -6,7 +6,7 @@ import { MyUserContext } from "../../configs/Contexts";
 import cookies from "react-cookies";
 import { Alert, Button, Form, Spinner } from "react-bootstrap";
 import { HttpStatusCode } from "axios";
-
+import { GoogleLogin } from '@react-oauth/google';
 import "./LoginPage.css";
 
 const LoginPage = () => {
@@ -108,6 +108,17 @@ const LoginPage = () => {
         }
     };
 
+    const handleLoginGoogle = async (credentialRespone) => {
+        let res = await Apis.post(endpoints['loginGoogle'],{
+            idToken: credentialRespone.credential
+        }, {
+            headers: {
+                'Content-type': 'application/json'
+            }
+        })
+
+
+    }
     return (
         <div className="login-page">
             <div className="login-card">
@@ -184,7 +195,14 @@ const LoginPage = () => {
                             "Đăng nhập"
                         )}
                     </Button>
+
                 </Form>
+                <GoogleLogin
+                    onSuccess={handleLoginGoogle}
+                    onError={() => {
+                        console.log('Login Failed');
+                    }}
+                />
             </div>
         </div>
     );

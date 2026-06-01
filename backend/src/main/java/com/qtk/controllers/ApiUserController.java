@@ -79,27 +79,20 @@ public class ApiUserController {
     }
     
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginRequestDTO u){
+    public ResponseEntity<?> login(@RequestBody UserLoginRequestDTO u) throws JOSEException{
         if(this.userService.authenticate(u.getEmail(), u.getPassword())){
-            try {
-                UserResponseDTO userDetailed = this.userService.getUserByUserEmail(u.getEmail());
-                String token = JwtUtils.generateToken(userDetailed.getEmail(), userDetailed.getRole());
-          
-                ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", token)
-                        .httpOnly(true)
-                        .secure(false)
-                        .path("/")
-                        .maxAge(24*60*60)
-                        .sameSite("Lax")
-                        .build();
-                
-                
+            UserResponseDTO userDetailed = this.userService.getUserByUserEmail(u.getEmail());
+            String token = JwtUtils.generateToken(userDetailed.getEmail(), userDetailed.getRole().getAuthority());
+            ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", token)
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/")
+                    .maxAge(24*60*60)
+                    .sameSite("Lax")
+                    .build();
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                     .body(userDetailed);
-            } catch (JOSEException e) {
-                return ResponseEntity.status(500).body("Error when create JWT");
-            }
             
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong info login");

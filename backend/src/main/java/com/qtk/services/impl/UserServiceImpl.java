@@ -62,10 +62,10 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("Lỗi tải ảnh lên hệ thống. Vui lòng thử lại sau!", e);
             }
         }
-        
+
         User savedUser = this.userRepo.addUser(u);
         return mapToResponseDTO(savedUser);
-        
+
     }
 
     @Override
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(int id) {
         this.userRepo.deleteUser(id);
     }
-    
+
     private User mapToEntity(UserCreateRequestDTO dto) {
         User u = new User();
         u.setFirstName(dto.getFirstName());
@@ -110,15 +110,54 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserResponseDTO mapToResponseDTO(User user) {
-        if (user == null) return null;
-        
+        if (user == null) {
+            return null;
+        }
+
         UserResponseDTO responseDTO = new UserResponseDTO();
         responseDTO.setId(user.getId());
         responseDTO.setEmail(user.getEmail());
-        responseDTO.setRole(user.getRole().getAuthority());
+        responseDTO.setRole(user.getRole());
         responseDTO.setFirstName(user.getFirstName());
         responseDTO.setLastName(user.getLastName());
         responseDTO.setAvatar(user.getAvatar());
         return responseDTO;
+    }
+
+    @Override
+    public UserResponseDTO addOAuth2User(String email, String name, String avatarUrl) {
+        User u = new User();
+        u.setEmail(email);
+
+        // Bản chất xử lý dữ liệu: Tách chuỗi name của Google thành firstName và lastName
+        // Nếu name là "Quách Trọng Kha", lastName sẽ là "Kha", firstName là "Quách Trọng"
+        String firstName = name;
+        String lastName = "";
+        if (name != null && name.trim().contains(" ")) {
+            int lastSpaceIndex = name.trim().lastIndexOf(" ");
+            firstName = name.substring(0, lastSpaceIndex).trim();
+            lastName = name.substring(lastSpaceIndex + 1).trim();
+        }
+
+        u.setFirstName(firstName);
+        u.setLastName(lastName);
+        u.setAvatar(avatarUrl);
+        u.setRole(UserRole.STUDENT); // Cấp quyền mặc định
+
+        // Sinh password mặc định để thỏa mãn ràng buộc (constraint) của CSDL nếu cột password NOT NULL
+        u.setPassword(this.passwordEncoder.encode("OAUTH2_NO_PASSWORD"));
+
+        // Lưu xuống Database
+        this.userRepo.addUser(u);
+
+        // Đóng gói toàn bộ thông tin từ Entity sang DTO để trả về an toàn
+        return new UserResponseDTO(
+                u.getId(),
+                u.getEmail(),
+                u.getRole(),
+                u.getFirstName(),
+                u.getLastName(),
+                u.getAvatar()
+        );
     }
 }
