@@ -1,0 +1,19 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Enum.java to edit this template
+ */
+package com.qtk.repositories;
+
+import com.qtk.pojo.Document;
+import java.util.List;
+import java.util.Map;
+
+/**
+ *
+ * @author lossrunner
+ */
+public interface DocumentRepository {
+    public List<Document> getDocuments(Map <String, String> params);
+    
+    public List<Document> getDocumentsByUserId(int userId, Map<String, String> params);
+}
