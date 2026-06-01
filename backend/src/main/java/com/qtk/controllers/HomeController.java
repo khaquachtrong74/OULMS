@@ -6,6 +6,7 @@ package com.qtk.controllers;
 
 import com.qtk.services.LevelService;
 import com.qtk.services.SubjectService;
+import com.qtk.services.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,9 +28,17 @@ public class HomeController {
     @Autowired
     private LevelService levelService;
     
+    @Autowired
+    private TopicService topicService;
+    
     @ModelAttribute
     public void subjectView(Model model) {
         model.addAttribute("subjects", subService.getSubject(null));
+    }
+    
+    @ModelAttribute
+    public void topicView(Model model) {
+        model.addAttribute("topics", topicService.getTopic(null));
     }
     
     @ModelAttribute

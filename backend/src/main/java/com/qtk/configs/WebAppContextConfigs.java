@@ -4,6 +4,7 @@
  */
 package com.qtk.configs;
 
+import com.qtk.formatters.LevelFormatter;
 import com.qtk.formatters.SubjectFormatter;
 import com.qtk.formatters.TopicFormatter;
 import org.springframework.context.annotation.Bean;
@@ -53,6 +54,7 @@ public class WebAppContextConfigs implements WebMvcConfigurer{
     public void addFormatters(FormatterRegistry registry) {
         registry.addFormatter(new SubjectFormatter());
         registry.addFormatter(new TopicFormatter());
+        registry.addFormatter(new LevelFormatter());
     }
     
     
