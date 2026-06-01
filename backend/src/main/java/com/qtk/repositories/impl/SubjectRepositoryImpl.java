@@ -43,7 +43,8 @@ public class SubjectRepositoryImpl implements  SubjectRepository{
                 Predicate p = builder.like(root.get("name"), String.format("%%%s%%", kw));
                 query.where(p);
             }
-        }       
+        }
+        query.orderBy(builder.desc(root.get("id")));
         Query q = session.createQuery(query);
         return q.getResultList();
     }

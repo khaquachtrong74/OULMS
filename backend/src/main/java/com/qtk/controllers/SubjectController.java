@@ -30,7 +30,7 @@ public class SubjectController {
     
     @RequestMapping("/subjects")
     public String subjectView(Model model, @RequestParam Map<String, String> params) {
-        model.addAttribute("subjects", subService.getSubject(params));
+        model.addAttribute("subjects", this.subService.getSubject(params));
         return "subject";
     }
     

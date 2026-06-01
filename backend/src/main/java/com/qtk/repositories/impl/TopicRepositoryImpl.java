@@ -44,7 +44,7 @@ public class TopicRepositoryImpl implements TopicRepository{
                 query.where(p);
             }
         }
-     
+        query.orderBy(builder.desc(root.get("id")));
         Query q = session.createQuery(query);
         return q.getResultList();
     }
