@@ -1,0 +1,75 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.qtk.repositories.impl;
+
+import com.qtk.pojo.Document;
+import com.qtk.repositories.DocumentRepository;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import java.util.List;
+import java.util.Map;
+import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ *
+ * @author ngodo
+ */
+@Repository
+@Transactional
+public class DocumentRepositoryImpl implements DocumentRepository{
+    
+    @Autowired
+    private LocalSessionFactoryBean factory;
+
+    @Override
+    public List<Document> getDocument(Map<String, String> params) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Document> query = builder.createQuery(Document.class);
+        Root root = query.from(Document.class);
+        query.select(root);
+        
+        if (params != null) {
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                Predicate p = builder.like(root.get("title"), String.format("%%%s%%", kw));
+                query.where(p);
+            }
+        }
+        query.orderBy(builder.desc(root.get("id")));
+        Query q = session.createQuery(query);
+        return q.getResultList();
+    }
+
+    @Override
+    public void addOrUpdateDocument(Document d) {
+        Session session = this.factory.getObject().getCurrentSession();
+        if(d.getId() != null)
+            session.merge(d);
+        else
+            session.persist(d);
+    }
+
+    @Override
+    public Document getDocumentById(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(Document.class, id);
+    }
+
+    @Override
+    public void deleteDocument(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        Document d = this.getDocumentById(id);
+        session.remove(d);
+    }
+    
+}

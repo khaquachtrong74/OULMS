@@ -23,6 +23,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -30,6 +31,7 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -85,18 +87,21 @@ public class Document implements Serializable {
     @ManyToMany
     private Set<Tag> tagSet;
     @JoinColumn(name = "level_id", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne
     private Level levelId;
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne
     private Topic topicId;
     @JoinColumn(name = "uploaded_by", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne
     private User uploadedBy;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "documentId")
     private Progress progress;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "documentId")
     private Set<Comment> commentSet;
+    
+    @Transient
+    private MultipartFile file;
 
     public Document() {
     }
@@ -248,5 +253,20 @@ public class Document implements Serializable {
     public String toString() {
         return "com.qtk.pojo.Document[ id=" + id + " ]";
     }
+    
+        /**
+     * @return the file
+     */
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    /**
+     * @param file the file to set
+     */
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
     
 }
