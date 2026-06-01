@@ -5,10 +5,10 @@ import { MyUserContext } from './configs/Contexts';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import { Container } from "react-bootstrap";
 import HomeScreen from "./screens/Home/HomeScreen";
 import LoginPage from "./screens/Authentication/LoginScreen";
 import './App.css';
+import DocumentScreen from "./screens/DocumentManager/DocumentScreen";
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load('user') || null);
@@ -19,7 +19,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<HomeScreen />}></Route>    
                     <Route path="/login" element={<LoginPage />}></Route>    
-                    
+                    <Route path="/documents-manage" element={<DocumentScreen />}></Route>
                 </Routes>
             
             <Footer/>

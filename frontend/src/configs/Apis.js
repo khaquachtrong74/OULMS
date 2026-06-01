@@ -6,6 +6,7 @@ export const endpoints = {
     login:'/login',
     logout:'/logout',
     profile:'/secure/profile',
+    document: '/documents'
 
 }
 
