@@ -4,6 +4,8 @@
  */
 package com.qtk.services;
 
+import com.qtk.dto.DocumentRequestDTO;
+import com.qtk.dto.DocumentResponseDTO;
 import com.qtk.enums.DocumentStatus;
 import com.qtk.pojo.Document;
 import java.util.List;
@@ -15,7 +17,11 @@ import org.springframework.stereotype.Service;
  * @author ngodo
  */
 public interface DocumentService {
-    List<Document> getDocument(Map<String, String> params);
+    List<Document> getDocuments(Map<String, String> params);
+    List<DocumentResponseDTO> getPublicDocument(Map<String, String> params);
+    List<DocumentResponseDTO> getDocumentsByUserId(int userId, Map<String, String> params);
+    DocumentResponseDTO getDocumentDetail(int id);
+    void createDocument(DocumentRequestDTO d);
     void addOrUpdateDocument(Document d);
     Document getDocumentById(int id);
     void updateDocumentStatus(int id, DocumentStatus status);

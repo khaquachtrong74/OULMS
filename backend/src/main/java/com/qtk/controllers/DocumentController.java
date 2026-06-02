@@ -31,7 +31,7 @@ public class DocumentController {
     @RequestMapping("/documents/active")
     public String documentActiveView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "ACTIVE");
-        model.addAttribute("documents", this.docService.getDocument(params));
+        model.addAttribute("documents", this.docService.getDocuments(params));
         model.addAttribute("status", "ACTIVE");
         return "document";
     }
@@ -39,7 +39,7 @@ public class DocumentController {
     @RequestMapping("/documents/pending")
     public String documentPendingView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "PENDING");
-        model.addAttribute("documents", this.docService.getDocument(params));
+        model.addAttribute("documents", this.docService.getDocuments(params));
         model.addAttribute("status", "PENDING");
         return "document";
     }
@@ -47,7 +47,7 @@ public class DocumentController {
     @RequestMapping("/documents/rejected")
     public String documentRejectedView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "REJECTED");
-        model.addAttribute("documents", this.docService.getDocument(params));
+        model.addAttribute("documents", this.docService.getDocuments(params));
         model.addAttribute("status", "REJECTED");
         return "document";
     }
@@ -55,7 +55,7 @@ public class DocumentController {
     @RequestMapping("/documents/hidden")
     public String documentHiddenView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "HIDDEN");
-        model.addAttribute("documents", this.docService.getDocument(params));
+        model.addAttribute("documents", this.docService.getDocuments(params));
         model.addAttribute("status", "HIDDEN");
         return "document";
     }

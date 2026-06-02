@@ -47,5 +47,11 @@ public class LevelRepositoryImpl implements LevelRepository{
         Query q = session.createQuery(query);
         return q.getResultList();
     }
+
+    @Override
+    public Level getLevelById(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(Level.class, id);
+    }
     
 }

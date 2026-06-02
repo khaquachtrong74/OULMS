@@ -14,4 +14,5 @@ import java.util.Map;
  */
 public interface LevelRepository {
     List<Level> getLevel(Map<String, String> params);
+    Level getLevelById(int id);
 }

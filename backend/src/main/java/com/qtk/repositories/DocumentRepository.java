@@ -14,7 +14,8 @@ import java.util.Map;
  * @author ngodo
  */
 public interface DocumentRepository {
-    List<Document> getDocument(Map<String, String> params);
+    List<Document> getDocuments(Map<String, String> params);
+    List<Document> getDocumentsByUserId(int userId, Map<String, String> params);
     void addOrUpdateDocument(Document d);
     Document getDocumentById(int id);
     void updateDocumentStatus(int id, DocumentStatus status);

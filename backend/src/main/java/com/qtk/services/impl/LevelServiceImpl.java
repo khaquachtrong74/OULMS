@@ -26,5 +26,10 @@ public class LevelServiceImpl implements LevelService{
     public List<Level> getLevel(Map<String, String> params) {
         return this.levelRepo.getLevel(params);
     }
+
+    @Override
+    public Level getLevelById(int id) {
+        return this.levelRepo.getLevelById(id);
+    }
     
 }
