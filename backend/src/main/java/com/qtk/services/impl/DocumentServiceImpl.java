@@ -31,23 +31,23 @@ import com.qtk.services.GoogleDriveService;
  * @author ngodo
  */
 @Service
-public class DocumentServiceImpl implements DocumentService{
-    
+public class DocumentServiceImpl implements DocumentService {
+
     @Autowired
     private DocumentRepository docRepo;
-    
+
     @Autowired
     private TopicRepository topicRepo;
-    
+
     @Autowired
     private LevelRepository levelRepo;
-    
+
     @Autowired
     private UserRepository userRepo;
-    
+
     @Autowired
     private GoogleDriveService googleDriveService;
-    
+
     private DocumentResponseDTO toDTO(Document d) {
         DocumentResponseDTO dto = new DocumentResponseDTO();
 
@@ -66,6 +66,54 @@ public class DocumentServiceImpl implements DocumentService{
         return dto;
     }
 
+    private void validateDocumentRequest(DocumentRequestDTO dto) {
+        if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Tên tài liệu không được để trống");
+        }
+
+        if (dto.getDescription() == null || dto.getDescription().trim().isEmpty()) {
+            throw new IllegalArgumentException("Mô tả không được để trống");
+        }
+
+        if (dto.getTopicId() == null) {
+            throw new IllegalArgumentException("Chủ đề không được để trống");
+        }
+
+        if (dto.getLevelId() == null) {
+            throw new IllegalArgumentException("Cấp độ không được để trống");
+        }
+
+        if (dto.getFile() == null || dto.getFile().isEmpty()) {
+            throw new IllegalArgumentException("File không được để trống");
+        }
+
+        long maxSize = 500L * 1024 * 1024;
+        if (dto.getFile().getSize() > maxSize) {
+            throw new IllegalArgumentException("File không được vượt quá 500MB");
+        }
+
+        String contentType = dto.getFile().getContentType();
+
+        if (contentType == null
+                || !(contentType.equals("application/pdf")
+                || contentType.equals("video/mp4")
+                || contentType.equals("image/jpeg")
+                || contentType.equals("image/png")
+                || contentType.equals("application/zip")
+                || contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                || contentType.equals("application/vnd.openxmlformats-officedocument.presentationml.presentation"))) {
+            throw new IllegalArgumentException("Định dạng file không được hỗ trợ");
+        }
+
+        if (this.topicRepo.getTopicById(dto.getTopicId()) == null) {
+            throw new IllegalArgumentException("Chủ đề không tồn tại");
+        }
+
+        if (this.levelRepo.getLevelById(dto.getLevelId()) == null) {
+            throw new IllegalArgumentException("Cấp độ không tồn tại");
+        }
+    }
+
     @Override
     public List<Document> getDocuments(Map<String, String> params) {
         return this.docRepo.getDocuments(params);
@@ -75,7 +123,7 @@ public class DocumentServiceImpl implements DocumentService{
     public List<DocumentResponseDTO> getPublicDocument(Map<String, String> params) {
         return this.docRepo.getDocuments(params).stream().map(this::toDTO).toList();
     }
-    
+
     @Override
     public List<DocumentResponseDTO> getDocumentsByUserId(int userId, Map<String, String> params) {
         return this.docRepo.getDocumentsByUserId(userId, params).stream().map(this::toDTO).toList();
@@ -85,23 +133,25 @@ public class DocumentServiceImpl implements DocumentService{
     public DocumentResponseDTO getDocumentDetail(int id) {
         return this.toDTO(this.docRepo.getDocumentById(id));
     }
-    
+
     @Override
     public void addOrUpdateDocument(Document d) {
         d.setUploadedBy(this.userRepo.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()));
 
-        if (!d.getFile().isEmpty() && d.getFile() != null) {
+        if (d.getFile() != null && !d.getFile().isEmpty()) {
             File driveFile = googleDriveService.uploadFile(d.getFile());
             d.setFileUrl(driveFile.getWebViewLink());
             d.setDriveFileId(driveFile.getId());
             d.setFileType(d.getFile().getContentType());
-            d.setFileSize(d.getFile().getSize());            
+            d.setFileSize(d.getFile().getSize());
         }
         this.docRepo.addOrUpdateDocument(d);
     }
 
     @Override
     public void createDocument(DocumentRequestDTO dto) {
+        this.validateDocumentRequest(dto);
+        
         Document d = new Document();
         d.setTitle(dto.getTitle());
         d.setDescription(dto.getDescription());
@@ -113,11 +163,11 @@ public class DocumentServiceImpl implements DocumentService{
             d.setFileUrl(driveFile.getWebViewLink());
             d.setDriveFileId(driveFile.getId());
             d.setFileType(dto.getFile().getContentType());
-            d.setFileSize(dto.getFile().getSize());      
+            d.setFileSize(dto.getFile().getSize());
         }
         this.docRepo.addOrUpdateDocument(d);
     }
-    
+
     @Override
     public Document getDocumentById(int id) {
         return this.docRepo.getDocumentById(id);
@@ -126,5 +176,5 @@ public class DocumentServiceImpl implements DocumentService{
     @Override
     public void updateDocumentStatus(int id, DocumentStatus status) {
         this.docRepo.updateDocumentStatus(id, status);
-    }   
+    }
 }

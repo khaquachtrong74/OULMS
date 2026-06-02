@@ -55,7 +55,7 @@ public class ApiDocumentController {
     }
     
     @PostMapping(
-            path = "/document",
+            path = "/secure/document",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER')")
@@ -63,6 +63,8 @@ public class ApiDocumentController {
         try {
             this.docService.createDocument(dto);
             return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (IllegalArgumentException i) {
+            return new ResponseEntity<>(i.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
