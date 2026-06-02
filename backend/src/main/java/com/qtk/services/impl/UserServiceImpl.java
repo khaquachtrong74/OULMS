@@ -8,15 +8,19 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.qtk.dto.UserCreateRequestDTO;
 import com.qtk.dto.UserResponseDTO;
+import com.qtk.dto.UserUpdateRequestDTO;
 import com.qtk.enums.UserRole;
 import com.qtk.pojo.User;
 import com.qtk.repositories.UserRepository;
 import com.qtk.services.UserService;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -159,5 +163,46 @@ public class UserServiceImpl implements UserService {
                 u.getLastName(),
                 u.getAvatar()
         );
+    }
+
+    @Override
+    public List<UserResponseDTO> getAllUsers(Map<String, String> params) {
+        List<User> results = this.userRepo.getAllUsers(params);
+        if (results.isEmpty()) {
+            return new ArrayList<UserResponseDTO>();
+        }
+        return results.stream()
+                .map(user -> this.mapToResponseDTO(user))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserResponseDTO getUserById(int id) {
+        User user = this.userRepo.getUserById(id);
+        return mapToResponseDTO(user);
+    }
+
+    @Override
+    public UserResponseDTO updateUser(UserUpdateRequestDTO dto) {
+        User u = this.userRepo.getUserById(dto.getId());
+        if (u != null) {
+            u.setFirstName(dto.getFirstName());
+            u.setLastName(dto.getLastName());
+            u.setRole(dto.getRole());
+
+            // Xử lý upload ảnh nếu người dùng có chọn file mới
+            if (dto.getAvatar() != null && !dto.getAvatar().isEmpty()) {
+                Map res = null;
+                try {
+                    res = this.cloudinary.uploader().upload(dto.getAvatar().getBytes(), ObjectUtils.asMap("resource_type", "auto"));
+                } catch (IOException ex) {
+                    System.getLogger(UserServiceImpl.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                }
+                u.setAvatar(res.get("secure_url").toString());
+            }
+
+            this.userRepo.updateUser(u);
+        }
+        return mapToResponseDTO(u);
     }
 }

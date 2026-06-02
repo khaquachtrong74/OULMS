@@ -11,7 +11,7 @@ package com.qtk.enums;
  */
 public enum UserRole {
     STUDENT("STUDENT"),
-    LECTURE("LECTURE"),
+    LECTURER("LECTURER"),
     ADMIN("ADMIN");
 
     private final String authority;
