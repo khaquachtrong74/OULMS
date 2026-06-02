@@ -6,6 +6,8 @@ package com.qtk.services.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.google.api.services.drive.model.File;
+import com.qtk.enums.DocumentStatus;
 import com.qtk.pojo.Document;
 import com.qtk.repositories.DocumentRepository;
 import com.qtk.repositories.UserRepository;
@@ -18,6 +20,7 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.qtk.services.GoogleDriveService;
 
 /**
  *
@@ -33,7 +36,7 @@ public class DocumentServiceImpl implements DocumentService{
     private UserRepository userRepo;
     
     @Autowired
-    private Cloudinary cloudinary;
+    private GoogleDriveService googleDriveService;
 
     @Override
     public List<Document> getDocument(Map<String, String> params) {
@@ -43,14 +46,13 @@ public class DocumentServiceImpl implements DocumentService{
     @Override
     public void addOrUpdateDocument(Document d) {
         d.setUploadedBy(this.userRepo.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()));
-        if(!d.getFile().isEmpty()) {
-            try {
-                Map res =this.cloudinary.uploader().upload(d.getFile().getBytes(), 
-                        ObjectUtils.asMap("resource_type", "auto", "folder" , "Document"));
-                d.setUrl(res.get("secure_url").toString());
-            } catch (IOException ex) {
-                Logger.getLogger(DocumentServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
+
+        if (!d.getFile().isEmpty() && d.getFile() != null) {
+            File driveFile = googleDriveService.uploadFile(d.getFile());
+            d.setFileUrl(driveFile.getWebViewLink());
+            d.setDriveFileId(driveFile.getId());
+            d.setFileType(d.getFile().getContentType());
+            d.setFileSize(d.getFile().getSize());            
         }
         this.docRepo.addOrUpdateDocument(d);
     }
@@ -61,8 +63,7 @@ public class DocumentServiceImpl implements DocumentService{
     }
 
     @Override
-    public void deleteDocument(int id) {
-        this.docRepo.deleteDocument(id);
-    }
-    
+    public void updateDocumentStatus(int id, DocumentStatus status) {
+        this.docRepo.updateDocumentStatus(id, status);
+    }   
 }

@@ -39,7 +39,7 @@
             <version>${jakartaee}</version>
             <scope>provided</scope>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.21.2</version>
@@ -153,6 +153,23 @@
             <version>1.18.46</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-drive</artifactId>
+            <version>v3-rev20260428-2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client-jetty</artifactId>
+            <version>1.36.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client-gson</artifactId>
+            <version>2.7.0</version>
+        </dependency>  
     </dependencies> 
     
     <build>
@@ -165,11 +182,12 @@
                     <source>17</source>
                     <target>17</target>
                     <parameters>true</parameters>
-                     <annotationProcessorPaths>
+                    <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.46</version> </path>
+                            <version>1.18.46</version> 
+                        </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
