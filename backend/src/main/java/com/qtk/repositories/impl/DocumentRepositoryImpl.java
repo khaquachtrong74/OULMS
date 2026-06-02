@@ -82,8 +82,7 @@ public class DocumentRepositoryImpl implements DocumentRepository{
         
         List<Predicate> predicates = new ArrayList<>();
         
-        predicates.add(builder.equal(root.get("uploadedBy"), userId));
-        predicates.add(root.get("status").as(DocumentStatus.class).in(DocumentStatus.ACTIVE, DocumentStatus.HIDDEN));
+        predicates.add(builder.equal(root.get("uploadedBy").get("id"), userId));
         
         if (params != null) {
             String kw = params.get("kw");
