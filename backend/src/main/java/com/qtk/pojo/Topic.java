@@ -4,6 +4,7 @@
  */
 package com.qtk.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -33,6 +34,8 @@ import org.hibernate.annotations.UpdateTimestamp;
  *
  * @author ngodo
  */
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
 @Entity
 @Table(name = "topic")
 @XmlRootElement

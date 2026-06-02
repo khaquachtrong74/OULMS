@@ -1,0 +1,138 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!-- Tái sử dụng head từ index.html -->
+    <th:block th:replace="index :: head"></th:block>
+</head>
+<body>
+    <aside>
+        <!-- Tái sử dụng sidebar từ index.html -->
+        <th:block th:replace="index :: sidebar"></th:block>
+    </aside>
+
+    <main class="main-content bg-light min-vh-100 p-4">
+        <!-- Header -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">
+                    <i class="bi bi-people text-primary me-2"></i>
+                    Quản lý người dùng
+                </h1>
+                <p class="text-muted mb-0">Danh sách tài khoản trong hệ thống</p>
+            </div>
+            <div class="d-flex gap-3 align-items-center">
+                <!-- Thanh tìm kiếm -->
+                <form th:action="@{/admin/users}" method="get" class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input type="text"
+                           name="kw"
+                           class="form-control ps-5 border-0 bg-white shadow-sm rounded-pill"
+                           placeholder="Tìm kiếm người dùng..."
+                           style="width: 300px;">
+                </form>
+                <!-- Nút thông báo -->
+                <button class="btn btn-light shadow-sm rounded-circle">
+                    <i class="bi bi-bell fs-5"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Tiêu đề bảng & Nút thêm mới -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-semibold mb-0">Danh sách người dùng</h5>
+            <a th:href="@{/admin/user}"
+               class="btn btn-primary rounded-pill px-4 shadow-sm">
+                <i class="bi bi-person-plus me-2"></i>
+                Thêm người dùng
+            </a>
+        </div>
+
+        <!-- Bảng dữ liệu -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Người dùng</th>
+                                <th>Email</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th class="text-end pe-4">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Lặp qua danh sách users (Dữ liệu giả lập Thymeleaf) -->
+                            <tr th:each="u : ${users}">
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <!-- Avatar -->
+                                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center"
+                                             style="width: 42px; height: 42px;">
+                                            <i class="bi bi-person fs-5"></i>
+                                        </div>
+                                        <!-- Thông tin Tên & ID -->
+                                        <div>
+                                            <div class="fw-semibold" th:text="${u.firstName + u.lastName}">Nguyễn Văn A</div>
+                                            <small class="text-muted">
+                                                ID: <span th:text="${u.id}">101</span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- Email -->
+                                <td class="text-muted" th:text="${u.email}">
+                                    nguyenvana@gmail.com
+                                </td>
+                                <!-- Vai trò -->
+                                <td>
+                                    <!-- Thay đổi màu badge dựa trên Role -->
+                                    <span class="badge rounded-pill px-3 py-2"
+                                          th:classappend="${u.role == 'ADMIN' ? 'bg-danger-subtle text-danger' : 'bg-info-subtle text-info'}"
+                                          th:text="${u.role}">
+                                        USER
+                                    </span>
+                                </td>
+                                <!-- Trạng thái -->
+                                <td>
+                                    <span class="badge rounded-pill px-3 py-2 bg-success-subtle text-success">
+                                        Hoạt động
+                                    </span>
+                                </td>
+                                <!-- Thao tác -->
+                                <td class="text-end pe-4">
+                                    <div class="d-flex flex-column align-items-end gap-2">
+                                        <a th:href="@{/admin/users/} + ${u.id}"
+                                           class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                           style="width: 100px;">
+                                            <i class="bi bi-pencil-square me-1"></i>
+                                            Sửa
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-danger rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                                style="width: 100px;"
+                                                th:onclick="'deleteUser(\'' + @{/admin/users/} + ${u.id} + '\')'">
+                                            <i class="bi bi-trash me-1"></i>
+                                            Xoá
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Trạng thái trống khi không có dữ liệu -->
+                            <tr th:if="${#lists.isEmpty(users)}">
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-people fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                                    Chưa có người dùng nào trong hệ thống
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Script chung -->
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html>

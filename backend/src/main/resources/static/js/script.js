@@ -32,6 +32,23 @@ function updateStatusDocument(url) {
             if (res.status === 204)
                 location.reload();
             else
+                alert("Xoá thất bại!");
+        });
+    };
+};
+
+function deleteUser(url){
+    if (confirm("Bạn có muốn xoá không") === true) {
+        fetch(url, {
+            method: "delete"
+        }).then(res => {
+            if (res.status === 204)
+                location.reload();
+            else
+                alert("Xoá thất bại!");
+        });
+    };
+}
                 alert("Cập nhật thất bại!");
         });
     };

@@ -4,10 +4,13 @@
  */
 package com.qtk.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,6 +29,7 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import com.qtk.enums.UserRole;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -33,6 +37,8 @@ import org.hibernate.annotations.UpdateTimestamp;
  *
  * @author ngodo
  */
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
 @Entity
 @Table(name = "user")
 @XmlRootElement
@@ -66,14 +72,12 @@ public class User implements Serializable {
     @Size(min = 1, max = 50)
     @Column(name = "email")
     private String email;
-    @Basic(optional = false)
-    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable=false)
+    private UserRole role;
     @Size(min = 1, max = 150)
     @Column(name = "password")
     private String password;
-    @Size(max = 8)
-    @Column(name = "role")
-    private String role;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -162,11 +166,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 

@@ -4,11 +4,12 @@
  */
 package com.qtk.pojo;
 
-import com.qtk.enums.DocumentStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -98,19 +99,25 @@ public class Document implements Serializable {
         @JoinColumn(name = "document_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "tag_id", referencedColumnName = "id")})
     @ManyToMany
+    @JsonIgnore // Thêm dòng này để loại bỏ tagSet khi chuyển sang JSON
     private Set<Tag> tagSet;
     @JoinColumn(name = "level_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JsonIgnore 
     private Level levelId;
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+      @JsonIgnore 
     private Topic topicId;
     @JoinColumn(name = "uploaded_by", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JsonIgnore 
     private User uploadedBy;
+    @JsonIgnore 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "documentId")
     private Progress progress;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "documentId")
+    @JsonIgnore 
     private Set<Comment> commentSet;
 
     @Transient
