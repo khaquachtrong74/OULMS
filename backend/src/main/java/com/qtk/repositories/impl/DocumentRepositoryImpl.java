@@ -4,6 +4,7 @@
  */
 package com.qtk.repositories.impl;
 
+import com.qtk.enums.DocumentStatus;
 import com.qtk.pojo.Document;
 import com.qtk.repositories.DocumentRepository;
 import jakarta.persistence.Query;
@@ -22,12 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
- * @author lossrunner
+ * @author ngodo
  */
 @Repository
 @Transactional
-public class DocumentRepositoryImpl implements DocumentRepository {
-
+public class DocumentRepositoryImpl implements DocumentRepository{
+    
     @Autowired
     private LocalSessionFactoryBean factory;
 
@@ -41,23 +42,32 @@ public class DocumentRepositoryImpl implements DocumentRepository {
         
         List<Predicate> predicates = new ArrayList<>();
         
-        predicates.add(builder.equal(root.get("status").as(String.class), "ACTIVE"));
-        
         if (params != null) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
-                predicates.add(builder.like(builder.lower(root.get("title")), String.format("%%%s%%", kw.toLowerCase())));
+                predicates.add(builder.like(root.get("title"), String.format("%%%s%%", kw)));
             }
             
-            String type = params.get("type");
-            if (type != null && !type.isEmpty() && !type.equals("Tất cả")) {
-                predicates.add(builder.equal(root.get("type").as(String.class), type));
+            String status = params.get("status");
+            if (status != null && !status.isEmpty()) {
+                predicates.add(builder.equal(root.get("status"), DocumentStatus.valueOf(status.trim().toUpperCase())));
+            }
+            
+            String topicId = params.get("topicId");
+            if (topicId != null && !topicId.isEmpty()) {
+                predicates.add(builder.equal(root.get("topicId").get("id"), Integer.valueOf(topicId)));
+            }
+            
+            String levelId = params.get("levelId");
+            if (levelId != null && !levelId.isEmpty()) {
+                predicates.add(builder.equal(root.get("levelId").get("id"), Integer.valueOf(levelId)));
             }
         }
+        if (!predicates.isEmpty()) {
+            query.where(predicates.toArray(Predicate[]::new));
+        }
         
-        query.where(predicates.toArray(Predicate[]::new));
-        query.orderBy(builder.desc(root.get("id"))); 
-        
+        query.orderBy(builder.desc(root.get("id")));
         Query q = session.createQuery(query);
         return q.getResultList();
     }
@@ -72,25 +82,55 @@ public class DocumentRepositoryImpl implements DocumentRepository {
         
         List<Predicate> predicates = new ArrayList<>();
         
-        predicates.add(builder.equal(root.get("uploadedBy"), userId));
-        predicates.add(root.get("status").as(String.class).in("ACTIVE", "HIDDEN"));
+        predicates.add(builder.equal(root.get("uploadedBy").get("id"), userId));
         
         if (params != null) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
-                predicates.add(builder.like(builder.lower(root.get("title")), String.format("%%%s%%", kw.toLowerCase())));
+                predicates.add(builder.like(root.get("title"), String.format("%%%s%%", kw)));
             }
             
-            String type = params.get("type");
-            if (type != null && !type.isEmpty() && !type.equals("Tất cả")) {
-                predicates.add(builder.equal(root.get("type").as(String.class), type));
+            String topicId = params.get("topicId");
+            if (topicId != null && !topicId.isEmpty()) {
+                predicates.add(builder.equal(root.get("topicId").get("id"), Integer.valueOf(topicId)));
+            }
+            
+            String levelId = params.get("levelId");
+            if (levelId != null && !levelId.isEmpty()) {
+                predicates.add(builder.equal(root.get("levelId").get("id"), Integer.valueOf(levelId)));
             }
         }
-        
-        query.where(predicates.toArray(Predicate[]::new));
+        if (!predicates.isEmpty()) {
+            query.where(predicates.toArray(Predicate[]::new));
+        }      
         query.orderBy(builder.desc(root.get("id")));
-        
         Query q = session.createQuery(query);
         return q.getResultList();
     }
+    
+    @Override
+    public void addOrUpdateDocument(Document d) {
+        Session session = this.factory.getObject().getCurrentSession();
+        if(d.getId() != null)
+            session.merge(d);
+        else
+            session.persist(d);
+    }
+
+    @Override
+    public Document getDocumentById(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(Document.class, id);
+    }
+
+    @Override
+    public void updateDocumentStatus(int id, DocumentStatus status) {
+        Session session = this.factory.getObject().getCurrentSession();
+        Document d = this.getDocumentById(id);
+        if (d != null) {
+            d.setStatus(status);
+            session.merge(d);
+        }     
+    }
+    
 }

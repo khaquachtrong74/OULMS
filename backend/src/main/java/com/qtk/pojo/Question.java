@@ -25,6 +25,8 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  *
@@ -57,9 +59,11 @@ public class Question implements Serializable {
     @NotNull
     @Column(name = "correct_answer")
     private Character correctAnswer;
-    @Column(name = "created-at")
+    @CreationTimestamp
+    @Column(name = "created-at", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @UpdateTimestamp
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;

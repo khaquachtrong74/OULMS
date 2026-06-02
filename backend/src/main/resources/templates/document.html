@@ -1,0 +1,219 @@
+
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="index :: head"></th:block>
+</head>
+<body>
+    <aside>
+        <th:block th:replace="index :: sidebar"></th:block>
+    </aside>
+    
+    <main class="main-content bg-light min-vh-100 p-4">
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">
+
+                    <!-- ACTIVE -->
+                    <th:block th:if="${status == 'ACTIVE'}">
+                        <i class="bi bi-book text-primary me-2"></i>
+                        Quản lí tài liệu
+                    </th:block>
+
+                    <!-- PENDING -->
+                    <th:block th:if="${status == 'PENDING'}">
+                        <i class="bi bi-clock-history text-warning me-2"></i>
+                        Duyệt tài liệu
+                    </th:block>
+                    
+                    <th:block th:if="${status == 'REJECTED'}">
+                        <i class="bi bi-clock-history text-warning me-2"></i>
+                        Tài liệu bị từ chối
+                    </th:block>
+                    
+                    <th:block th:if="${status == 'HIDDEN'}">
+                        <i class="bi bi-clock-history text-warning me-2"></i>
+                        Tài liệu bị ẩn
+                    </th:block>
+
+                </h1>
+
+                <p class="text-muted mb-0">
+
+                    <span th:if="${status == 'ACTIVE'}">
+                        Danh sách các tài liệu đã duyệt
+                    </span>
+
+                    <span th:if="${status == 'PENDING'}">
+                        Danh sách tài liệu chờ duyệt
+                    </span>
+                    
+                    <span th:if="${status == 'REJECTED'}">
+                        Danh sách tài liệu bị từ chối
+                    </span>
+                    
+                    <span th:if="${status == 'HIDDEN'}">
+                        Danh sách tài liệu bị ẩn
+                    </span>
+
+                </p>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center">
+                <form th:action="@{/admin/documents}" method="get" class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input type="text"
+                           name="kw"
+                           class="form-control ps-5 border-0 bg-white shadow-sm rounded-pill"
+                           placeholder="Tìm kiếm tài liệu..."
+                           style="width: 300px;">
+                </form>
+
+                <button class="btn btn-light shadow-sm rounded-circle">
+                    <i class="bi bi-bell fs-5"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-semibold mb-0">Danh sách tài liệu</h5>
+
+            <a th:href="@{/admin/document}"
+               class="btn btn-primary rounded-pill px-4 shadow-sm">
+                <i class="bi bi-plus-circle me-2"></i>
+                Thêm tài liệu
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Tài liệu</th>
+                                <th>Mô tả</th>
+                                <th>Chủ đề</th>
+                                <th>Cấp độ</th>
+                                <th>Người đăng</th>
+                                <th class="text-end pe-4">Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:each="d : ${documents}">
+                                <td class="ps-4">
+                                    <div class="fw-semibold" th:text="${d.title}"></div>
+                                    <small class="text-muted">
+                                        ID: <span th:text="${d.id}"></span>
+                                    </small>
+                                </td>
+
+                                <td class="text-muted text-truncate"
+                                    style="max-width: 220px;"
+                                    th:text="${d.description}">
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2"
+                                          th:text="${d.topicId.name}">
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2"
+                                          th:text="${d.levelId.name}">
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center"
+                                             style="width: 34px; height: 34px;">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+                                        <span th:text="${d.uploadedBy.email}"></span>
+                                    </div>
+                                </td>
+
+                                <td class="text-end pe-4">
+                                    <div class="d-flex flex-column align-items-end gap-2">
+                                        <a th:href="${d.fileUrl}"
+                                            target="_blank"
+                                            style="width: 100px;"
+                                            class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center justify-content-center gap-2">
+                                            <i class="bi bi-file-earmark-text me-1"></i>
+                                            Xem
+                                        </a>
+                                        
+                                        <th:block th:if="${status == 'ACTIVE'}">
+                                            <a th:href="@{/admin/documents/} + ${d.id}"
+                                               class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                               style="width: 100px;">
+                                                <i class="bi bi-pencil-square me-1"></i>
+                                                Sửa
+                                            </a>
+
+                                            <button class="btn btn-sm btn-outline-danger rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                                    style="width: 100px;"
+                                                    th:onclick="'updateStatusDocument(\'' + @{/api/documents/} + ${d.id} + '/HIDDEN\')'">
+                                                <i class="bi bi-trash me-1"></i>
+                                                Ẩn
+                                            </button>
+                                        </th:block>
+                                        
+                                        <th:block th:if="${status == 'PENDING'}">
+                                            <button th:onclick="'updateStatusDocument(\'' + @{/api/documents/} + ${d.id} + '/ACTIVE\')'"
+                                               class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                               style="width: 100px;">
+                                                <i class="bi bi-check-lg"></i>
+                                                Duyệt
+                                            </button>
+
+                                            <button class="btn btn-sm btn-outline-danger rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                                    style="width: 100px;"
+                                                    th:onclick="'updateStatusDocument(\'' + @{/api/documents/} + ${d.id} + '/REJECTED\')'">
+                                                <i class="bi bi-x-lg"></i>
+                                                Từ chối
+                                            </button>
+                                        </th:block>
+                                        
+                                        <th:block th:if="${status == 'REJECTED'}">
+                                            <button th:onclick="'updateStatusDocument(\'' + @{/api/documents/} + ${d.id} + '/ACTIVE\')'"
+                                               class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                               style="width: 100px;">
+                                                <i class="bi bi-check-lg"></i>
+                                                Chấp nhận
+                                            </button>
+                                        </th:block>
+                                        
+                                        <th:block th:if="${status == 'HIDDEN'}">
+                                            <button th:onclick="'updateStatusDocument(\'' + @{/api/documents/} + ${d.id} + '/ACTIVE\')'"
+                                               class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                               style="width: 100px;">
+                                                <i class="bi bi-check-lg"></i>
+                                                Mở lại
+                                            </button>
+                                        </th:block>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(documents)}">
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    Chưa có tài liệu nào
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script th:src="@{/js/script.js}"></script>
+</body>
+
+</html>
+
+

@@ -4,12 +4,15 @@ import com.nimbusds.jose.JOSEException;
 import com.qtk.dto.UserCreateRequestDTO;
 import com.qtk.dto.UserLoginRequestDTO;
 import com.qtk.dto.UserResponseDTO;
+import com.qtk.pojo.User;
 import com.qtk.services.UserService;
 import com.qtk.utils.JwtUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +52,7 @@ public class ApiUserController {
     @Autowired
     private UserService userService;
     
+
     
     
     @PostMapping(path = "/users", 

@@ -24,10 +24,10 @@ function deleteTopic(url) {
     };
 };
 
-function deleteDocument(url) {
-    if (confirm("Bạn có muốn xoá không") === true) {
+function updateStatusDocument(url) {
+    if (confirm("Bạn có muốn cập nhật trạng thái không") === true) {
         fetch(url, {
-            method: "delete"
+            method: "post"
         }).then(res => {
             if (res.status === 204)
                 location.reload();
@@ -49,3 +49,7 @@ function deleteUser(url){
         });
     };
 }
+                alert("Cập nhật thất bại!");
+        });
+    };
+};

@@ -30,6 +30,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import com.qtk.enums.UserRole;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 /**
  *
  * @author ngodo
@@ -69,18 +72,17 @@ public class User implements Serializable {
     @Size(min = 1, max = 50)
     @Column(name = "email")
     private String email;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 100)
-    @Column(name = "password")
-    private String password;
-    
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable=false)
     private UserRole role;
-    @Column(name = "created_at")
+    @Size(min = 1, max = 150)
+    @Column(name = "password")
+    private String password;
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @UpdateTimestamp
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
