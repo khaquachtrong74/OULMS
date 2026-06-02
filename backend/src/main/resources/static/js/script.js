@@ -47,9 +47,5 @@ function deleteUser(url){
             else
                 alert("Xoá thất bại!");
         });
-    };
 }
-                alert("Cập nhật thất bại!");
-        });
-    };
 };
