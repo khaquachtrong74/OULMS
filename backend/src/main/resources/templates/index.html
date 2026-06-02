@@ -1,7 +1,7 @@
 <!-- Admin Dashboard for EduDocs (Bootstrap 5 + Thymeleaf) -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:fragment="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - EduDocs</title>
@@ -119,13 +119,25 @@
             justify-content: center;
             border-radius: 8px;
         }
+        
+        .sub-menu {
+            font-size: 14px;
+            padding-left: 20px;
+        }
+
+        .sub-menu i {
+            font-size: 13px;
+        }
     </style>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
 
 <!-- Sidebar -->
-<aside class="sidebar d-flex flex-column">
+<aside class="sidebar d-flex flex-column" th:fragment="sidebar">
 
     <div class="p-4 mb-4">
         <div class="d-flex align-items-center gap-2">
@@ -136,22 +148,82 @@
         </div>
     </div>
 
-    <nav class="flex-grow-1">
-        <a href="#" class="nav-link-admin active">
+    <nav class="flex-grow-1" id="sidebarMenu">
+
+        <a th:href="@{/}" class="nav-link-admin active">
             <i class="bi bi-grid-fill"></i> Tổng quan
         </a>
+
         <a href="#" class="nav-link-admin">
             <i class="bi bi-people"></i> Quản lý người dùng
         </a>
-        <a href="#" class="nav-link-admin">
-            <i class="bi bi-file-earmark-check"></i> Phê duyệt tài liệu
+
+        <a class="nav-link-admin d-flex justify-content-between align-items-center"
+           data-bs-toggle="collapse"
+           href="#documentMenu"
+           role="button"
+           aria-expanded="false">
+
+            <span>
+                <i class="bi bi-folder"></i> Quản lý tài liệu
+            </span>
+
+            <i class="bi bi-chevron-down"></i>
         </a>
+
+        <div class="collapse ps-3" id="documentMenu">
+
+            <a th:href="@{/admin/subjects}" class="nav-link-admin sub-menu">
+                <i class="bi bi-book"></i> Môn học
+            </a>
+
+            <a th:href="@{/admin/topics}" class="nav-link-admin sub-menu">
+                <i class="bi bi-tags"></i> Chủ đề
+            </a>
+
+            <a th:href="@{/admin/documents/active}" class="nav-link-admin sub-menu">
+                <i class="bi bi-file-earmark-text"></i> Tài liệu
+            </a>
+
+        </div>
+        
+        <a class="nav-link-admin d-flex justify-content-between align-items-center"
+           data-bs-toggle="collapse"
+           href="#documentapproval"
+           role="button"
+           aria-expanded="false">
+
+            <span>
+                <i class="bi bi-folder"></i> Phê duyệt tài liệu
+            </span>
+
+            <i class="bi bi-chevron-down"></i>
+        </a>
+
+        <div class="collapse ps-3" id="documentapproval">
+
+            <a th:href="@{/admin/documents/pending}" class="nav-link-admin sub-menu">
+                <i class="bi bi-book"></i> Phê duyệt
+            </a>
+
+            <a th:href="@{/admin/documents/rejected}" class="nav-link-admin sub-menu">
+                <i class="bi bi-tags"></i> Từ chối
+            </a>
+
+            <a th:href="@{/admin/documents/hidden}" class="nav-link-admin sub-menu">
+                <i class="bi bi-file-earmark-text"></i> Ẩn
+            </a>
+
+        </div>
+
         <a href="#" class="nav-link-admin">
             <i class="bi bi-exclamation-octagon"></i> Báo cáo vi phạm
         </a>
+
         <a href="#" class="nav-link-admin">
             <i class="bi bi-gear"></i> Cài đặt hệ thống
         </a>
+
     </nav>
 
     <div class="p-4 mt-auto border-top">
@@ -404,8 +476,23 @@
 
 </main>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const currentPath = window.location.pathname;
+
+        document.querySelectorAll(".collapse a").forEach(link => {
+            if (link.pathname === currentPath) {
+                const parentCollapse = link.closest(".collapse");
+
+                if (parentCollapse) {
+                    parentCollapse.classList.add("show");
+                }
+
+                link.classList.add("active");
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

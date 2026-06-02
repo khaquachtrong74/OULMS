@@ -21,7 +21,8 @@ public class DispatcherServeletInit extends AbstractAnnotationConfigDispatcherSe
             ThymeleafConfigs.class,
             SpringSecurityConfigs.class,
             ApiSecurityConfigs.class,
-            OpenApiConfig.class
+            OpenApiConfig.class,
+            GoogleDriveConfig.class
         };
     }
 

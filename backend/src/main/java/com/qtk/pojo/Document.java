@@ -4,11 +4,13 @@
  */
 package com.qtk.pojo;
 
+import com.qtk.enums.DocumentStatus;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,6 +25,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -30,6 +33,7 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -43,11 +47,13 @@ import java.util.Set;
     @NamedQuery(name = "Document.findById", query = "SELECT d FROM Document d WHERE d.id = :id"),
     @NamedQuery(name = "Document.findByTitle", query = "SELECT d FROM Document d WHERE d.title = :title"),
     @NamedQuery(name = "Document.findByDescription", query = "SELECT d FROM Document d WHERE d.description = :description"),
-    @NamedQuery(name = "Document.findByUrl", query = "SELECT d FROM Document d WHERE d.url = :url"),
-    @NamedQuery(name = "Document.findByType", query = "SELECT d FROM Document d WHERE d.type = :type"),
+    @NamedQuery(name = "Document.findByFileUrl", query = "SELECT d FROM Document d WHERE d.fileUrl = :fileUrl"),
+    @NamedQuery(name = "Document.findByFileType", query = "SELECT d FROM Document d WHERE d.fileType = :fileType"),
     @NamedQuery(name = "Document.findByCreatedAt", query = "SELECT d FROM Document d WHERE d.createdAt = :createdAt"),
     @NamedQuery(name = "Document.findByUpdatedAt", query = "SELECT d FROM Document d WHERE d.updatedAt = :updatedAt"),
-    @NamedQuery(name = "Document.findByStatus", query = "SELECT d FROM Document d WHERE d.status = :status")})
+    @NamedQuery(name = "Document.findByStatus", query = "SELECT d FROM Document d WHERE d.status = :status"),
+    @NamedQuery(name = "Document.findByFileSize", query = "SELECT d FROM Document d WHERE d.fileSize = :fileSize"),
+    @NamedQuery(name = "Document.findByDriveFileId", query = "SELECT d FROM Document d WHERE d.driveFileId = :driveFileId")})
 public class Document implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -61,42 +67,50 @@ public class Document implements Serializable {
     @Size(min = 1, max = 50)
     @Column(name = "title")
     private String title;
-    @Size(max = 100)
+    @Size(max = 200)
     @Column(name = "description")
     private String description;
+    @Size(max = 150)
+    @Column(name = "file_url")
+    private String fileUrl;
     @Size(max = 100)
-    @Column(name = "url")
-    private String url;
-    @Size(max = 5)
-    @Column(name = "type")
-    private String type;
+    @Column(name = "file_type")
+    private String fileType;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    @Size(max = 6)
-    @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private DocumentStatus status = DocumentStatus.PENDING;
+    @Column(name = "file_size")
+    private Long fileSize;
+    @Size(max = 150)
+    @Column(name = "drive_file_id")
+    private String driveFileId;
     @JoinTable(name = "document_tag", joinColumns = {
         @JoinColumn(name = "document_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "tag_id", referencedColumnName = "id")})
     @ManyToMany
     private Set<Tag> tagSet;
     @JoinColumn(name = "level_id", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     private Level levelId;
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     private Topic topicId;
     @JoinColumn(name = "uploaded_by", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     private User uploadedBy;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "documentId")
     private Progress progress;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "documentId")
     private Set<Comment> commentSet;
+
+    @Transient
+    private MultipartFile file;
 
     public Document() {
     }
@@ -134,20 +148,20 @@ public class Document implements Serializable {
         this.description = description;
     }
 
-    public String getUrl() {
-        return url;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
-    public String getType() {
-        return type;
+    public String getFileType() {
+        return fileType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 
     public Date getCreatedAt() {
@@ -166,12 +180,28 @@ public class Document implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public String getStatus() {
+    public DocumentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(DocumentStatus status) {
         this.status = status;
+    }
+
+    public Long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public String getDriveFileId() {
+        return driveFileId;
+    }
+
+    public void setDriveFileId(String driveFileId) {
+        this.driveFileId = driveFileId;
     }
 
     @XmlTransient
@@ -248,5 +278,20 @@ public class Document implements Serializable {
     public String toString() {
         return "com.qtk.pojo.Document[ id=" + id + " ]";
     }
+    
+        /**
+     * @return the file
+     */
+    public MultipartFile getFile() {
+        return file;
+}
+
+    /**
+     * @param file the file to set
+     */
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
     
 }

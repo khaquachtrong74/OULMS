@@ -4,9 +4,13 @@
  */
 package com.qtk.configs;
 
+import com.qtk.formatters.LevelFormatter;
+import com.qtk.formatters.SubjectFormatter;
+import com.qtk.formatters.TopicFormatter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -22,6 +26,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(
         basePackages = {
             "com.qtk.controllers",
+            "com.qtk.repositories",
             "com.qtk.services",
             "org.springdoc"
         }
@@ -44,5 +49,13 @@ public class WebAppContextConfigs implements WebMvcConfigurer{
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/js/**").addResourceLocations("classpath:/static/js/");
     }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addFormatter(new SubjectFormatter());
+        registry.addFormatter(new TopicFormatter());
+        registry.addFormatter(new LevelFormatter());
+    }
+    
     
 }
