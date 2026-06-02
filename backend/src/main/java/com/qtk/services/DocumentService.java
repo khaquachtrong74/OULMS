@@ -4,6 +4,7 @@
  */
 package com.qtk.services;
 
+import com.qtk.enums.DocumentStatus;
 import com.qtk.pojo.Document;
 import java.util.List;
 import java.util.Map;
@@ -17,5 +18,5 @@ public interface DocumentService {
     List<Document> getDocument(Map<String, String> params);
     void addOrUpdateDocument(Document d);
     Document getDocumentById(int id);
-    void deleteDocument(int id);
+    void updateDocumentStatus(int id, DocumentStatus status);
 }

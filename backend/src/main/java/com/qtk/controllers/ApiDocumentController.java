@@ -4,6 +4,7 @@
  */
 package com.qtk.controllers;
 
+import com.qtk.enums.DocumentStatus;
 import com.qtk.pojo.Document;
 import com.qtk.services.DocumentService;
 import java.util.List;
@@ -12,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -37,9 +38,9 @@ public class ApiDocumentController {
         return new ResponseEntity<>(this.docService.getDocument(params), HttpStatus.OK);
     }
     
-    @DeleteMapping("/documents/{documentId}")
+    @PostMapping("/documents/{documentId}/{status}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable(value = "documentId") int id) {
-        this.docService.deleteDocument(id);
+    public void updateStatus(@PathVariable(value = "documentId") int id, @PathVariable("status") DocumentStatus status) {
+        this.docService.updateDocumentStatus(id, status);
     }
 }

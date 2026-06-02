@@ -4,6 +4,7 @@
  */
 package com.qtk.repositories.impl;
 
+import com.qtk.enums.DocumentStatus;
 import com.qtk.pojo.Document;
 import com.qtk.repositories.DocumentRepository;
 import jakarta.persistence.Query;
@@ -11,6 +12,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Session;
@@ -38,13 +40,23 @@ public class DocumentRepositoryImpl implements DocumentRepository{
         Root root = query.from(Document.class);
         query.select(root);
         
+        List<Predicate> predicates = new ArrayList<>();
+        
         if (params != null) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
-                Predicate p = builder.like(root.get("title"), String.format("%%%s%%", kw));
-                query.where(p);
+                predicates.add(builder.like(root.get("title"), String.format("%%%s%%", kw)));
             }
+            
+            String status = params.get("status");
+            if (status != null && !status.isEmpty()) {
+                predicates.add(builder.equal(root.get("status"), DocumentStatus.valueOf(status.trim().toUpperCase())));
+            }         
         }
+        if (!predicates.isEmpty()) {
+            query.where(predicates.toArray(Predicate[]::new));
+        }
+        
         query.orderBy(builder.desc(root.get("id")));
         Query q = session.createQuery(query);
         return q.getResultList();
@@ -66,10 +78,13 @@ public class DocumentRepositoryImpl implements DocumentRepository{
     }
 
     @Override
-    public void deleteDocument(int id) {
+    public void updateDocumentStatus(int id, DocumentStatus status) {
         Session session = this.factory.getObject().getCurrentSession();
         Document d = this.getDocumentById(id);
-        session.remove(d);
+        if (d != null) {
+            d.setStatus(status);
+            session.merge(d);
+        }     
     }
     
 }
