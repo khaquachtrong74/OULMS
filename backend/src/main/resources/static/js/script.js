@@ -56,30 +56,3 @@ function deleteUser(url) {
     }
 }
 ;
-function quickUpdateStatus(url, documentId, newStatus) {
-    if (confirm(`Xác nhận chuyển trạng thái tài liệu sang: ${newStatus}?`)) {
-        
-        // Sử dụng url được truyền từ Thymeleaf xuống để đảm bảo có Context Path
-        fetch(url, {
-            method: 'POST', // Giữ nguyên POST
-            headers: {'Content-Type': 'application/json'}
-        })
-        .then(response => {
-            if (response.ok) {
-                const row = document.getElementById(`doc-row-${documentId}`);
-                if (row) {
-                    row.classList.add('fade-out'); 
-                    setTimeout(() => {
-                        row.remove();
-                    }, 300);
-                }
-            } else {
-                alert("Không thể cập nhật trạng thái do lỗi từ máy chủ.");
-            }
-        })
-        .catch(error => {
-            console.error("Lỗi:", error);
-            alert("Mất kết nối đến máy chủ.");
-        });
-    }
-}

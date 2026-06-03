@@ -187,9 +187,12 @@
                         </a>
 
                         <ul class="dropdown-menu" >
-                            <li><a class="dropdown-item" th:href="@{/admin/documents/pending}">Chờ duyệt (Pending)</a></li>
-                            <li><a class="dropdown-item" th:href="@{/admin/documents/active}">Đang hoạt động (Active)</a></li>
-                            <li><a class="dropdown-item" th:href="@{/admin/documents/rejected}">Bị từ chối (Rejected)</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/active}">Quản lý tài liệu</a></li>
+
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/pending}">Tài liệu chờ duyệt</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/active}">Tài liệu đã duyệt</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/rejected}">Tài liệu từ chối duyệt</a></li>
+
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" th:href="@{/admin/documents/stats}">Thống kê tổng</a></li>
                         </ul>
