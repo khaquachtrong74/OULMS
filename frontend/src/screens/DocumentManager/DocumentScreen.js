@@ -1,188 +1,518 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Container, Row, Col, Table, Button, Form, Badge, InputGroup, Card, Spinner } from 'react-bootstrap';
+
+import React, { useContext, useState, useEffect, useCallback } from 'react';
+import { Container, Row, Col, Table, Button, Form, Badge, InputGroup, Card, Spinner, Modal } from 'react-bootstrap';
+import { Search, FileEarmarkPdf, PlayCircle, Files, FileEarmarkText, CloudUpload, PencilSquare } from 'react-bootstrap-icons';
 import './DocumentPage.css';
 import { MyUserContext } from '../../configs/Contexts';
-import Apis, { endpoints } from '../../configs/Apis'; 
-
+import Apis, { endpoints } from '../../configs/Apis';
+import { Pagination } from 'react-bootstrap';
 const DocumentScreen = () => {
   const [user] = useContext(MyUserContext);
+
+  // States quản lý danh sách tài liệu
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [kw, setKw] = useState(''); 
-  const [filterType, setFilterType] = useState('Tất cả');
+  const [kw, setKw] = useState('');
+  const [filterLevel, setFilterLevel] = useState('');
 
-  // 1. Hàm nạp dữ liệu: Gọi qua endpoint bảo mật
-  const fetchDocuments = async () => {
+  // States quản lý Metadata phân loại
+  const [topics, setTopics] = useState([]);
+  const [levels, setLevels] = useState([]);
+
+  // States quản lý Modal Tải lên (Upload)
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [newDoc, setNewDoc] = useState({
+    title: '',
+    description: '',
+    topicId: '',
+    levelId: '',
+    file: null
+  });
+
+  // States quản lý Modal Cập nhật (Edit)
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editingDoc, setEditingDoc] = useState({
+    id: '',
+    title: '',
+    description: '',
+    topicId: '',
+    levelId: '',
+    file: null // Tùy chọn: chỉ truyền lên nếu giảng viên muốn thay file mới
+  });
+const [currentPage, setCurrentPage] = useState(1);
+const ITEMS_PER_PAGE = 10;
+const currentDocuments = documents.slice(
+  (currentPage - 1) * ITEMS_PER_PAGE,
+  currentPage * ITEMS_PER_PAGE
+);
+
+const totalPages = Math.ceil(documents.length / ITEMS_PER_PAGE);
+  // 1. Fetch dữ liệu Metadata cho các Form Dropdown
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      try {
+        const [resTopic, resLevel] = await Promise.all([
+          Apis.get(endpoints['topic']),
+          Apis.get(endpoints['level'])
+        ]);
+        setTopics(resTopic.data || []);
+        setLevels(resLevel.data || []);
+      } catch (error) {
+        console.error("Lỗi khi tải metadata:", error);
+      }
+    };
+    fetchMetadata();
+  }, []);
+
+  // 2. Gọi API nạp danh sách tài liệu cá nhân dựa trên userId (Xác thực Session)
+  const fetchMyDocuments = useCallback(async () => {
+    if (!user) return;
     try {
       setLoading(true);
       const params = {};
       if (kw.trim() !== '') params.kw = kw;
-      if (filterType !== 'Tất cả') params.type = filterType;
+      if (filterLevel !== '') params.levelId = filterLevel;
 
-      // CHUẨN BẢO MẬT: Gọi đúng cổng '/secure/documents' qua secureDocument
-      const response = await Apis.get(endpoints['document'], { params });
-      
+      const response = await Apis.get(endpoints['secureDocuments'](user.id), { params });
       if (response.data) {
         setDocuments(response.data);
       }
     } catch (error) {
-      console.error("Lỗi khi nạp dữ liệu tài liệu bảo mật:", error);
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        alert("Phiên đăng nhập hết hạn hoặc bạn không có quyền quản lý kho tài liệu này!");
-      }
+      console.error("Lỗi khi nạp tài liệu cá nhân:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [kw, filterLevel, user]);
 
   useEffect(() => {
-    if (user) {
-      const delayDebounce = setTimeout(() => {
-        fetchDocuments();
-      }, 500);
-      return () => clearTimeout(delayDebounce);
+    const delayDebounce = setTimeout(() => {
+      fetchMyDocuments();
+    }, 400);
+    return () => clearTimeout(delayDebounce);
+  }, [fetchMyDocuments]);
+useEffect(() => {
+  setCurrentPage(1);
+}, [kw, filterLevel]);
+  // 3. Xử lý logic Form Tải lên tài liệu mới
+  const handleUploadSubmit = async (e) => {
+    e.preventDefault();
+    if (!newDoc.file) {
+      alert("Vui lòng đính kèm tệp tin tài liệu!");
+      return;
     }
-  }, [kw, filterType, user]);
 
-  // 2. Hàm Ẩn/Hiện: Gửi request lên cổng bảo mật
-  const handleToggleStatus = async (id, currentStatus) => {
-    const nextStatus = currentStatus === 'ACTIVE' ? 'HIDDEN' : 'ACTIVE';
+    setUploadLoading(true);
     try {
-      // Gọi qua secureDocument có ID đi kèm ở URL
-      await Apis.patch(`${endpoints['secureDocument']}/${id}/`, { status: nextStatus });
-      setDocuments(documents.map(doc => doc.id === id ? { ...doc, status: nextStatus } : doc));
+      const formData = new FormData();
+      formData.append('title', newDoc.title);
+      formData.append('description', newDoc.description);
+      formData.append('topicId', newDoc.topicId);
+      formData.append('levelId', newDoc.levelId);
+      formData.append('file', newDoc.file);
+
+      await Apis.post(endpoints['secureDocument'], formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      alert("Tải lên học liệu thành công! Đang chờ kiểm duyệt.");
+      setShowUploadModal(false);
+      setNewDoc({ title: '', description: '', topicId: '', levelId: '', file: null });
+      fetchMyDocuments();
     } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái tài liệu:", error);
-      alert("Không thể cập nhật trạng thái. Vui lòng thử lại!");
+      console.error("Lỗi upload tài liệu:", error);
+      alert(error.response?.data || "Tải lên thất bại. Vui lòng thử lại!");
+    } finally {
+      setUploadLoading(false);
     }
   };
 
-  // 3. Hàm Xóa mềm: Gửi request lên cổng bảo mật
-  const handleSoftDelete = async (id) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa tài liệu này không?')) {
-      try {
-        // Gọi qua secureDocument có ID đi kèm ở URL
-        await Apis.patch(`${endpoints['secureDocument']}/${id}/`, { status: 'DELETE' });
-        setDocuments(documents.map(doc => doc.id === id ? { ...doc, status: 'DELETE' } : doc));
-      } catch (error) {
-        console.error("Lỗi khi xóa tài liệu:", error);
-        alert("Xóa tài liệu thất bại!");
+  // 4. Kích hoạt Modal Sửa và đổ dữ liệu cũ vào form
+  const handleOpenEditModal = (doc) => {
+    setEditingDoc({
+      id: doc.id,
+      title: doc.title,
+      description: doc.description || '',
+      topicId: doc.topicId || '',
+      levelId: doc.levelId || '',
+      file: null // Mặc định không chọn file mới trừ khi người dùng chủ động tải đè
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setEditLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('title', editingDoc.title);
+      formData.append('description', editingDoc.description);
+      formData.append('topicId', editingDoc.topicId);
+      formData.append('levelId', editingDoc.levelId);
+
+      // Chỉ đính kèm file nếu người dùng chọn file mới thay thế
+      if (editingDoc.file) {
+        formData.append('file', editingDoc.file);
       }
+
+      // ĐỒNG BỘ: Sử dụng POST thuần túy giúp đường truyền Multipart cực kỳ ổn định
+      await Apis.post(endpoints['secureDocuments'](editingDoc.id), formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      alert("Cập nhật thông tin học liệu thành công!");
+      setShowEditModal(false);
+      fetchMyDocuments();
+    } catch (error) {
+      console.error("Lỗi khi cập nhật tài liệu:", error);
+      alert(error.response?.data || "Chỉnh sửa tài liệu thất bại. Vui lòng kiểm tra lại dữ liệu!");
+    } finally {
+      setEditLoading(false);
     }
+  };
+
+  // Hàm render Icon nhận diện định dạng tệp tin trực quan
+  const renderFileIcon = (title = "") => {
+    const lower = title.toLowerCase();
+    if (lower.includes('.pdf')) return <FileEarmarkPdf size={24} className="text-danger me-2" />;
+    if (lower.includes('.mp4') || lower.includes('.mkv')) return <PlayCircle size={24} className="text-primary me-2" />;
+    if (lower.includes('.docx') || lower.includes('.doc')) return <FileEarmarkText size={24} className="text-info me-2" />;
+    return <Files size={24} className="text-secondary me-2" />;
   };
 
   return (
-    <Container className="py-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <Container className="py-5">
+      {/* HEADER SECTION */}
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-5">
         <div>
-          <h2 className="fw-bold text-dark">Kho Tài Liệu Của Tôi</h2>
-          <p className="text-secondary mb-0">Xin chào giảng viên, bạn có thể đăng tải và quản lý các tài nguyên số tại đây</p>
+          <h2 className="fw-extrabold text-dark m-0 d-flex align-items-center gap-2">
+            Kho Học Liệu Cá Nhân
+          </h2>
+          <p className="text-muted mb-0 mt-1">Quản lý, chỉnh sửa nội dung và theo dõi trạng thái phê duyệt các tài nguyên số của bạn.</p>
         </div>
-        <Button variant="primary" className="fw-medium shadow-sm">
-          + Tải lên tài liệu mới
+        <Button
+          variant="primary"
+          className="fw-bold px-4 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2 align-self-start"
+          onClick={() => setShowUploadModal(true)}
+        >
+          <CloudUpload size={20} /> Tải lên tài liệu mới
         </Button>
       </div>
 
-      <Card className="border-0 shadow-sm p-3 mb-4 bg-light">
+      {/* SEARCH & FILTERS CONTAINER */}
+      <Card className="border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
         <Row className="g-3">
-          <Col md={7}>
-            <InputGroup>
+          <Col md={8}>
+            <InputGroup className="bg-light rounded-3 overflow-hidden border border-1">
+              <InputGroup.Text className="bg-light border-0 ps-3">
+                <Search className="text-muted" />
+              </InputGroup.Text>
               <Form.Control
-                placeholder="Tìm theo tên bài học hoặc mô tả ngắn..."
+                className="bg-light border-0 py-2 shadow-none"
+                placeholder="Tìm kiếm nhanh tiêu đề hoặc từ khóa tài liệu học phần..."
                 value={kw}
                 onChange={(e) => setKw(e.target.value)}
               />
             </InputGroup>
           </Col>
-          <Col md={5}>
-            <Form.Select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-              <option value="Tất cả">Tất cả định dạng</option>
-              <option value="PDF">Tài liệu tập tin (PDF)</option>
-              <option value="VIDEO">Video bài giảng (VIDEO)</option>
-              <option value="SLIDE">Slide trình chiếu (SLIDE)</option>
-              <option value="DOC">Văn bản hướng dẫn (DOC)</option>
+          <Col md={4}>
+            <Form.Select
+              className="py-2 border-1 rounded-3 shadow-none focus-ring focus-ring-primary"
+              value={filterLevel}
+              onChange={(e) => setFilterLevel(e.target.value)}
+            >
+              <option value="">Tất cả cấp độ</option>
+              {levels.map(lvl => (
+                <option key={lvl.id} value={lvl.id}>{lvl.name}</option>
+              ))}
             </Form.Select>
           </Col>
         </Row>
       </Card>
 
-      <Card className="border-0 shadow-sm overflow-hidden">
+      {/* DOCUMENT LIST TABLE */}
+      <Card className="border-0 shadow-sm rounded-4 overflow-hidden bg-white">
         {loading ? (
           <div className="text-center py-5">
-            <Spinner animation="border" variant="primary" className="mb-2" />
-            <div className="text-secondary">Đang nạp dữ liệu từ hệ thống bảo mật...</div>
+            <Spinner animation="border" variant="primary" className="mb-3" />
+            <div className="text-secondary fw-medium">Đang đồng bộ kho dữ liệu tài liệu...</div>
           </div>
         ) : (
           <Table hover responsive className="mb-0 align-middle">
-            <thead className="bg-dark text-white">
+            <thead className="table-dark-custom">
               <tr>
-                <th className="ps-3" style={{ width: '45%' }}>Tài liệu / Mô tả</th>
-                <th>Định dạng</th>
-                <th>Ngày cập nhật</th>
-                <th>Trạng thái</th>
-                <th className="text-end pe-3">Hành động</th>
+                <th className="ps-4 py-3" style={{ width: '45%' }}>Tài liệu học tập</th>
+                <th className="py-3">Chủ đề</th>
+                <th className="py-3">Cấp độ</th>
+                <th className="py-3">Trạng thái</th>
+                <th className="text-end pe-4 py-3">Hành động</th>
               </tr>
             </thead>
             <tbody>
-              {documents.length > 0 ? (
-                documents.map((doc) => (
-                  <tr key={doc.id} className={doc.status === 'DELETE' ? 'opacity-50' : ''}>
-                    <td className="ps-3">
-                      <div className="fw-bold text-dark">{doc.title}</div>
-                      <small className="text-muted d-block text-truncate" style={{ maxWidth: '350px' }}>
-                        {doc.description || 'Không có mô tả ngắn'}
-                      </small>
-                    </td>
-                    <td>
-                      <Badge bg="secondary" className="fw-normal">{doc.type}</Badge>
-                    </td>
-                    <td>
-                      <small className="text-secondary">
-                        {doc.updatedAt ? new Date(doc.updatedAt).toLocaleDateString('vi-VN') : doc.createdAt ? new Date(doc.createdAt).toLocaleDateString('vi-VN') : 'Mới cập nhật'}
-                      </small>
-                    </td>
-                    <td>
-                      {doc.status === 'ACTIVE' && <Badge bg="success">Đang hiển thị</Badge>}
-                      {doc.status === 'HIDDEN' && <Badge bg="warning" text="dark">Đang ẩn</Badge>}
-                      {doc.status === 'DELETE' && <Badge bg="danger">Đã xóa</Badge>}
-                    </td>
-                    <td className="text-end pe-3">
-                      <div className="d-flex justify-content-end gap-2">
-                        {doc.status !== 'DELETE' && (
-                          <>
-                            <Button 
-                              variant={doc.status === 'ACTIVE' ? 'outline-warning' : 'outline-success'} 
-                              size="sm"
-                              onClick={() => handleToggleStatus(doc.id, doc.status)}
-                            >
-                              {doc.status === 'ACTIVE' ? 'Ẩn đi' : 'Hiện'}
-                            </Button>
-                            <Button 
-                              variant="outline-danger" 
-                              size="sm" 
-                              onClick={() => handleSoftDelete(doc.id)}
-                            >
-                              Xóa
-                            </Button>
-                          </>
-                        )}
+              {currentDocuments.length > 0 ? (
+                currentDocuments.map((doc) => (
+                  <tr key={doc.id}>
+                    <td className="ps-4 py-3">
+                      <div className="d-flex align-items-center">
+                        {renderFileIcon(doc.title)}
+                        <div>
+                          <div className="fw-bold text-dark text-hover-primary cursor-pointer">{doc.title}</div>
+                          <span className="text-muted small d-block text-truncate mt-1" style={{ maxWidth: '380px' }}>
+                            {doc.description || 'Chưa cấu hình mô tả ngắn.'}
+                          </span>
+                        </div>
                       </div>
                     </td>
+                    <td>
+                      <Badge bg="network-light" text="dark" className="border px-2 py-1.5 fw-medium text-secondary bg-light">
+                        {doc.topicName || 'Chưa phân loại'}
+                      </Badge>
+                    </td>
+                    <td>
+                      <span className="small fw-semibold text-dark">{doc.levelName || 'Cơ bản'}</span>
+                    </td>
+                    <td>
+                      {doc.status === 'ACTIVE' && <Badge bg="success" className="px-2.5 py-1.5 rounded-2">Đang hiển thị</Badge>}
+                      {doc.status === 'HIDDEN' && <Badge bg="secondary" className="px-2.5 py-1.5 rounded-2">Đang ẩn</Badge>}
+                      {doc.status === 'PENDING' && <Badge bg="warning" text="dark" className="px-2.5 py-1.5 rounded-2">Chờ duyệt</Badge>}
+                      {doc.status === 'REJECTED' && <Badge bg="danger" className="px-2.5 py-1.5 rounded-2">Bị từ chối</Badge>}
+                    </td>
+                    <td className="text-end pe-4 py-3">
+                      {/* THAY THẾ: Chỉ giữ lại nút Edit mở Modal */}
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="rounded-3 px-3 d-inline-flex align-items-center gap-1.5"
+                        onClick={() => handleOpenEditModal(doc)}
+                      >
+                        <PencilSquare size={14} />
+                        <span>Chỉnh sửa</span>
+                      </Button>
+                    </td>
+
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="text-center py-4 text-muted">
-                    Kho lưu trữ hiện tại đang trống hoặc không tìm thấy tài liệu phù hợp.
+                  <td colSpan="5" className="text-center py-5 text-muted fw-medium">
+                    Bạn chưa đóng góp tài liệu nào hoặc bộ lọc không khớp dữ liệu.
                   </td>
                 </tr>
               )}
             </tbody>
           </Table>
+          
         )}
+             <Pagination className="justify-content-center my-4">
+  <Pagination.Prev
+    disabled={currentPage === 1}
+    onClick={() => setCurrentPage(currentPage - 1)}
+  />
+
+  {[...Array(totalPages)].map((_, index) => (
+    <Pagination.Item
+      key={index}
+      active={currentPage === index + 1}
+      onClick={() => setCurrentPage(index + 1)}
+    >
+      {index + 1}
+    </Pagination.Item>
+  ))}
+
+  <Pagination.Next
+    disabled={currentPage === totalPages}
+    onClick={() => setCurrentPage(currentPage + 1)}
+  />
+</Pagination>
       </Card>
+
+      {/* ================= MODAL 1: TẢI LÊN TÀI LIỆU MỚI ================= */}
+      <Modal show={showUploadModal} onHide={() => !uploadLoading && setShowUploadModal(false)} centered size="lg">
+        <Form onSubmit={handleUploadSubmit}>
+          <Modal.Header closeButton={!uploadLoading} className="border-0 pb-0 pt-4 px-4">
+            <Modal.Title className="fw-bold text-dark">Tải Lên Học Liệu Số Mới</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-4">
+            <Row className="g-3">
+              <Col md={12}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold text-secondary small">Tiêu đề học phần / Bài học</Form.Label>
+                  <Form.Control
+                    required
+                    placeholder="Ví dụ: Slide bài giảng Chương 1 - Cấu trúc dữ liệu giải thuật.pdf"
+                    value={newDoc.title}
+                    onChange={(e) => setNewDoc(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold text-secondary small">Thuộc chủ đề</Form.Label>
+                  <Form.Select
+                    required
+                    value={newDoc.topicId}
+                    onChange={(e) => setNewDoc(prev => ({ ...prev, topicId: e.target.value }))}
+                  >
+                    <option value="">-- Chọn chủ đề bài học --</option>
+                    {topics.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold text-secondary small">Cấp độ học thuật</Form.Label>
+                  <Form.Select
+                    required
+                    value={newDoc.levelId}
+                    onChange={(e) => setNewDoc(prev => ({ ...prev, levelId: e.target.value }))}
+                  >
+                    <option value="">-- Chọn cấp độ học thuật --</option>
+                    {levels.map(l => (
+                      <option key={l.id} value={l.id}>{l.name}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={12}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold text-secondary small">Mô tả tóm tắt nội dung chính</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    required
+                    placeholder="Mô tả ngắn gọn nội dung cốt lõi của tài liệu..."
+                    value={newDoc.description}
+                    onChange={(e) => setNewDoc(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={12}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold text-secondary small">Đính kèm tệp tin tài liệu</Form.Label>
+                  <Form.Control
+                    type="file"
+                    required
+                    accept="application/pdf,video/mp4,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    onChange={(e) => setNewDoc(prev => ({ ...prev, file: e.target.files[0] }))}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer className="border-0 pt-0 pb-4 px-4">
+            <Button variant="outline-secondary" className="px-4 rounded-pill" onClick={() => setShowUploadModal(false)} disabled={uploadLoading}>
+              Hủy bỏ
+            </Button>
+            <Button variant="primary" type="submit" className="px-4 rounded-pill" disabled={uploadLoading}>
+              {uploadLoading ? <Spinner animation="border" size="sm" /> : "Xác nhận tải lên"}
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+
+      {/* ================= MODAL 2: CẬP NHẬT THÔNG TIN (EDIT MODAL) ================= */}
+      <Modal show={showEditModal} onHide={() => !editLoading && setShowEditModal(false)} centered size="lg">
+        <Form onSubmit={handleEditSubmit}>
+          <Modal.Header closeButton={!editLoading} className="border-0 pb-0 pt-4 px-4">
+            <Modal.Title className="fw-bold text-dark">Chỉnh Sửa Thông Tin Học Liệu</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-4">
+            <Row className="g-3">
+              <Col md={12}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold text-secondary small">Tiêu đề học phần</Form.Label>
+                  <Form.Control
+                    required
+                    placeholder="Nhập tiêu đề cập nhật..."
+                    value={editingDoc.title}
+                    onChange={(e) => setEditingDoc(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold text-secondary small">Chủ đề bài giảng</Form.Label>
+                  <Form.Select
+                    required
+                    value={editingDoc.topicId}
+                    onChange={(e) => setEditingDoc(prev => ({ ...prev, topicId: e.target.value }))}
+                  >
+                    <option value="">-- Chọn chủ đề bài học --</option>
+                    {topics.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold text-secondary small">Cấp độ học thuật</Form.Label>
+                  <Form.Select
+                    required
+                    value={editingDoc.levelId}
+                    onChange={(e) => setEditingDoc(prev => ({ ...prev, levelId: e.target.value }))}
+                  >
+                    <option value="">-- Chọn cấp độ học thuật --</option>
+                    {levels.map(l => (
+                      <option key={l.id} value={l.id}>{l.name}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={12}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold text-secondary small">Mô tả tóm tắt</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    required
+                    placeholder="Cập nhật mô tả nội dung..."
+                    value={editingDoc.description}
+                    onChange={(e) => setEditingDoc(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={12}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold text-secondary small">Thay đổi tệp tin mới (Không bắt buộc)</Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept="application/pdf,video/mp4,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    onChange={(e) => setEditingDoc(prev => ({ ...prev, file: e.target.files[0] }))}
+                  />
+                  <Form.Text className="text-muted block mt-1">
+                    Chỉ chọn tệp nếu bạn muốn tải đè và thay thế tệp tin hiện tại trên hệ thống lưu trữ Cloud.
+                  </Form.Text>
+                </Form.Group>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer className="border-0 pt-0 pb-4 px-4">
+            <Button variant="outline-secondary" className="px-4 rounded-pill" onClick={() => setShowEditModal(false)} disabled={editLoading}>
+              Hủy bỏ
+            </Button>
+            <Button variant="primary" type="submit" className="px-4 rounded-pill" disabled={editLoading}>
+              {editLoading ? <Spinner animation="border" size="sm" /> : "Lưu thay đổi"}
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
     </Container>
   );
 };
 
 export default DocumentScreen;
+

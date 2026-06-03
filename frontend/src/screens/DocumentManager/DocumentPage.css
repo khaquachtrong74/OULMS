@@ -1,141 +1,38 @@
-/* Custom styles cho trang Quản lý tài liệu học tập */
-
-/* 1. Định dạng chung cho container */
-.container {
-  max-width: 1200px;
+/* Tối ưu hóa UI Table của OULMS Hub */
+.table-dark-custom {
+  background-color: #2e2f40 !important; /* Đồng bộ với màu chủ đạo brand */
 }
 
-/* 2. Khối tiêu đề chính */
-h2.text-dark {
-  font-size: 1.75rem;
-  letter-spacing: -0.5px;
-  position: relative;
-}
-
-/* 3. Tùy chỉnh thanh Tìm kiếm và Bộ lọc */
-.card.bg-light {
-  background-color: #ffffff !important; /* Đổi nền xám nhẹ sang trắng tinh tế */
-  border: 1px solid #eef2f5 !important;
-  border-radius: 12px;
-}
-
-.form-control, .form-select {
-  border: 1px solid #ced4da;
-  padding: 0.6rem 1rem;
-  font-size: 0.95rem;
-  border-radius: 8px;
-  transition: all 0.2s ease-in-out;
-}
-
-/* Hiệu ứng khi nhấn vào ô nhập liệu hoặc hộp chọn */
-.form-control:focus, .form-select:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
-}
-
-/* 4. Tùy chỉnh Card bọc ngoài Bảng danh sách */
-.card.overflow-hidden {
-  border: 1px solid #eef2f5;
-  border-radius: 12px;
-}
-
-/* 5. Tùy chỉnh Bảng biểu (Table) */
-.table {
-  font-size: 0.95rem;
-}
-
-/* Thanh đầu bảng (Table Header) màu tối hiện đại */
-.table thead.bg-dark th {
-  background-color: #1a252f;
-  color: #ffffff;
+.table-dark-custom th {
+  color: #ffffff !important;
   font-weight: 600;
-  padding: 1rem 0.75rem;
-  border-bottom: none;
   font-size: 0.9rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
+  border: none;
 }
 
-/* Các hàng trong bảng */
-.table tbody tr {
-  transition: background-color 0.15s ease;
+.fw-extrabold {
+  font-weight: 800;
 }
 
-/* Hiệu ứng di chuột qua từng hàng */
-.table-hover tbody tr:hover {
-  background-color: #f8fafc !important;
-  cursor: default;
+.text-hover-primary:hover {
+  color: #0d6efd;
+  transition: color 0.2s ease;
 }
 
-/* Các ô dữ liệu */
-.table td {
-  padding: 1.1rem 0.75rem;
-  color: #334155;
-  border-bottom: 1px solid #f1f5f9;
+.modal-content {
+  border-radius: 20px !important;
+  border: none !important;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.15) !important;
 }
 
-/* 6. Định dạng các Nhãn (Badge) trạng thái */
+.focus-ring-primary:focus {
+  border-color: #0d6efd !important;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15) !important;
+}
+
 .badge {
-  padding: 0.5em 0.8em;
-  font-size: 0.8rem;
-  font-weight: 500;
-  border-radius: 6px;
-}
-
-/* Badge trạng thái "Đã duyệt" */
-.bg-success {
-  background-color: #10b981 !important; /* Màu xanh lá dịu mắt */
-}
-
-/* Badge trạng thái "Chờ duyệt" */
-.bg-warning {
-  background-color: #f59e0b !important; /* Màu vàng cam hổ phách */
-}
-
-/* Badge loại tài liệu */
-.bg-secondary {
-  background-color: #f1f5f9 !important; /* Chuyển nền xám đậm thành xám cực nhẹ */
-  color: #475569 !important; /* Chữ xám tối */
-  border: 1px solid #e2e8f0;
-}
-
-/* 7. Tùy chỉnh các nút bấm hành động (Actions) */
-.btn-sm {
-  padding: 0.35rem 0.75rem;
-  font-size: 0.85rem;
-  border-radius: 6px;
-  font-weight: 500;
-}
-
-/* Nút bấm Thêm tài liệu mới */
-.btn-primary {
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: transform 0.1s ease;
-}
-
-.btn-primary:active {
-  transform: scale(0.98);
-}
-
-/* 8. Tối ưu hiển thị Responsive cho màn hình nhỏ (Mobile) */
-@media (max-width: 768px) {
-  h2.text-dark {
-    font-size: 1.4rem;
-  }
-  
-  .table td, .table th {
-    padding: 0.75rem 0.5rem;
-  }
-  
-  .d-flex.justify-content-between {
-    flex-direction: column;
-    align-items: flex-start !important;
-    gap: 1rem;
-  }
-  
-  .btn-primary {
-    width: 100%;
-  }
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
