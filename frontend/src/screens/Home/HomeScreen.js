@@ -110,20 +110,6 @@ const HomeScreen = () => {
                             <span>— Hành trang tri thức</span>
                         </div>
 
-                        {/* THANH TÌM KIẾM HOÀN CHỈNH */}
-                        <Form onSubmit={handleSearchSubmit} className="search-wrapper">
-                            <InputGroup size="lg">
-                                <Form.Control
-                                    placeholder="Nhập tiêu đề tài liệu học tập cần tìm kiếm..."
-                                    value={kw}
-                                    onChange={(e) => setKw(e.target.value)}
-                                />
-                                <Button type="submit" variant="warning" className="search-btn">
-                                    <Search size={20} />
-                                    <span>Tìm kiếm</span>
-                                </Button>
-                            </InputGroup>
-                        </Form>
                     </div>
                 </Container>
             </section>
