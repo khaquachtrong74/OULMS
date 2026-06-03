@@ -194,4 +194,11 @@ public class DocumentServiceImpl implements DocumentService {
 
         this.docRepo.addOrUpdateDocument(doc);
     }
+
+    @Override
+    public void deleteDocument(int id) {
+        this.docRepo.deleteDocument(id);
+    }
+    
+    
 }

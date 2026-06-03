@@ -13,7 +13,8 @@ export const endpoints = {
     topic: '/topics',
     subject: '/subjects',
     level: '/levels',
-    loginGoogle: '/auth/google'
+    loginGoogle: '/auth/google',
+    tag: '/tags'
 
 }
 

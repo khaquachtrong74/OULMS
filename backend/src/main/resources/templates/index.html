@@ -148,7 +148,7 @@
 
             <nav class="flex-grow-1">
 
-                <a th:href="@{/}" class="nav-link-admin active">
+                <a th:href="@{/}" class="nav-link-admin">
                     <i class="bi bi-grid-fill"></i> Tổng quan
                 </a>
 
@@ -187,9 +187,12 @@
                         </a>
 
                         <ul class="dropdown-menu" >
-                            <li><a class="dropdown-item" th:href="@{/admin/documents/pending}">Chờ duyệt (Pending)</a></li>
-                            <li><a class="dropdown-item" th:href="@{/admin/documents/active}">Đang hoạt động (Active)</a></li>
-                            <li><a class="dropdown-item" th:href="@{/admin/documents/rejected}">Bị từ chối (Rejected)</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/active}">Quản lý tài liệu</a></li>
+
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/pending}">Tài liệu chờ duyệt</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/active}">Tài liệu đã duyệt</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/rejected}">Tài liệu từ chối duyệt</a></li>
+
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" th:href="@{/admin/documents/stats}">Thống kê tổng</a></li>
                         </ul>
@@ -234,7 +237,7 @@
             </div>
 
             <div class="p-4 mt-auto border-top" sec:authorize="isAnonymous()">
-                <a th:href="@{/login}" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                <a th:href="@{/admin/login}" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
                     <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập hệ thống
                 </a>
             </div>

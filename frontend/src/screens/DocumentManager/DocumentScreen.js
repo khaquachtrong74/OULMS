@@ -1,7 +1,7 @@
 
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Table, Button, Form, Badge, InputGroup, Card, Spinner, Modal } from 'react-bootstrap';
-import { Search, FileEarmarkPdf, PlayCircle, Files, FileEarmarkText, CloudUpload, PencilSquare } from 'react-bootstrap-icons';
+import { Search, FileEarmarkPdf, PlayCircle, Files, FileEarmarkText, CloudUpload, PencilSquare, Trash } from 'react-bootstrap-icons';
 import './DocumentPage.css';
 import { MyUserContext } from '../../configs/Contexts';
 import Apis, { endpoints } from '../../configs/Apis';
@@ -41,14 +41,14 @@ const DocumentScreen = () => {
     levelId: '',
     file: null // Tùy chọn: chỉ truyền lên nếu giảng viên muốn thay file mới
   });
-const [currentPage, setCurrentPage] = useState(1);
-const ITEMS_PER_PAGE = 10;
-const currentDocuments = documents.slice(
-  (currentPage - 1) * ITEMS_PER_PAGE,
-  currentPage * ITEMS_PER_PAGE
-);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 6;
+  const currentDocuments = documents.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
-const totalPages = Math.ceil(documents.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(documents.length / ITEMS_PER_PAGE);
   // 1. Fetch dữ liệu Metadata cho các Form Dropdown
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -92,9 +92,9 @@ const totalPages = Math.ceil(documents.length / ITEMS_PER_PAGE);
     }, 400);
     return () => clearTimeout(delayDebounce);
   }, [fetchMyDocuments]);
-useEffect(() => {
-  setCurrentPage(1);
-}, [kw, filterLevel]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [kw, filterLevel]);
   // 3. Xử lý logic Form Tải lên tài liệu mới
   const handleUploadSubmit = async (e) => {
     e.preventDefault();
@@ -172,6 +172,33 @@ useEffect(() => {
     } finally {
       setEditLoading(false);
     }
+  };
+
+  const handleDeleteDocument = async (docId, title) => {
+    const confirmed = window.confirm(`Bạn có chắc muốn xóa tài liệu "${title}" không?`);
+    if (!confirmed) return;
+    try {
+      await Apis.delete(endpoints['secureDocuments'](docId));
+
+      alert("Xóa tài liệu thành công!");
+
+      setDocuments(prev =>
+        prev.filter(doc => doc.id !== docId)
+      );
+
+      fetchMyDocuments();
+    } catch (error) {
+      console.error("Lỗi khi xóa tài liệu:", error);
+      alert(error.response?.data || "Không thể xóa tài liệu!");
+    }
+  }
+  // Hàm render Icon nhận diện định dạng tệp tin trực quan
+  const renderFileIcon = (title = "") => {
+    const lower = title.toLowerCase();
+    if (lower.includes('.pdf')) return <FileEarmarkPdf size={24} className="text-danger me-2" />;
+    if (lower.includes('.mp4') || lower.includes('.mkv')) return <PlayCircle size={24} className="text-primary me-2" />;
+    if (lower.includes('.docx') || lower.includes('.doc')) return <FileEarmarkText size={24} className="text-info me-2" />;
+    return <Files size={24} className="text-secondary me-2" />;
   };
 
   // Hàm render Icon nhận diện định dạng tệp tin trực quan
@@ -281,16 +308,27 @@ useEffect(() => {
                       {doc.status === 'REJECTED' && <Badge bg="danger" className="px-2.5 py-1.5 rounded-2">Bị từ chối</Badge>}
                     </td>
                     <td className="text-end pe-4 py-3">
-                      {/* THAY THẾ: Chỉ giữ lại nút Edit mở Modal */}
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        className="rounded-3 px-3 d-inline-flex align-items-center gap-1.5"
-                        onClick={() => handleOpenEditModal(doc)}
-                      >
-                        <PencilSquare size={14} />
-                        <span>Chỉnh sửa</span>
-                      </Button>
+                      <div className="d-flex justify-content-end gap-2">
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          className="rounded-3 px-3 d-inline-flex align-items-center gap-1"
+                          onClick={() => handleOpenEditModal(doc)}
+                        >
+                          <PencilSquare size={14} />
+                          <span>Chỉnh sửa</span>
+                        </Button>
+
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          className="rounded-3 px-3 d-inline-flex align-items-center gap-1"
+                          onClick={() => handleDeleteDocument(doc.id, doc.title)}
+                        >
+                          <Trash size={14} />
+                          <span>Xóa</span>
+                        </Button>
+                      </div>
                     </td>
 
                   </tr>
@@ -304,29 +342,33 @@ useEffect(() => {
               )}
             </tbody>
           </Table>
-          
+
         )}
-             <Pagination className="justify-content-center my-4">
-  <Pagination.Prev
-    disabled={currentPage === 1}
-    onClick={() => setCurrentPage(currentPage - 1)}
-  />
+        {totalPages > 1 && (
+          <div className="d-flex justify-content-center mt-4">
+            <Pagination>
+              <Pagination.Prev
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => p - 1)}
+              />
 
-  {[...Array(totalPages)].map((_, index) => (
-    <Pagination.Item
-      key={index}
-      active={currentPage === index + 1}
-      onClick={() => setCurrentPage(index + 1)}
-    >
-      {index + 1}
-    </Pagination.Item>
-  ))}
+              {[...Array(totalPages)].map((_, index) => (
+                <Pagination.Item
+                  key={index}
+                  active={currentPage === index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </Pagination.Item>
+              ))}
 
-  <Pagination.Next
-    disabled={currentPage === totalPages}
-    onClick={() => setCurrentPage(currentPage + 1)}
-  />
-</Pagination>
+              <Pagination.Next
+                disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}
+              />
+            </Pagination>
+          </div>
+        )}
+
       </Card>
 
       {/* ================= MODAL 1: TẢI LÊN TÀI LIỆU MỚI ================= */}
