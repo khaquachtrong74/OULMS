@@ -109,14 +109,31 @@ const LoginPage = () => {
     };
 
     const handleLoginGoogle = async (credentialRespone) => {
-        let res = await Apis.post(endpoints['loginGoogle'],{
+        let res = await Apis.post(endpoints['loginGoogle'], {
             idToken: credentialRespone.credential
         }, {
             headers: {
                 'Content-type': 'application/json'
             }
         })
+        if (res.status === HttpStatusCode.Ok || res.status === 200) {
 
+            let userProfile = await Apis.get(endpoints["profile"]);
+
+            cookies.save(COOKIE_KEYS.USER, userProfile.data);
+
+            dispatch({
+                type: ACTION_TYPE.LOGIN,
+                payload: userProfile.data,
+            });
+
+            let next = q.get("next");
+            if (next) {
+                nav(next);
+            } else {
+                nav("/");
+            }
+        }
 
     }
     return (
@@ -176,33 +193,46 @@ const LoginPage = () => {
                         </a>
                     </div>
 
-                    <Button
-                        type="submit"
-                        className="login-btn"
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <>
-                                <Spinner
-                                    animation="border"
-                                    size="sm"
-                                />
-                                <span className="ms-2">
-                                    Đang đăng nhập...
-                                </span>
-                            </>
-                        ) : (
-                            "Đăng nhập"
-                        )}
-                    </Button>
+                    <div className="auth-actions">
+    <Button
+        type="submit"
+        className="login-btn"
+        disabled={loading}
+    >
+        {loading ? (
+            <>
+                <Spinner animation="border" size="sm" />
+                <span className="ms-2">Đang đăng nhập...</span>
+            </>
+        ) : (
+            "Đăng nhập"
+        )}
+    </Button>
+
+    <Button
+        variant="outline-primary"
+        className="register-btn"
+        onClick={() => nav("/register")}
+    >
+        Đăng ký
+    </Button>
+</div>
 
                 </Form>
-                <GoogleLogin
-                    onSuccess={handleLoginGoogle}
-                    onError={() => {
-                        console.log('Login Failed');
-                    }}
-                />
+                <div className="login-divider">
+                    <span>Hoặc</span>
+                </div>
+
+                <div className="google-login-wrapper">
+                    <GoogleLogin
+                        onSuccess={handleLoginGoogle}
+                        onError={() => {
+                            console.log("Login Failed");
+                        }}
+                            width="380"
+                    />
+                </div>
+          
             </div>
         </div>
     );

@@ -9,6 +9,9 @@ import HomeScreen from "./screens/Home/HomeScreen";
 import LoginPage from "./screens/Authentication/LoginScreen";
 import './App.css';
 import DocumentScreen from "./screens/DocumentManager/DocumentScreen";
+import ExploreScreen from "./screens/Explore/ExploreScreen";
+import ProfileScreen from "./screens/Authentication/ProfileScreen";
+import RegisterScreen from "./screens/Authentication/RegisterScreen";
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load('user') || null);
@@ -19,7 +22,11 @@ function App() {
                 <Routes>
                     <Route path="/" element={<HomeScreen />}></Route>    
                     <Route path="/login" element={<LoginPage />}></Route>    
+                    <Route path="/register" element={<RegisterScreen />}></Route>
                     <Route path="/documents-manage" element={<DocumentScreen />}></Route>
+                    <Route path="/explore" element={<ExploreScreen />}></Route>    
+                    <Route path="/profile" element={<ProfileScreen />}></Route>    
+
                 </Routes>
             
             <Footer/>

@@ -12,32 +12,35 @@ import {
 } from "react-bootstrap";
 import {
     Search,
-    BookOpen,
+    Book,
     Cpu,
     Database,
     Globe,
-    Brain,
-    FileText,
+    FileEarmarkText,
     Clock,
-    TrendingUp
-} from "lucide-react";
+    GraphUp,
+    Lightbulb
+} from "react-bootstrap-icons";
 import "./HomePage.css";
-import Apis, { endpoints } from '../../configs/Apis'; // Import instance Axios public của bạn
+import Apis, { endpoints } from '../../configs/Apis'; 
 
 const HomeScreen = () => {
-    // 1. Quản lý trạng thái dữ liệu từ API và bộ lọc tìm kiếm
+    // 1. Quản lý trạng thái dữ liệu từ API
     const [latestDocuments, setLatestDocuments] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [kw, setKw] = useState(''); // Từ khóa tìm kiếm (Đồng bộ 'kw' với Backend)
+    const [subjects, setSubjects] = useState([]); // State mới cho Danh mục môn học
+    
+    const [loadingDocs, setLoadingDocs] = useState(true);
+    const [loadingSubjects, setLoadingSubjects] = useState(true); // State loading cho Danh mục
+    
+    const [kw, setKw] = useState(''); 
 
     // 2. Hàm fetch tài liệu công khai từ Database
     const fetchLatestDocs = async (searchKey = '') => {
         try {
-            setLoading(true);
+            setLoadingDocs(true);
             const params = {};
             if (searchKey.trim() !== '') params.kw = searchKey;
 
-            // Gọi endpoint public '/documents'
             const response = await Apis.get(endpoints['document'], { params });
             if (response.data) {
                 setLatestDocuments(response.data);
@@ -45,13 +48,30 @@ const HomeScreen = () => {
         } catch (error) {
             console.error("Lỗi khi nạp tài liệu trang chủ:", error);
         } finally {
-            setLoading(false);
+            setLoadingDocs(false);
         }
     };
 
-    // Tự động nạp dữ liệu khi mở trang đầu tiên
+    // 3. Hàm fetch danh mục môn học (Subject) từ Database
+    const fetchSubjects = async () => {
+        try {
+            setLoadingSubjects(true);
+            const response = await Apis.get(endpoints['subject']);
+            if (response.data) {
+                // Tùy theo API của bạn cấu trúc trả về list hay object có phân trang
+                setSubjects(Array.isArray(response.data) ? response.data : response.data.content || []);
+            }
+        } catch (error) {
+            console.error("Lỗi khi nạp danh mục môn học:", error);
+        } finally {
+            setLoadingSubjects(false);
+        }
+    };
+
+    // Tự động nạp dữ liệu khi mở trang
     useEffect(() => {
         fetchLatestDocs();
+        fetchSubjects();
     }, []);
 
     // Xử lý sự kiện khi bấm nút Tìm kiếm
@@ -60,12 +80,17 @@ const HomeScreen = () => {
         fetchLatestDocs(kw);
     };
 
-    const categories = [
-        { title: "Trí tuệ nhân tạo", icon: <Brain size={28} />, docs: 128 },
-        { title: "Khoa học dữ liệu", icon: <Database size={28} />, docs: 94 },
-        { title: "Lập trình Web", icon: <Globe size={28} />, docs: 176 },
-        { title: "Kỹ thuật phần mềm", icon: <Cpu size={28} />, docs: 112 }
-    ];
+    // Hàm random icon cho các môn học (vì DB của bạn có thể không lưu icon)
+    const renderSubjectIcon = (index) => {
+        const icons = [
+            <Lightbulb size={28} />,
+            <Database size={28} />,
+            <Globe size={28} />,
+            <Cpu size={28} />,
+            <Book size={28} />
+        ];
+        return icons[index % icons.length];
+    };
 
     return (
         <div className="homepage">
@@ -103,26 +128,47 @@ const HomeScreen = () => {
                 </Container>
             </section>
 
-            {/* CATEGORY SECTION */}
+            {/* CATEGORY SECTION (ĐÃ THAY BẰNG DỮ LIỆU THẬT) */}
             <section className="section-spacing">
                 <Container>
                     <div className="section-header">
                         <h2>Danh mục môn học</h2>
                         <p>Khám phá tài liệu theo từng chuyên môn</p>
                     </div>
-                    <Row className="g-4">
-                        {categories.map((c, index) => (
-                            <Col lg={3} md={6} key={index}>
-                                <Card className="category-card h-100">
-                                    <Card.Body>
-                                        <div className="category-icon">{c.icon}</div>
-                                        <h5>{c.title}</h5>
-                                        <p>{c.docs} tài liệu</p>
-                                    </Card.Body>
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
+                    
+                    {loadingSubjects ? (
+                        <div className="text-center py-4">
+                            <Spinner animation="border" variant="primary" />
+                        </div>
+                    ) : (
+                        <Row className="g-4">
+                            {subjects.length > 0 ? (
+                                // Lấy 4 môn học hoặc render tất cả (tùy bạn chỉnh slice)
+                                subjects.slice(0, 4).map((s, index) => (
+                                    <Col lg={3} md={6} key={s.id || index}>
+                                        <Card className="category-card h-100">
+                                            <Card.Body>
+                                                <div className="category-icon">
+                                                    {renderSubjectIcon(index)}
+                                                </div>
+                                                {/* Đổi s.subjectName hoặc s.name tùy thuộc vào field entity Subject trên backend của bạn */}
+                                                <h5>{s.subjectName || s.name || "Tên môn học"}</h5>
+                                                
+                                                {/* Nếu backend chưa có API đếm số bài viết, ta tạm để như sau */}
+                                                <p className="text-muted text-sm mt-2">
+                                                    {s.description || "Tài liệu học thuật chuyên ngành"}
+                                                </p>
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
+                                ))
+                            ) : (
+                                <Col xs={12} className="text-center text-muted">
+                                    Chưa có môn học nào.
+                                </Col>
+                            )}
+                        </Row>
+                    )}
                 </Container>
             </section>
 
@@ -135,7 +181,7 @@ const HomeScreen = () => {
                     </div>
 
                     {/* Vùng điều kiện: Hiển thị loading hoặc danh sách dữ liệu thật */}
-                    {loading ? (
+                    {loadingDocs ? (
                         <div className="text-center py-5">
                             <Spinner animation="border" variant="primary" className="mb-2" />
                             <div className="text-secondary">Đang nạp kho tài nguyên...</div>
@@ -149,10 +195,9 @@ const HomeScreen = () => {
                                             <Card.Body className="d-flex flex-column">
                                                 <div className="document-top">
                                                     <div className="document-icon">
-                                                        <FileText size={22} />
-                                                    </div>
+    <FileEarmarkText size={22} />                                                    </div>
                                                     <Badge bg="info" className="text-uppercase">
-                                                        {doc.type}
+                                                        {doc.type || 'Tài liệu'}
                                                     </Badge>
                                                 </div>
 
@@ -162,15 +207,14 @@ const HomeScreen = () => {
 
                                                 <div className="document-meta mt-auto pt-3">
                                                     <div>
-                                                        <BookOpen size={16} />
-                                                        <span>Mã môn: #{doc.topicId}</span>
+<Book size={16} />                                                        <span>Mã môn: #{doc.topicId || doc.subjectId || 'N/A'}</span>
                                                     </div>
                                                     <div>
                                                         <Clock size={16} />
                                                         <span>
                                                             {doc.updatedAt 
                                                                 ? new Date(doc.updatedAt).toLocaleDateString('vi-VN') 
-                                                                : new Date(doc.createdAt).toLocaleDateString('vi-VN')}
+                                                                : (doc.createdAt ? new Date(doc.createdAt).toLocaleDateString('vi-VN') : 'Mới cập nhật')}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -198,8 +242,9 @@ const HomeScreen = () => {
                     <Row className="g-4">
                         <Col md={4}>
                             <div className="stats-card">
-                                <TrendingUp size={32} />
-                                <h3>1,240+</h3>
+                                <GraphUp size={32} />
+                                {/* Nếu cần bạn có thể bind số liệu thực vào đây `latestDocuments.length` (nếu API trả về tất cả) */}
+                                <h3>{latestDocuments.length > 0 ? `${latestDocuments.length}+` : "0"}</h3>
                                 <p>Tài liệu học tập học phần</p>
                             </div>
                         </Col>
