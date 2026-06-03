@@ -148,7 +148,7 @@
 
             <nav class="flex-grow-1">
 
-                <a th:href="@{/}" class="nav-link-admin active">
+                <a th:href="@{/}" class="nav-link-admin">
                     <i class="bi bi-grid-fill"></i> Tổng quan
                 </a>
 
@@ -234,7 +234,7 @@
             </div>
 
             <div class="p-4 mt-auto border-top" sec:authorize="isAnonymous()">
-                <a th:href="@{/login}" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                <a th:href="@{/admin/login}" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
                     <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập hệ thống
                 </a>
             </div>

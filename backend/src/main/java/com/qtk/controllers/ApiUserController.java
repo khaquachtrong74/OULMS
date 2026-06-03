@@ -126,7 +126,7 @@ public class ApiUserController {
     @DeleteMapping("/secure/users/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable("id") int id){
-        userService.deleteUser(id);
+        this.userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
     @PatchMapping(path = "/secure/profile", 

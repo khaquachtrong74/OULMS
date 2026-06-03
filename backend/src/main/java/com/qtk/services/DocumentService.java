@@ -23,7 +23,8 @@ public interface DocumentService {
     DocumentResponseDTO getDocumentDetail(int id);
     void createDocument(DocumentRequestDTO d);
     void addOrUpdateDocument(Document d);
-    
+    void deleteDocument(int id);
+
     void updateDocument(int documentId, DocumentRequestDTO dto);
     Document getDocumentById(int id);
     void updateDocumentStatus(int id, DocumentStatus status);

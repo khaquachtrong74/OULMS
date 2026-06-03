@@ -97,7 +97,7 @@ public class DocumentRepositoryImpl implements DocumentRepository {
         root.fetch("levelId", JoinType.LEFT);
         root.fetch("uploadedBy", JoinType.LEFT);
         query.select(root);
-     
+
         List<Predicate> predicates = new ArrayList<>();
 
         predicates.add(builder.equal(root.get("uploadedBy").get("id"), userId));
@@ -151,6 +151,19 @@ public class DocumentRepositoryImpl implements DocumentRepository {
             d.setStatus(status);
             session.merge(d);
         }
+    }
+
+    @Override
+    public void deleteDocument(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        Document d = this.getDocumentById(id);
+        if (d != null) {
+            session.remove(d);
+        } else {
+
+            throw new RuntimeException("Document not found with id: " + id);
+        }
+
     }
 
 }

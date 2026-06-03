@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -152,5 +153,12 @@ public class ApiDocumentController {
     public void updateStatus(@PathVariable(value = "documentId") int id, @PathVariable("status") DocumentStatus status
     ) {
         this.docService.updateDocumentStatus(id, status);
+    }
+    
+    @DeleteMapping("/secure/documents/{uploadBy}")
+    @PreAuthorize("hasAnyAuthority('LECTURER')")
+    public ResponseEntity<?> deleteDocument(@PathVariable("uploadBy") int id){
+        this.docService.deleteDocument(id);
+        return ResponseEntity.noContent().build();
     }
 }
