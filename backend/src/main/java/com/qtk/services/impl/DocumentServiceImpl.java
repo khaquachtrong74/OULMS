@@ -58,7 +58,6 @@ public class DocumentServiceImpl implements DocumentService {
         dto.setLevelId(d.getLevelId().getId());
         dto.setLevelName(d.getLevelId().getName());
         
-        dto.setUploadedByEmail(d.getUploadedBy().getEmail());
         return dto;
     }
 
