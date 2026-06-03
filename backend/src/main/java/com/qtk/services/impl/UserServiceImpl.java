@@ -132,9 +132,6 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO addOAuth2User(String email, String name, String avatarUrl) {
         User u = new User();
         u.setEmail(email);
-
-        // Bản chất xử lý dữ liệu: Tách chuỗi name của Google thành firstName và lastName
-        // Nếu name là "Quách Trọng Kha", lastName sẽ là "Kha", firstName là "Quách Trọng"
         String firstName = name;
         String lastName = "";
         if (name != null && name.trim().contains(" ")) {
@@ -146,15 +143,12 @@ public class UserServiceImpl implements UserService {
         u.setFirstName(firstName);
         u.setLastName(lastName);
         u.setAvatar(avatarUrl);
-        u.setRole(UserRole.STUDENT); // Cấp quyền mặc định
+        u.setRole(UserRole.STUDENT);
 
-        // Sinh password mặc định để thỏa mãn ràng buộc (constraint) của CSDL nếu cột password NOT NULL
         u.setPassword(this.passwordEncoder.encode("OAUTH2_NO_PASSWORD"));
 
-        // Lưu xuống Database
         this.userRepo.addUser(u);
 
-        // Đóng gói toàn bộ thông tin từ Entity sang DTO để trả về an toàn
         return new UserResponseDTO(
                 u.getId(),
                 u.getEmail(),

@@ -65,7 +65,7 @@ public class UserRepositoryImpl implements UserRepository {
         Query query = s.createNamedQuery("User.findByEmail", User.class);
         query.setParameter("email", userEmail);
 
-        return (User) query.getSingleResult();
+        return (User) query.getResultStream().findFirst().orElse(null);
     }
 
     @Override
