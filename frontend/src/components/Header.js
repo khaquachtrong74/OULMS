@@ -89,7 +89,7 @@ const Header = () => {
                         {user && ['ADMIN', 'LECTURER'].includes(user.role) && (
                             <Nav.Link
                                 as={NavLink}
-                                to="/admin-dashboard"
+                                to="/documents-manage"
                                 className={getNavLinkClass}
                             >
                                 Quản trị

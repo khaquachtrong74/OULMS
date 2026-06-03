@@ -8,6 +8,8 @@ export const endpoints = {
     logout:'/logout',
     profile:'/secure/profile',
     document: '/documents',
+    secureDocuments: (uploadBy)=> `/secure/documents/${uploadBy}`, 
+    secureDocument: '/secure/document',   
     topic: '/topics',
     subject: '/subjects',
     level: '/levels',
