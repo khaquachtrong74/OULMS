@@ -38,7 +38,7 @@ public class LevelRepositoryImpl implements LevelRepository{
         Root root = query.from(Level.class);
         query.select(root);
         
-        if (params!= null) {
+        if (params != null && params.containsKey("kw") && !params.get("kw").isEmpty()) {
             String kw = params.get("kw");
             Predicate p = builder.like(root.get("name"), String.format("%%%s%%", kw));
             query.where(p);

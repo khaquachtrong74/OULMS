@@ -28,8 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
-public class DocumentRepositoryImpl implements DocumentRepository{
-    
+public class DocumentRepositoryImpl implements DocumentRepository {
+
     @Autowired
     private LocalSessionFactoryBean factory;
 
@@ -39,38 +39,51 @@ public class DocumentRepositoryImpl implements DocumentRepository{
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Document> query = builder.createQuery(Document.class);
         Root root = query.from(Document.class);
+        
         root.fetch("topicId", JoinType.LEFT);
         root.fetch("levelId", JoinType.LEFT);
         root.fetch("uploadedBy", JoinType.LEFT);
+        
         query.select(root).distinct(true);
         
         List<Predicate> predicates = new ArrayList<>();
-        
+
         if (params != null) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
                 predicates.add(builder.like(root.get("title"), String.format("%%%s%%", kw)));
             }
-            
+
             String status = params.get("status");
             if (status != null && !status.isEmpty()) {
                 predicates.add(builder.equal(root.get("status"), DocumentStatus.valueOf(status.trim().toUpperCase())));
             }
-            
+
             String topicId = params.get("topicId");
             if (topicId != null && !topicId.isEmpty()) {
                 predicates.add(builder.equal(root.get("topicId").get("id"), Integer.valueOf(topicId)));
             }
-            
+
             String levelId = params.get("levelId");
             if (levelId != null && !levelId.isEmpty()) {
                 predicates.add(builder.equal(root.get("levelId").get("id"), Integer.valueOf(levelId)));
+            }
+            String subjectId = params.get("subjectId");
+            if (subjectId != null && !subjectId.isEmpty()) {
+                predicates.add(
+                        builder.equal(
+                                root.get("topicId")
+                                        .get("subjectId")
+                                        .get("id"),
+                                Integer.valueOf(subjectId)
+                        )
+                );
             }
         }
         if (!predicates.isEmpty()) {
             query.where(predicates.toArray(Predicate[]::new));
         }
-        
+
         query.orderBy(builder.desc(root.get("id")));
         Query q = session.createQuery(query);
         return q.getResultList();
@@ -82,43 +95,48 @@ public class DocumentRepositoryImpl implements DocumentRepository{
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Document> query = builder.createQuery(Document.class);
         Root root = query.from(Document.class);
+        root.fetch("topicId", JoinType.LEFT);
+        root.fetch("levelId", JoinType.LEFT);
+        root.fetch("uploadedBy", JoinType.LEFT);
         query.select(root);
-        
+
         List<Predicate> predicates = new ArrayList<>();
-        
+
         predicates.add(builder.equal(root.get("uploadedBy").get("id"), userId));
-        
+
         if (params != null) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
                 predicates.add(builder.like(root.get("title"), String.format("%%%s%%", kw)));
             }
-            
+
             String topicId = params.get("topicId");
             if (topicId != null && !topicId.isEmpty()) {
                 predicates.add(builder.equal(root.get("topicId").get("id"), Integer.valueOf(topicId)));
             }
-            
+
             String levelId = params.get("levelId");
             if (levelId != null && !levelId.isEmpty()) {
                 predicates.add(builder.equal(root.get("levelId").get("id"), Integer.valueOf(levelId)));
             }
+
         }
         if (!predicates.isEmpty()) {
             query.where(predicates.toArray(Predicate[]::new));
-        }      
+        }
         query.orderBy(builder.desc(root.get("id")));
         Query q = session.createQuery(query);
         return q.getResultList();
     }
-    
+
     @Override
     public void addOrUpdateDocument(Document d) {
         Session session = this.factory.getObject().getCurrentSession();
-        if(d.getId() != null)
+        if (d.getId() != null) {
             session.merge(d);
-        else
+        } else {
             session.persist(d);
+        }
     }
 
     @Override
@@ -134,7 +152,20 @@ public class DocumentRepositoryImpl implements DocumentRepository{
         if (d != null) {
             d.setStatus(status);
             session.merge(d);
-        }     
+        }
     }
-    
+
+    @Override
+    public void deleteDocument(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        Document d = this.getDocumentById(id);
+        if (d != null) {
+            session.remove(d);
+        } else {
+
+            throw new RuntimeException("Document not found with id: " + id);
+        }
+
+    }
+
 }

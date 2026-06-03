@@ -4,6 +4,7 @@
  */
 package com.qtk.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
@@ -112,6 +113,7 @@ public class Level implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Set<Document> getDocumentSet() {
         return documentSet;
     }

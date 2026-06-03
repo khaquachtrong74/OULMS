@@ -121,3 +121,62 @@
 .login-btn:hover {
     transform: translateY(-1px);
 }
+
+.login-divider {
+    position: relative;
+    margin: 1.75rem 0;
+    text-align: center;
+}
+
+.login-divider::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: #dee2e6;
+}
+
+.login-divider span {
+    position: relative;
+    background: white;
+    padding: 0 16px;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.register-section {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .4rem;
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+.register-link {
+    padding: 0 !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    color: #0d6efd !important;
+}
+
+.register-link:hover {
+    color: #0a58ca !important;
+}
+
+.auth-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 1rem;
+}
+
+.auth-actions .login-btn,
+.auth-actions .register-btn {
+    flex: 1;
+    height: 52px;
+    border-radius: 14px;
+    font-weight: 600;
+}

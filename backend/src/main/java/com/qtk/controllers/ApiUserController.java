@@ -4,6 +4,7 @@ import com.nimbusds.jose.JOSEException;
 import com.qtk.dto.UserCreateRequestDTO;
 import com.qtk.dto.UserLoginRequestDTO;
 import com.qtk.dto.UserResponseDTO;
+import com.qtk.dto.UserUpdateRequestDTO;
 import com.qtk.pojo.User;
 import com.qtk.services.UserService;
 import com.qtk.utils.JwtUtils;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,7 +49,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
 public class ApiUserController {
     @Autowired
     private UserService userService;
@@ -125,8 +126,36 @@ public class ApiUserController {
     @DeleteMapping("/secure/users/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable("id") int id){
-        userService.deleteUser(id);
+        this.userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
-    
+    @PatchMapping(path = "/secure/profile", 
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE, 
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("isAuthenticated()")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        content = @Content(
+            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+            schema = @Schema(implementation = UserUpdateRequestDTO.class)
+        )
+    )
+    public ResponseEntity<?> updateProfile(
+            @Valid @ModelAttribute UserUpdateRequestDTO requestDTO, 
+            BindingResult bindingResult, 
+            Principal principal) {
+        
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
+        UserResponseDTO currentUser = this.userService.getUserByUserEmail(principal.getName());
+        requestDTO.setId(currentUser.getId()); 
+        requestDTO.setRole(currentUser.getRole());
+        UserResponseDTO updatedUser = this.userService.updateUser(requestDTO);
+        
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
 }

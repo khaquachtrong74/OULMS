@@ -29,7 +29,7 @@ public class ApiLevelController {
     @Autowired
     private LevelService levelService;
     
-    @GetMapping("/level")
+    @GetMapping("/levels")
     public ResponseEntity<List<Level>> list(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.levelService.getLevel(params), HttpStatus.OK);
     }
