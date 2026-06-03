@@ -9,6 +9,7 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -69,7 +70,7 @@ public class Topic implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "topicId")
     private Set<Document> documentSet;
     @JoinColumn(name = "subject_id", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Subject subjectId;
 
     public Topic() {

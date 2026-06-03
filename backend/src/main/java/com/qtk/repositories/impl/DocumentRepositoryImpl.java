@@ -10,6 +10,7 @@ import com.qtk.repositories.DocumentRepository;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
@@ -38,7 +39,10 @@ public class DocumentRepositoryImpl implements DocumentRepository{
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Document> query = builder.createQuery(Document.class);
         Root root = query.from(Document.class);
-        query.select(root);
+        root.fetch("topicId", JoinType.LEFT);
+        root.fetch("levelId", JoinType.LEFT);
+        root.fetch("uploadedBy", JoinType.LEFT);
+        query.select(root).distinct(true);
         
         List<Predicate> predicates = new ArrayList<>();
         

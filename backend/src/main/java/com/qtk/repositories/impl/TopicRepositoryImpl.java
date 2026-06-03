@@ -9,6 +9,7 @@ import com.qtk.repositories.TopicRepository;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
@@ -36,7 +37,8 @@ public class TopicRepositoryImpl implements TopicRepository{
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Topic> query = builder.createQuery(Topic.class);
         Root root = query.from(Topic.class);
-        query.select(root);
+        root.fetch("subjectId", JoinType.LEFT);
+        query.select(root).distinct(true);
         if (params != null) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {

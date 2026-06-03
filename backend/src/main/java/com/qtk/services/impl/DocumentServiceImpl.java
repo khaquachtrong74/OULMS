@@ -62,7 +62,8 @@ public class DocumentServiceImpl implements DocumentService {
 
         dto.setLevelId(d.getLevelId().getId());
         dto.setLevelName(d.getLevelId().getName());
-
+        
+        dto.setUploadedByEmail(d.getUploadedBy().getEmail());
         return dto;
     }
 
@@ -115,7 +116,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<Document> getDocuments(Map<String, String> params) {
+    public List<Document> getAdminDocuments(Map<String, String> params) {
         return this.docRepo.getDocuments(params);
     }
 

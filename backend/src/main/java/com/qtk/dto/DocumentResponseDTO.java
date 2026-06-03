@@ -29,4 +29,6 @@ public class DocumentResponseDTO {
 
     private Integer levelId;
     private String levelName;
+    
+    private String uploadedByEmail;
 }
