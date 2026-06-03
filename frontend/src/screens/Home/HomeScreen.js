@@ -8,7 +8,8 @@ import {
     InputGroup,
     Row,
     Badge,
-    Spinner
+    Spinner,
+    Pagination
 } from "react-bootstrap";
 import {
     Search,
@@ -22,18 +23,25 @@ import {
     Lightbulb
 } from "react-bootstrap-icons";
 import "./HomePage.css";
-import Apis, { endpoints } from '../../configs/Apis'; 
+import Apis, { endpoints } from '../../configs/Apis';
 
 const HomeScreen = () => {
     // 1. Quản lý trạng thái dữ liệu từ API
     const [latestDocuments, setLatestDocuments] = useState([]);
     const [subjects, setSubjects] = useState([]); // State mới cho Danh mục môn học
-    
+
     const [loadingDocs, setLoadingDocs] = useState(true);
     const [loadingSubjects, setLoadingSubjects] = useState(true); // State loading cho Danh mục
-    
-    const [kw, setKw] = useState(''); 
 
+    const [kw, setKw] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 6;
+    const pagedDocuments = latestDocuments.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    const totalPages = Math.ceil(latestDocuments.length / ITEMS_PER_PAGE);
     // 2. Hàm fetch tài liệu công khai từ Database
     const fetchLatestDocs = async (searchKey = '') => {
         try {
@@ -77,6 +85,7 @@ const HomeScreen = () => {
     // Xử lý sự kiện khi bấm nút Tìm kiếm
     const handleSearchSubmit = (e) => {
         e.preventDefault();
+        setCurrentPage(1);
         fetchLatestDocs(kw);
     };
 
@@ -121,7 +130,7 @@ const HomeScreen = () => {
                         <h2>Danh mục môn học</h2>
                         <p>Khám phá tài liệu theo từng chuyên môn</p>
                     </div>
-                    
+
                     {loadingSubjects ? (
                         <div className="text-center py-4">
                             <Spinner animation="border" variant="primary" />
@@ -139,7 +148,7 @@ const HomeScreen = () => {
                                                 </div>
                                                 {/* Đổi s.subjectName hoặc s.name tùy thuộc vào field entity Subject trên backend của bạn */}
                                                 <h5>{s.subjectName || s.name || "Tên môn học"}</h5>
-                                                
+
                                                 {/* Nếu backend chưa có API đếm số bài viết, ta tạm để như sau */}
                                                 <p className="text-muted text-sm mt-2">
                                                     {s.description || "Tài liệu học thuật chuyên ngành"}
@@ -175,13 +184,13 @@ const HomeScreen = () => {
                     ) : (
                         <Row className="g-4">
                             {latestDocuments.length > 0 ? (
-                                latestDocuments.slice(0, 6).map((doc) => ( // Lấy tối đa 6 tài liệu mới nhất
+                                pagedDocuments.map((doc) => ( // Lấy tối đa 6 tài liệu mới nhất
                                     <Col lg={4} md={6} key={doc.id}>
                                         <Card className="document-card h-100">
                                             <Card.Body className="d-flex flex-column">
                                                 <div className="document-top">
                                                     <div className="document-icon">
-    <FileEarmarkText size={22} />                                                    </div>
+                                                        <FileEarmarkText size={22} />                                                    </div>
                                                     <Badge bg="info" className="text-uppercase">
                                                         {doc.type || 'Tài liệu'}
                                                     </Badge>
@@ -193,13 +202,13 @@ const HomeScreen = () => {
 
                                                 <div className="document-meta mt-auto pt-3">
                                                     <div>
-<Book size={16} />                                                        <span>Mã môn: #{doc.topicId || doc.subjectId || 'N/A'}</span>
+                                                        <Book size={16} />                                                        <span>Mã môn: #{doc.topicId || doc.subjectId || 'N/A'}</span>
                                                     </div>
                                                     <div>
                                                         <Clock size={16} />
                                                         <span>
-                                                            {doc.updatedAt 
-                                                                ? new Date(doc.updatedAt).toLocaleDateString('vi-VN') 
+                                                            {doc.updatedAt
+                                                                ? new Date(doc.updatedAt).toLocaleDateString('vi-VN')
                                                                 : (doc.createdAt ? new Date(doc.createdAt).toLocaleDateString('vi-VN') : 'Mới cập nhật')}
                                                         </span>
                                                     </div>
@@ -218,6 +227,30 @@ const HomeScreen = () => {
                                 </Col>
                             )}
                         </Row>
+                    )}
+                    {totalPages > 1 && (
+                        <div className="d-flex justify-content-center mt-4">
+                            <Pagination>
+                                <Pagination.Prev
+                                    disabled={currentPage === 1}
+                                    onClick={() => setCurrentPage(p => p - 1)}
+                                />
+
+                                {[...Array(totalPages)].map((_, index) => (
+                                    <Pagination.Item
+                                        key={index}
+                                        active={currentPage === index + 1}
+                                        onClick={() => setCurrentPage(index + 1)}
+                                    >
+                                        {index + 1}
+                                    </Pagination.Item>
+                                ))}
+
+                                <Pagination.Next
+                                    disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}
+                                />
+                            </Pagination>
+                        </div>
                     )}
                 </Container>
             </section>

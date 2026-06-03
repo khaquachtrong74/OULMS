@@ -5,7 +5,7 @@ import { Search, FileEarmarkPdf, PlayCircle, Files, FileEarmarkText, CloudUpload
 import './DocumentPage.css';
 import { MyUserContext } from '../../configs/Contexts';
 import Apis, { endpoints } from '../../configs/Apis';
-
+import { Pagination } from 'react-bootstrap';
 const DocumentScreen = () => {
   const [user] = useContext(MyUserContext);
 
@@ -41,7 +41,14 @@ const DocumentScreen = () => {
     levelId: '',
     file: null // Tùy chọn: chỉ truyền lên nếu giảng viên muốn thay file mới
   });
+const [currentPage, setCurrentPage] = useState(1);
+const ITEMS_PER_PAGE = 10;
+const currentDocuments = documents.slice(
+  (currentPage - 1) * ITEMS_PER_PAGE,
+  currentPage * ITEMS_PER_PAGE
+);
 
+const totalPages = Math.ceil(documents.length / ITEMS_PER_PAGE);
   // 1. Fetch dữ liệu Metadata cho các Form Dropdown
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -85,7 +92,9 @@ const DocumentScreen = () => {
     }, 400);
     return () => clearTimeout(delayDebounce);
   }, [fetchMyDocuments]);
-
+useEffect(() => {
+  setCurrentPage(1);
+}, [kw, filterLevel]);
   // 3. Xử lý logic Form Tải lên tài liệu mới
   const handleUploadSubmit = async (e) => {
     e.preventDefault();
@@ -243,8 +252,8 @@ const DocumentScreen = () => {
               </tr>
             </thead>
             <tbody>
-              {documents.length > 0 ? (
-                documents.map((doc) => (
+              {currentDocuments.length > 0 ? (
+                currentDocuments.map((doc) => (
                   <tr key={doc.id}>
                     <td className="ps-4 py-3">
                       <div className="d-flex align-items-center">
@@ -283,6 +292,7 @@ const DocumentScreen = () => {
                         <span>Chỉnh sửa</span>
                       </Button>
                     </td>
+
                   </tr>
                 ))
               ) : (
@@ -294,7 +304,29 @@ const DocumentScreen = () => {
               )}
             </tbody>
           </Table>
+          
         )}
+             <Pagination className="justify-content-center my-4">
+  <Pagination.Prev
+    disabled={currentPage === 1}
+    onClick={() => setCurrentPage(currentPage - 1)}
+  />
+
+  {[...Array(totalPages)].map((_, index) => (
+    <Pagination.Item
+      key={index}
+      active={currentPage === index + 1}
+      onClick={() => setCurrentPage(index + 1)}
+    >
+      {index + 1}
+    </Pagination.Item>
+  ))}
+
+  <Pagination.Next
+    disabled={currentPage === totalPages}
+    onClick={() => setCurrentPage(currentPage + 1)}
+  />
+</Pagination>
       </Card>
 
       {/* ================= MODAL 1: TẢI LÊN TÀI LIỆU MỚI ================= */}
