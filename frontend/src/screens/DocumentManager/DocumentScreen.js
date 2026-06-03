@@ -201,6 +201,15 @@ const DocumentScreen = () => {
     return <Files size={24} className="text-secondary me-2" />;
   };
 
+  // Hàm render Icon nhận diện định dạng tệp tin trực quan
+  const renderFileIcon = (title = "") => {
+    const lower = title.toLowerCase();
+    if (lower.includes('.pdf')) return <FileEarmarkPdf size={24} className="text-danger me-2" />;
+    if (lower.includes('.mp4') || lower.includes('.mkv')) return <PlayCircle size={24} className="text-primary me-2" />;
+    if (lower.includes('.docx') || lower.includes('.doc')) return <FileEarmarkText size={24} className="text-info me-2" />;
+    return <Files size={24} className="text-secondary me-2" />;
+  };
+
   return (
     <Container className="py-5">
       {/* HEADER SECTION */}
