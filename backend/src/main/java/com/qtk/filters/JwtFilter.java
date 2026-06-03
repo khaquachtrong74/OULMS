@@ -11,6 +11,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -31,15 +32,28 @@ public class JwtFilter implements Filter{
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 //        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+        if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
+            chain.doFilter(request, response);
+            return;
+        }
         if(httpRequest.getRequestURI().startsWith(String.format("%s/api/secure", httpRequest.getContextPath()))){
-            String header = httpRequest.getHeader("Authorization");
+            String token = null;
             
-            if(header == null || !header.startsWith("Bearer ")){
+            if(httpRequest.getCookies() != null){
+                for(Cookie cookie : httpRequest.getCookies()){
+                    if("jwtToken".equals(cookie.getName())){
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+                        
+            if(token == null){
                 ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header");
                 return;
             }else{
-                String token = header.substring(7);
                 try {
                     JWTClaimsSet claimset = JwtUtils.validateTokenAndGetClaims(token);
              
