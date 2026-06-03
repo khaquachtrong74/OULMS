@@ -4,8 +4,6 @@
  */
 package com.qtk.services.impl;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.google.api.services.drive.model.File;
 import com.qtk.dto.DocumentRequestDTO;
 import com.qtk.dto.DocumentResponseDTO;
@@ -16,11 +14,8 @@ import com.qtk.repositories.LevelRepository;
 import com.qtk.repositories.TopicRepository;
 import com.qtk.repositories.UserRepository;
 import com.qtk.services.DocumentService;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -62,7 +57,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         dto.setLevelId(d.getLevelId().getId());
         dto.setLevelName(d.getLevelId().getName());
-
+        
         return dto;
     }
 
@@ -115,7 +110,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<Document> getDocuments(Map<String, String> params) {
+    public List<Document> getAdminDocuments(Map<String, String> params) {
         return this.docRepo.getDocuments(params);
     }
 
@@ -177,4 +172,33 @@ public class DocumentServiceImpl implements DocumentService {
     public void updateDocumentStatus(int id, DocumentStatus status) {
         this.docRepo.updateDocumentStatus(id, status);
     }
+    
+     @Override
+    public void updateDocument(int documentId, DocumentRequestDTO dto) {
+        Document doc = this.docRepo.getDocumentById(documentId);
+
+        if (doc == null)
+            throw new IllegalArgumentException("Không tìm thấy tài liệu");
+
+        if (dto.getTitle() != null)
+            doc.setTitle(dto.getTitle());
+
+        if (dto.getDescription() != null)
+            doc.setDescription(dto.getDescription());
+
+        if (dto.getTopicId() != null)
+            doc.setTopicId(this.topicRepo.getTopicById(dto.getTopicId()));
+
+        if (dto.getLevelId() != null)
+            doc.setLevelId(this.levelRepo.getLevelById(dto.getLevelId()));
+
+        this.docRepo.addOrUpdateDocument(doc);
+    }
+
+    @Override
+    public void deleteDocument(int id) {
+        this.docRepo.deleteDocument(id);
+    }
+    
+    
 }

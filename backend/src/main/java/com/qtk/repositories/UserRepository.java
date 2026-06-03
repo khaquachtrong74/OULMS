@@ -5,6 +5,8 @@
 package com.qtk.repositories;
 
 import com.qtk.pojo.User;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -14,6 +16,10 @@ public interface UserRepository {
     public User getUserByUsername(String username);
     public User getUserByUserEmail(String userEmail);
     public User addUser(User u);
+    public List<User> getAllUsers(Map<String, String> params);
+    
+    public User getUserById(int id);
+    public User updateUser(User u);
     public void deleteUser(int id);
     public boolean authenticate(String userEmail, String password);
 }

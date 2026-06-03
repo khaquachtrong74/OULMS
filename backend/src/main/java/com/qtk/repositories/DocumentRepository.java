@@ -18,5 +18,6 @@ public interface DocumentRepository {
     List<Document> getDocumentsByUserId(int userId, Map<String, String> params);
     void addOrUpdateDocument(Document d);
     Document getDocumentById(int id);
+    void deleteDocument(int id);
     void updateDocumentStatus(int id, DocumentStatus status);
 }

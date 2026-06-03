@@ -38,43 +38,50 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @PropertySource("classpath:cloudinary.properties")
 @Order(2)
 public class SpringSecurityConfigs {
-    
+
     @Autowired
     private Environment env;
-    
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
-    
+
     @Bean
     public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
         return new HandlerMappingIntrospector();
     }
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        
-        http.securityMatcher("/admin/**", "/", "/login", "/logout").csrf(c -> c.disable())
-                .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/", "/admin").hasAuthority("ADMIN")
-                .anyRequest().permitAll()
-        ).formLogin(form -> form.loginPage("/admin/login") // Đường dẫn tới trang đăng nhập
-                .loginProcessingUrl("/login") // Đường dẫn xử lý POST
-                .defaultSuccessUrl("/", true) // Chuyển hướng khi thành công
-                .failureUrl("/admin/login?error=true") // Chuyển hướng khi thất bại
+        http.securityMatcher("/admin/**", "/", "/login", "/logout")
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/admin/login").permitAll()
+                .requestMatchers("/", "/admin/**").hasAuthority("ADMIN")
+                .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                .loginPage("/admin/login")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/", true)
+                .failureUrl("/admin/login?error=true")
                 .permitAll()
-        ).logout((logout) -> logout.logoutUrl("/logout").logoutSuccessUrl("/admin/login").permitAll());
+                )
+                .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/admin/login")
+                .permitAll()
+                );
 
         return http.build();
     }
-    
+
     @Bean
     public Cloudinary cloudinary() {
         Cloudinary cloudinary
                 = new Cloudinary(ObjectUtils.asMap(
-                        "cloud_name", this.env.getProperty("cloudinary.cloud_name") ,
+                        "cloud_name", this.env.getProperty("cloudinary.cloud_name"),
                         "api_key", this.env.getProperty("cloudinary.api_key"),
                         "api_secret", this.env.getProperty("cloudinary.api_secret"),
                         "secure", true));

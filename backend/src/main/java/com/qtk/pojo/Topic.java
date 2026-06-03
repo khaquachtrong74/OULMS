@@ -4,10 +4,13 @@
  */
 package com.qtk.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,6 +36,8 @@ import org.hibernate.annotations.UpdateTimestamp;
  *
  * @author ngodo
  */
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
 @Entity
 @Table(name = "topic")
 @XmlRootElement
@@ -66,7 +71,7 @@ public class Topic implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "topicId")
     private Set<Document> documentSet;
     @JoinColumn(name = "subject_id", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Subject subjectId;
 
     public Topic() {
@@ -114,6 +119,7 @@ public class Topic implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Set<Document> getDocumentSet() {
         return documentSet;
     }

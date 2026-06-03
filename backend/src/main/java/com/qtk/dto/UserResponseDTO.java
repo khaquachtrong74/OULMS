@@ -4,7 +4,9 @@
  */
 package com.qtk.dto;
 
+import com.qtk.enums.UserRole;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,8 +20,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor 
+@Builder
 public class UserResponseDTO {
     private int id;
     private String email;
-    private String role;
+    private UserRole role;
+    private String firstName;
+    private String lastName;
+    private String avatar;
 }

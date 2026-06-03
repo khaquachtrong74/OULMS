@@ -4,9 +4,11 @@
  */
 package com.qtk.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -64,9 +66,11 @@ public class Subject implements Serializable {
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    @OneToMany(mappedBy = "subjectId")
+    @JsonIgnore
+    @OneToMany(mappedBy = "subjectId", fetch = FetchType.LAZY)
     private Set<Course> courseSet;
-    @OneToMany(mappedBy = "subjectId")
+    @JsonIgnore
+    @OneToMany(mappedBy = "subjectId", fetch = FetchType.LAZY)
     private Set<Topic> topicSet;
 
     public Subject() {
@@ -122,6 +126,7 @@ public class Subject implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Set<Course> getCourseSet() {
         return courseSet;
     }
@@ -131,6 +136,7 @@ public class Subject implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Set<Topic> getTopicSet() {
         return topicSet;
     }

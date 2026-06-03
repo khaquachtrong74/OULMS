@@ -8,8 +8,10 @@ function deleteSubject(url) {
             else
                 alert("Xoá thất bại!");
         });
-    };
-};
+    }
+    ;
+}
+;
 
 function deleteTopic(url) {
     if (confirm("Bạn có muốn xoá không") === true) {
@@ -21,8 +23,10 @@ function deleteTopic(url) {
             else
                 alert("Xoá thất bại!");
         });
-    };
-};
+    }
+    ;
+}
+;
 
 function updateStatusDocument(url) {
     if (confirm("Bạn có muốn cập nhật trạng thái không") === true) {
@@ -34,5 +38,21 @@ function updateStatusDocument(url) {
             else
                 alert("Cập nhật thất bại!");
         });
-    };
-};
+    }
+    ;
+}
+;
+
+function deleteUser(url) {
+    if (confirm("Bạn có muốn xoá không") === true) {
+        fetch(url, {
+            method: "delete"
+        }).then(res => {
+            if (res.status === 204)
+                location.reload();
+            else
+                alert("Xoá thất bại!");
+        });
+    }
+}
+;
