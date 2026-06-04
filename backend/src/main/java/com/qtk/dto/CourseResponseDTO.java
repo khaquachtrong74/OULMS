@@ -4,6 +4,7 @@
  */
 package com.qtk.dto;
 
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,9 +27,14 @@ public class CourseResponseDTO {
     private String description;
     private Integer price;
     
+    private Date createdAt;
+    private Date updatedAt;
+    
     private Integer subjectId; 
     private String subjectName;
     
     private Integer lecturerId;
     private String lecturerName;
+    
+    
 }

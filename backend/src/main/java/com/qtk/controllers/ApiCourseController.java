@@ -47,9 +47,9 @@ public class ApiCourseController {
     }
     
     @GetMapping("/courses/{id}")
-    public ResponseEntity<CourseDetailResponseDTO> getCourseDetailed(@PathVariable(value = "id") int id) {
+    public ResponseEntity<CourseResponseDTO> getCourseDetailed(@PathVariable(value = "id") int id) {
         try {
-            CourseDetailResponseDTO courseDetail = this.courseService.getCourseDetailById(id);
+            CourseResponseDTO courseDetail = this.courseService.getCourseDetailById(id);
             if (courseDetail == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

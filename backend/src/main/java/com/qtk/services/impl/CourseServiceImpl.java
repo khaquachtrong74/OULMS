@@ -80,7 +80,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CourseDetailResponseDTO getCourseDetailById(int id) {
+    public CourseResponseDTO getCourseDetailById(int id) {
         Course c = this.courseRepository.getCourseById(id);
         if (c == null) {
             return null;
@@ -90,25 +90,19 @@ public class CourseServiceImpl implements CourseService {
                 ? c.getLecturerId().getFirstName() + " " + c.getLecturerId().getLastName()
                 : "Chưa cập nhật";
 
-        String categoryName = (c.getSubjectId() != null) ? c.getSubjectId().getName() : "Chưa phân loại";
+        String subjectName = (c.getSubjectId() != null) ? c.getSubjectId().getName() : "Chưa phân loại";
 
 
 
-        return CourseDetailResponseDTO.builder()
+        return CourseResponseDTO.builder()
                 .id(c.getId())
-                .title(c.getName())
+                .name(c.getName())
                 .description(c.getDescription())
-                .shortDescription("Đây là mô tả ngắn của khóa học...")
                 .price(c.getPrice())
-                .thumbnail("https://example.com/thumbnail.jpg")
-                .categoryName(categoryName)
-                .instructorName(lecturerName)
+                .subjectName(subjectName)
+                .lecturerName(lecturerName)
                 .createdAt(c.getCreatedAt())
-                .updatedAt(c.getUpdatedAt())
-                .isEnrolled(false) 
-                .totalChapters(0)
-                .totalLessons(0)
-                .chapters(new ArrayList<>())
+                .updatedAt(c.getUpdatedAt())        
                 .build();
     }
 }

@@ -21,5 +21,5 @@ public interface CourseService {
     Course getCourseById(int id);
     void deleteCourse(int id);
     
-    CourseDetailResponseDTO getCourseDetailById(int id);
+    CourseResponseDTO getCourseDetailById(int id);
 }
