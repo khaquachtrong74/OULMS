@@ -15,6 +15,7 @@ import ForumScreen from "./screens/Community/ForumScreen";
 import ForumCreate from "./screens/Community/ForumCreate";
 import ExploreCourseScreen from "./screens/Explore/ExploreCourseScreen";
 import CourseDetailedScreen from "./screens/Courses/CourseDetailedScreen";
+import PaymentSuccessScreen from "./screens/Payment/PaymentSuccessScreen";
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load('user') || null);
@@ -33,6 +34,7 @@ function App() {
                     <Route path="/forum-create" element={<ForumCreate />}></Route>    
                     {/* <Route path="/courses" element={<CourseScreen />}></Route>     */}
                     <Route path="/courses/:courseId" element={<CourseDetailedScreen />} />
+                    <Route path="/payment/success" element={<PaymentSuccessScreen />} />
                 </Routes>
             
             <Footer/>

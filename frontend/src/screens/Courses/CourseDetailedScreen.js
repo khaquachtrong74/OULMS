@@ -5,13 +5,6 @@ import { ShieldCheck, CheckCircleFill, Clock, Person, ArrowLeft, Tag } from 'rea
 import Apis, { endpoints } from '../../configs/Apis';
 import { MyUserContext } from '../../configs/Contexts';
 
-// [LƯU Ý]: Bạn cần tạo thư mục src/assets/images/ và bỏ 1 tấm ảnh tên default-course.jpg vào đó.
-// Nếu chưa có file, bạn tạm thời comment dòng import này lại và dùng URL tĩnh ở dưới nhé.
-// import defaultCourseImage from '../../assets/images/default-course.jpg'; 
-
-// =====================================================================
-// 1. DATA LAYER (Custom Hook - Single Responsibility Principle)
-// =====================================================================
 const useCourseDetail = (courseId) => {
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -38,17 +31,10 @@ const useCourseDetail = (courseId) => {
     return { course, loading, error, reloadCourse: loadCourseDetail };
 };
 
-// =====================================================================
-// 2. UI COMPONENTS
-// =====================================================================
 
-/**
- * Cột trái: Đọc trực tiếp các field name, description, subjectName, lecturerName, updatedAt từ DTO
- */
 const CourseMainContent = ({ course, onBack }) => {
     return (
         <div className="pe-lg-4">
-            {/* Nút Quay lại */}
             <Button 
                 variant="link" 
                 className="text-secondary text-decoration-none px-0 mb-4 d-inline-flex align-items-center gap-2"
@@ -57,19 +43,16 @@ const CourseMainContent = ({ course, onBack }) => {
                 <ArrowLeft size={18} /> Quay lại
             </Button>
 
-            {/* Badge Tên môn học */}
             <div className="mb-3">
                 <Badge bg="info" className="text-dark px-3 py-2 rounded-pill fw-medium d-inline-flex align-items-center gap-2">
                     <Tag size={14} /> {course.subjectName}
                 </Badge>
             </div>
 
-            {/* Tiêu đề chính */}
             <h1 className="fw-bold mb-4 text-dark" style={{ fontSize: '2.5rem', letterSpacing: '-0.5px' }}>
                 {course.name}
             </h1>
 
-            {/* Meta info (Giảng viên, Cập nhật) */}
             <div className="d-flex flex-wrap gap-4 mb-4 pb-4 border-bottom text-secondary small fw-medium">
                 <div className="d-flex align-items-center gap-2">
                     <Person size={18} />
@@ -81,7 +64,6 @@ const CourseMainContent = ({ course, onBack }) => {
                 </div>
             </div>
 
-            {/* Mô tả chi tiết HTML */}
             <div className="course-description mb-5 text-dark" style={{ lineHeight: '1.8', fontSize: '1.05rem' }}>
                 <h4 className="fw-bold mb-3">Mô tả khóa học</h4>
                 {course.description ? (
@@ -94,23 +76,18 @@ const CourseMainContent = ({ course, onBack }) => {
     );
 };
 
-/**
- * Cột phải: Đọc trực tiếp field price từ DTO
- */
+
 const CourseSidebar = ({ course, onEnroll, enrolling }) => {
-    // Nếu bạn chưa import file nội bộ, dùng link này để test tạm
     const fallbackImage = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop";
 
     return (
         <div className="sticky-top" style={{ top: '80px', zIndex: 10 }}>
             <Card className="border-0 shadow-sm rounded-4 overflow-hidden">
-                {/* Khu vực Thumbnail */}
                 <div 
                     className="position-relative bg-light border-bottom" 
                     style={{ height: '220px' }}
                 >
                     <img 
-                        // src={defaultCourseImage} // Bỏ comment dòng này nếu dùng ảnh import từ thư mục dự án
                         src={fallbackImage}
                         alt="Course cover" 
                         className="w-100 h-100" 
@@ -151,9 +128,7 @@ const CourseSidebar = ({ course, onEnroll, enrolling }) => {
     );
 };
 
-// =====================================================================
-// 3. MAIN COMPONENT
-// =====================================================================
+
 const CourseDetailedScreen = () => {
     const { courseId } = useParams(); 
     const nav = useNavigate();
@@ -170,14 +145,29 @@ const CourseDetailedScreen = () => {
 
         setEnrolling(true);
         try {
-            const enrollEndpoint = `/api/courses/${courseId}/enroll`;
-            await Apis.post(enrollEndpoint, {});
-            alert("Ghi danh thành công!");
-            reloadCourse(); 
+            if (course.price > 0) {
+                const res = await Apis.post(endpoints['payZaloPay'], {
+                    amount: course.price,
+                    courseId: courseId,
+                    userId: user.id
+                });
+
+                if (res.data && res.data.order_url) {
+                    window.location.href = res.data.order_url;
+                } else {
+                    alert("Không thể khởi tạo cổng thanh toán ZaloPay lúc này.");
+                    setEnrolling(false);
+                }
+            } else {
+                const enrollEndpoint = `/courses/${courseId}/enroll`; 
+                await Apis.post(enrollEndpoint, {});
+                alert("Ghi danh thành công!");
+                reloadCourse(); 
+                setEnrolling(false);
+            }
         } catch (err) {
             console.error(err);
-            alert(err.response?.data?.message || "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại.");
-        } finally {
+            alert(err.response?.data?.message || "Đã xảy ra lỗi khi xử lý. Vui lòng thử lại.");
             setEnrolling(false);
         }
     };

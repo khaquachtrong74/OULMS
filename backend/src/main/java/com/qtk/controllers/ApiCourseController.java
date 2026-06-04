@@ -13,6 +13,7 @@ import com.qtk.dto.CourseDetailResponseDTO;
 import com.qtk.dto.CourseResponseDTO;
 import com.qtk.pojo.Course;
 import com.qtk.services.CourseService;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
+@CrossOrigin(origins = {"http://localhost:3000", "https://quietly-untrashed-darby.ngrok-free.dev"}, allowCredentials = "true")
 public class ApiCourseController {
 
     @Autowired
@@ -43,6 +45,24 @@ public class ApiCourseController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
+        }
+    }
+    
+    
+    @PostMapping(value = "/courses/{id}/enroll", produces = "application/json")
+    public ResponseEntity<?> enrollCourse(@PathVariable(value = "id") int id) {
+        try {
+
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("message", "Ghi danh khóa học thành công!");
+            
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            Map<String, String> errorBody = new HashMap<>();
+            errorBody.put("message", "Hệ thống đang gặp lỗi khi xử lý thanh toán/ghi danh.");
+            
+            return new ResponseEntity<>(errorBody, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     

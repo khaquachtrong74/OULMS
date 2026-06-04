@@ -87,13 +87,13 @@ public class ApiUserController {
             String token = JwtUtils.generateToken(userDetailed.getEmail(), userDetailed.getRole().getAuthority());
             ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", token)
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(true)
                     .path("/")
                     .maxAge(24*60*60)
-                    .sameSite("Lax")
+                    .sameSite("None")
                     .build();
             return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString() + "; Partitioned")
                     .body(userDetailed);
             
         }
@@ -104,14 +104,14 @@ public class ApiUserController {
     public ResponseEntity<?> logout() {
         ResponseCookie clearCookie = ResponseCookie.from("jwtToken", "")
                 .httpOnly(true)
-                .secure(false) 
+                .secure(true) 
                 .path("/")
                 .maxAge(0) 
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, clearCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, clearCookie.toString() + "; Partitioned")
                 .body("Logged out successfully");
     }
     
