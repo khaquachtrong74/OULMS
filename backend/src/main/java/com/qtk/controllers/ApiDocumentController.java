@@ -57,7 +57,7 @@ public class ApiDocumentController {
     }
 
     @GetMapping("/secure/documents/{uploadBy}")
-    @PreAuthorize("hasAuthority('ADMIN', 'LECTURER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER')")
     public ResponseEntity<List<DocumentResponseDTO>> getDocumentsByCreatedUser(
             @RequestParam Map<String, String> params, @PathVariable(value = "uploadBy") int id) {
         try {
@@ -70,7 +70,7 @@ public class ApiDocumentController {
     }
 
     @PostMapping(value = "/secure/documents/{documentId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    @PreAuthorize("hasAuthority('ADMIN', 'LECTURER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER')")
     public ResponseEntity<?> updateDocument(
             @PathVariable int documentId,
             @RequestParam Map<String, String> params,
@@ -102,7 +102,7 @@ public class ApiDocumentController {
             path = "/secure/document",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    @PreAuthorize("hasAuthority('ADMIN', 'LECTURER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER')")
     public ResponseEntity<?> createDocument(@ModelAttribute DocumentRequestDTO dto
     ) {
         try {
@@ -126,7 +126,7 @@ public class ApiDocumentController {
     }
 
     @GetMapping("/secure/documents")
-//    @PreAuthorize("hasAuthority('ADMIN', 'LECTURER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER')")
     public ResponseEntity<List<DocumentResponseDTO>> getDocumentsUser(@RequestParam Map<String, String> params, Principal principal
     ) {
 
@@ -134,8 +134,6 @@ public class ApiDocumentController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         
-        
-
         try {
             String username = principal.getName();
 

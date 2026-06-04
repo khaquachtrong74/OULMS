@@ -7,6 +7,8 @@ package com.qtk.controllers;
 import com.qtk.enums.DocumentStatus;
 import com.qtk.pojo.Document;
 import com.qtk.services.DocumentService;
+import com.qtk.services.LevelService;
+import com.qtk.services.TopicService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,12 @@ public class DocumentController {
     
     @Autowired
     private DocumentService docService;
+    
+    @Autowired
+    private TopicService topicService;
+    
+    @Autowired
+    private LevelService levelService;
     
     @RequestMapping("/documents/active")
     public String documentActiveView(Model model, @RequestParam Map<String, String> params) {
@@ -67,13 +75,20 @@ public class DocumentController {
     public String createView(Model model) {
         model.addAttribute("document", new Document());
         return "documentCreate";
-        
+
     }
     
     @PostMapping("/document")
-    public String create(@ModelAttribute(value = "document") Document d) {
+    public String create(@ModelAttribute("document") Document d,
+                         @RequestParam("topicId") int topicId,
+                         @RequestParam("levelId") int levelId) {
+
+        d.setTopicId(this.topicService.getTopicById(topicId));
+        d.setLevelId(this.levelService.getLevelById(levelId));
+
         this.docService.addOrUpdateDocument(d);
-        return "redirect:/admin/documents/pending";
+
+        return "redirect:/admin/documents/active";
     }
     
     @GetMapping("/documents/{documentId}")
