@@ -4,6 +4,7 @@
  */
 package com.qtk.dto;
 
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CommentResponseDTO {
     private String content;
-    private String username;
+    private String email;
+    private String avatar;
     private Integer documentId;
+    private Date createdAt;
 }
