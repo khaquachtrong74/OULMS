@@ -30,7 +30,6 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @EnableTransactionManagement
 @ComponentScan(
         basePackages = {
-            "com.qtk.controllers",
             "com.qtk.repositories",
             "com.qtk.services"
         }
