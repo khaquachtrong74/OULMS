@@ -4,7 +4,9 @@
  */
 package com.qtk.controllers;
 
+import com.qtk.pojo.Subject;
 import com.qtk.pojo.Topic;
+import com.qtk.services.SubjectService;
 import com.qtk.services.TopicService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class TopicController {
     @Autowired
     private TopicService topicService;
     
+    @Autowired
+    private SubjectService subService;
+    
     @RequestMapping("/topics")
     public String topicView(Model model, @RequestParam Map<String, String> params) {
         model.addAttribute("topics", topicService.getTopic(params));
@@ -41,7 +46,10 @@ public class TopicController {
     }
     
     @PostMapping("/topic")
-    public String create(@ModelAttribute(value = "topic") Topic t) {
+    public String create(@ModelAttribute(value = "topic") Topic t, @RequestParam("subjectId") int subjectId) {
+        Subject s = this.subService.getSubjectById(subjectId);
+        t.setSubjectId(s);
+        
         this.topicService.addOrUpdateTopic(t);
         return "redirect:/admin/topics";
     }
