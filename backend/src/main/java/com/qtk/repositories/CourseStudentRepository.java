@@ -4,7 +4,9 @@
  */
 package com.qtk.repositories;
 
+import com.qtk.pojo.Course;
 import com.qtk.pojo.CourseStudent;
+import java.util.List;
 
 /**
  *
@@ -13,4 +15,5 @@ import com.qtk.pojo.CourseStudent;
 public interface CourseStudentRepository {
     void addCourseStudent(CourseStudent courseStudent);
     boolean isStudentEnrolled(int courseId, int studentId);
+    List<Course> getCoursesByUserId(int userId);
 }

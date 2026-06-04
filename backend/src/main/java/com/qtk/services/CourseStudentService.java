@@ -4,10 +4,15 @@
  */
 package com.qtk.services;
 
+import com.qtk.dto.CourseResponseDTO;
+import java.util.List;
+
 /**
  *
  * @author lossrunner
  */
 public interface CourseStudentService {
     void enrollStudent(int courseId, int studentId);
+    
+    List<CourseResponseDTO> getEnrolledCoursesByUser(int userId);
 }

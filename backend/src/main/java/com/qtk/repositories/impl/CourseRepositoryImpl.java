@@ -5,6 +5,7 @@
 package com.qtk.repositories.impl;
 
 import com.qtk.pojo.Course;
+import com.qtk.pojo.CourseStudent;
 import com.qtk.repositories.CourseRepository;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -12,6 +13,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,32 +40,51 @@ public class CourseRepositoryImpl implements CourseRepository {
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Course> query = builder.createQuery(Course.class);
         Root<Course> root = query.from(Course.class);
+        
+        // Tối ưu hóa truy vấn, tránh N+1 Query
         root.fetch("subjectId", JoinType.LEFT);
         root.fetch("lecturerId", JoinType.LEFT);
         query.select(root);
+        
+        // Tạo một cái "giỏ" chứa tất cả các điều kiện lọc
         List<Predicate> predicates = new ArrayList<>();
 
         if (params != null) {
+            // 1. Điều kiện tìm kiếm theo tên (Keyword)
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
-                Predicate p = builder.like(root.get("name"), String.format("%%%s%%", kw));
-                query.where(p);
+                // SỬA LỖI: Add vào giỏ predicates thay vì gọi query.where()
+                predicates.add(builder.like(root.get("name"), String.format("%%%s%%", kw)));
             }
             
+            // 2. Điều kiện lọc theo ID môn học
             String subjectId = params.get("subjectId");
             if (subjectId != null && !subjectId.isEmpty()) {
-                predicates.add(
-                        builder.equal(
-                                root.get("subjectId").get("id"),
-                                Integer.valueOf(subjectId)
-                        )
-                );
+                predicates.add(builder.equal(root.get("subjectId").get("id"), Integer.valueOf(subjectId)));
+            }
+
+            // 3. ĐIỀU KIỆN LÕI: Lọc bỏ các khóa học đã ghi danh
+            String currentUserId = params.get("currentUserId");
+            if (currentUserId != null && !currentUserId.isEmpty()) {
+                // Tạo Subquery: SELECT cs.courseId.id FROM CourseStudent cs WHERE cs.studentId.id = currentUserId
+                Subquery<Integer> subquery = query.subquery(Integer.class);
+                Root<CourseStudent> subRoot = subquery.from(CourseStudent.class);
+                
+                // Chọn cột khóa ngoại trỏ tới Course
+                subquery.select(subRoot.get("courseId").get("id")); 
+                // Điều kiện: ID sinh viên phải bằng với người đang đăng nhập
+                subquery.where(builder.equal(subRoot.get("studentId").get("id"), Integer.valueOf(currentUserId)));
+
+                // Thêm vào giỏ điều kiện: ID của Course gốc KHÔNG ĐƯỢC NẰM TRONG danh sách subquery
+                predicates.add(builder.not(root.get("id").in(subquery)));
             }
         }
 
+        // Đổ toàn bộ điều kiện trong giỏ vào query cùng 1 lúc (dùng phép AND ngầm định)
         if (!predicates.isEmpty()) {
             query.where(predicates.toArray(new Predicate[0])); 
         }
+        
         query.orderBy(builder.desc(root.get("id")));
         Query q = session.createQuery(query);
         return q.getResultList();

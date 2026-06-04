@@ -11,14 +11,19 @@ package com.qtk.controllers;
 
 import com.qtk.dto.CourseDetailResponseDTO;
 import com.qtk.dto.CourseResponseDTO;
+import com.qtk.dto.UserResponseDTO;
 import com.qtk.pojo.Course;
 import com.qtk.services.CourseService;
+import com.qtk.services.CourseStudentService;
+import com.qtk.services.UserService;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +41,12 @@ public class ApiCourseController {
 
     @Autowired
     private CourseService courseService;
+    
+    @Autowired
+private UserService userService;
+
+@Autowired
+private CourseStudentService courseStudentService;
 
     @GetMapping("/courses")
     public ResponseEntity<List<CourseResponseDTO>> getCourses(@RequestParam Map<String, String> params){
@@ -43,6 +54,7 @@ public class ApiCourseController {
             return new ResponseEntity<>(this.courseService.getCourses(params), HttpStatus.OK);
 
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
@@ -66,6 +78,20 @@ public class ApiCourseController {
         }
     }
     
+    @GetMapping("/secure/courses/my-learning")
+    @PreAuthorize("isAuthenticated()") // Bắt buộc phải đăng nhập và có JWT hợp lệ
+    public ResponseEntity<List<CourseResponseDTO>> getMyEnrolledCourses(Principal principal) {
+        try {
+            UserResponseDTO currentUser = this.userService.getUserByUserEmail(principal.getName());
+            List<CourseResponseDTO> enrolledCourses = this.courseStudentService.getEnrolledCoursesByUser(currentUser.getId());
+            
+            return new ResponseEntity<>(enrolledCourses, HttpStatus.OK);
+
+        } catch (Exception e) {
+          
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @GetMapping("/courses/{id}")
     public ResponseEntity<CourseResponseDTO> getCourseDetailed(@PathVariable(value = "id") int id) {
         try {

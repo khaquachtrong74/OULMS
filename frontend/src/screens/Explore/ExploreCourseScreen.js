@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Container, Row, Col, Form, InputGroup, Button, Spinner, Nav } from 'react-bootstrap';
 import { Search, Filter } from 'react-bootstrap-icons';
 import Apis, { endpoints } from '../../configs/Apis'; 
 import { useNavigate, useSearchParams } from 'react-router-dom'; // Bổ sung useSearchParams
 import DocumentCard from '../../components/DocumentCard';
 import CourseCard from '../../components/CourseCard';
+import { MyUserContext } from '../../configs/Contexts';
 
 const ExploreCourseScreen = () => {
     const nav = useNavigate();
-    
+    const [user] = useContext(MyUserContext);
     // 1. Khởi tạo useSearchParams để tương tác với URL
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -73,6 +74,7 @@ const ExploreCourseScreen = () => {
                 const res = await Apis.get(`${endpoints.document}?${queryParams.toString()}`);
                 setDocuments(res.data);
             } else if (activeTab === 'course') {
+                queryParams.append("currentUserId", user.id);
                 const res = await Apis.get(`${endpoints['courses']}?${queryParams.toString()}`);
                 setCourses(res.data);
             }

@@ -10,6 +10,7 @@ export const endpoints = {
     document: '/documents',
     secureDocument: (documentId) => `/secure/documents/${documentId}`,
     secureDocuments: '/secure/documents',
+    myCourses: '/secure/courses/my-learning',
     topic: '/topics',
     subject: '/subjects',
     level: '/levels',

@@ -4,6 +4,7 @@
  */
 package com.qtk.services.impl;
 
+import com.qtk.dto.CourseResponseDTO;
 import com.qtk.pojo.Course;
 import com.qtk.pojo.CourseStudent;
 import com.qtk.pojo.User;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 /**
  *
  * @author lossrunner
@@ -51,5 +54,24 @@ public class CourseStudentServiceImpl implements CourseStudentService {
 
         // 3. Đẩy xuống Repository để lưu
         this.courseStudentRepository.addCourseStudent(enrollment);
+    }
+    
+    @Override
+    public List<CourseResponseDTO> getEnrolledCoursesByUser(int userId) {
+        // 1. Gọi Repository để lấy danh sách Entity Course đã được JOIN sẵn tối ưu từ DB
+        List<Course> enrolledCourses = this.courseStudentRepository.getCoursesByUserId(userId);
+
+        // 2. Tiến hành Mapping dữ liệu Entity sang DTO (Data Transfer Object) bằng Stream API
+        return enrolledCourses.stream().map(c -> 
+            CourseResponseDTO.builder()
+                .id(c.getId())
+                .name(c.getName())
+                .description(c.getDescription())
+                .price(c.getPrice())
+                .subjectName(c.getSubjectId() != null ? c.getSubjectId().getName() : "Chưa phân loại")
+                .lecturerName(c.getLecturerId() != null ? 
+                    c.getLecturerId().getFirstName() + " " + c.getLecturerId().getLastName() : "Đang cập nhật")
+                .build()
+        ).collect(Collectors.toList());
     }
 }

@@ -116,8 +116,8 @@ public class User implements Serializable {
     private Set<ForumComment> forumCommentSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Set<Transaction> transactionSet;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "studentId",fetch = FetchType.LAZY)
-    private CourseStudent courseStudent;
+    @OneToMany(mappedBy = "studentId", fetch = FetchType.LAZY)
+    private Set<CourseStudent> courseStudents; // Đổi thành Set hoặc List
 
     public User() {
     }
@@ -304,12 +304,12 @@ public class User implements Serializable {
         this.transactionSet = transactionSet;
     }
 
-    public CourseStudent getCourseStudent() {
-        return courseStudent;
+    public Set<CourseStudent> getCourseStudent() {
+        return this.courseStudents;
     }
 
-    public void setCourseStudent(CourseStudent courseStudent) {
-        this.courseStudent = courseStudent;
+    public void setCourseStudent(Set<CourseStudent> courseStudent) {
+        this.courseStudents = courseStudent;
     }
 
     @Override
