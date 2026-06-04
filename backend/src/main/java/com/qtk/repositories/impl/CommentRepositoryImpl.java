@@ -8,6 +8,7 @@ import com.qtk.pojo.Comment;
 import com.qtk.repositories.CommentRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
@@ -35,10 +36,13 @@ public class CommentRepositoryImpl implements CommentRepository{
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Comment> query = builder.createQuery(Comment.class);
         Root root = query.from(Comment.class);
-        query.select(root);
+        root.fetch("userId", JoinType.LEFT);
         
-        Predicate p = builder.equal(root.get("ducmentId").get("id"), documentId);
+        query.select(root).distinct(true);
+        
+        Predicate p = builder.equal(root.get("documentId").get("id"), documentId);
         query.where(p);
+        query.orderBy(builder.desc(root.get("id")));
         
         Query q = session.createQuery(query);
         return q.getResultList();
@@ -50,5 +54,20 @@ public class CommentRepositoryImpl implements CommentRepository{
         session.persist(c);
         return c;
     }
+
+    @Override
+    public Comment getCommentById(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(Comment.class, id);
+    }
+
+    @Override
+    public void deleteComment(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        Comment c = this.getCommentById(id);
+        session.remove(c);
+    }
+    
+    
     
 }

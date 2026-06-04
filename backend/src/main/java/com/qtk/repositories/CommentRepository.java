@@ -14,4 +14,6 @@ import java.util.List;
 public interface CommentRepository {
     List<Comment> getCommemts(int documentId);
     Comment addComment(Comment c);
+    Comment getCommentById(int id);
+    void deleteComment(int id);
 }

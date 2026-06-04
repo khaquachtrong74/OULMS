@@ -4,6 +4,7 @@
  */
 package com.qtk.services;
 
+import com.qtk.dto.CommentResponseDTO;
 import com.qtk.pojo.Comment;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * @author ngodo
  */
 public interface CommentService {
-    List<Comment> getCommemts(int documentId);
-    Comment addComment(int documentId, String content);
+    List<CommentResponseDTO> getCommemts(int documentId);
+    CommentResponseDTO addComment(int documentId, String content);
+    void deleteComment(int commentId);
 }
