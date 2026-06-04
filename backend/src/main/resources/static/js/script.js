@@ -3,8 +3,10 @@ function deleteSubject(url) {
         fetch(url, {
             method: "delete"
         }).then(res => {
-            if (res.status === 204)
+            if (res.status === 204) {
+                alert("Xoá thành công");
                 location.reload();
+            }
             else
                 alert("Xoá thất bại!");
         });
@@ -31,12 +33,20 @@ function deleteTopic(url) {
 function updateStatusDocument(url) {
     if (confirm("Bạn có muốn cập nhật trạng thái không") === true) {
         fetch(url, {
-            method: "post"
-        }).then(res => {
-            if (res.status === 204)
+            method: "POST"
+        }).then(async res => {
+            const message = await res.text();
+
+            if (res.ok) {
+                alert(message);
                 location.reload();
-            else
-                alert("Xoá thất bại!");
+            } else {
+                alert(message);
+            }
+        })
+        .catch(err => {
+            alert("Có lỗi xảy ra!");
+            console.error(err);
         });
     }
     ;

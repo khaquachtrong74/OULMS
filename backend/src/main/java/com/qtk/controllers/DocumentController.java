@@ -7,16 +7,15 @@ package com.qtk.controllers;
 import com.qtk.enums.DocumentStatus;
 import com.qtk.pojo.Document;
 import com.qtk.services.DocumentService;
+import com.qtk.services.LevelService;
+import com.qtk.services.TopicService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,10 +33,16 @@ public class DocumentController {
     @Autowired
     private DocumentService docService;
     
+    @Autowired
+    private TopicService topicService;
+    
+    @Autowired
+    private LevelService levelService;
+    
     @RequestMapping("/documents/active")
     public String documentActiveView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "ACTIVE");
-        model.addAttribute("documents", this.docService.getDocuments(params));
+        model.addAttribute("documents", this.docService.getAdminDocuments(params));
         model.addAttribute("status", "ACTIVE");
         return "document";
     }
@@ -45,7 +50,7 @@ public class DocumentController {
     @RequestMapping("/documents/pending")
     public String documentPendingView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "PENDING");
-        model.addAttribute("documents", this.docService.getDocuments(params));
+        model.addAttribute("documents", this.docService.getAdminDocuments(params));
         model.addAttribute("status", "PENDING");
         return "document";
     }
@@ -53,7 +58,7 @@ public class DocumentController {
     @RequestMapping("/documents/rejected")
     public String documentRejectedView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "REJECTED");
-        model.addAttribute("documents", this.docService.getDocuments(params));
+        model.addAttribute("documents", this.docService.getAdminDocuments(params));
         model.addAttribute("status", "REJECTED");
         return "document";
     }
@@ -61,7 +66,7 @@ public class DocumentController {
     @RequestMapping("/documents/hidden")
     public String documentHiddenView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "HIDDEN");
-        model.addAttribute("documents", this.docService.getDocuments(params));
+        model.addAttribute("documents", this.docService.getAdminDocuments(params));
         model.addAttribute("status", "HIDDEN");
         return "document";
     }
@@ -70,13 +75,20 @@ public class DocumentController {
     public String createView(Model model) {
         model.addAttribute("document", new Document());
         return "documentCreate";
-        
+
     }
     
     @PostMapping("/document")
-    public String create(@ModelAttribute(value = "document") Document d) {
+    public String create(@ModelAttribute("document") Document d,
+                         @RequestParam("topicId") int topicId,
+                         @RequestParam("levelId") int levelId) {
+
+        d.setTopicId(this.topicService.getTopicById(topicId));
+        d.setLevelId(this.levelService.getLevelById(levelId));
+
         this.docService.addOrUpdateDocument(d);
-        return "redirect:/admin/documents/pending";
+
+        return "redirect:/admin/documents/active";
     }
     
     @GetMapping("/documents/{documentId}")
@@ -95,31 +107,46 @@ public class DocumentController {
             case ACTIVE, REJECTED -> "documentDetail";
             default -> "documentCreate";
         }; 
-    }   
-    @PostMapping("/documents/{id}/{status}")
-    @ResponseBody
-    public ResponseEntity<String> quickUpdateStatus(
-            @PathVariable("id") int id, 
-            @PathVariable("status") String statusStr) {
-        
-        try {
-            // 1. Ép kiểu String thành Enum. 
-            // Nếu chữ truyền lên không khớp với Enum (VD: truyền "ABC"), nó sẽ văng ra IllegalArgumentException.
-            DocumentStatus newStatus = DocumentStatus.valueOf(statusStr.toUpperCase());
-            
-            // 2. Gọi hàm từ Service của bạn. Vì hàm trả về void, nếu không văng lỗi (Exception) nghĩa là thành công.
-            this.docService.updateDocumentStatus(id, newStatus);
-            
-            return ResponseEntity.ok("Cập nhật trạng thái thành công");
-
-        } catch (IllegalArgumentException e) {
-            // Lỗi do Client truyền sai tên Status
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body("Trạng thái không hợp lệ: " + statusStr);
-        } catch (Exception e) {
-            // Lỗi trong quá trình thao tác Database (VD: không tìm thấy ID tài liệu, mất kết nối DB)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Lỗi máy chủ khi cập nhật tài liệu");
-        }
     }
+    
+    @PostMapping(
+            value = "/documents/{documentId}/{status}",
+            produces = "text/plain;charset=UTF-8"
+    )
+    @ResponseBody
+    public ResponseEntity<String> updateStatus(
+            @PathVariable("documentId") int id,
+            @PathVariable("status") DocumentStatus status) {
+
+        this.docService.updateDocumentStatus(id, status);
+
+        return ResponseEntity.ok("Cập nhật trạng thái thành công");
+    }
+    
+//    @PostMapping("/documents/{id}/{status}")
+//    @ResponseBody
+//    public ResponseEntity<String> quickUpdateStatus(
+//            @PathVariable("id") int id, 
+//            @PathVariable("status") String statusStr) {
+//        
+//        try {
+//            // 1. Ép kiểu String thành Enum. 
+//            // Nếu chữ truyền lên không khớp với Enum (VD: truyền "ABC"), nó sẽ văng ra IllegalArgumentException.
+//            DocumentStatus newStatus = DocumentStatus.valueOf(statusStr.toUpperCase());
+//            
+//            // 2. Gọi hàm từ Service của bạn. Vì hàm trả về void, nếu không văng lỗi (Exception) nghĩa là thành công.
+//            this.docService.updateDocumentStatus(id, newStatus);
+//            
+//            return ResponseEntity.ok("Cập nhật trạng thái thành công");
+//
+//        } catch (IllegalArgumentException e) {
+//            // Lỗi do Client truyền sai tên Status
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                                 .body("Trạng thái không hợp lệ: " + statusStr);
+//        } catch (Exception e) {
+//            // Lỗi trong quá trình thao tác Database (VD: không tìm thấy ID tài liệu, mất kết nối DB)
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                                 .body("Lỗi máy chủ khi cập nhật tài liệu");
+//        }
+//    }
 }

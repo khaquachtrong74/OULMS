@@ -25,19 +25,27 @@
               </div>
 
               <div class="mb-3">
-                  <label for="topic" class="form-label">Thuộc chủ đề:</label>
-                  <select class="form-select" th:field="*{topicId}" id="topic">
-                      <option value="">-- Chọn chủ đề --</option>
-                      <option th:each="t : ${topics}" th:value="${t.id}" th:text="${t.name}"></option>
-                  </select>
+                    <label for="topic" class="form-label">Thuộc chủ đề:</label>
+                    <select class="form-select" name="topicId" id="topic">
+                        <option value="">-- Chọn chủ đề --</option>
+                        <option th:each="t : ${topics}"
+                                th:value="${t.id}"
+                                th:text="${t.name}"
+                                th:selected="${document.topicId != null and document.topicId.id == t.id}">
+                        </option>
+                    </select>
               </div>
 
               <div class="mb-3">
-                  <label for="level" class="form-label">Cấp độ:</label>
-                  <select class="form-select" th:field="*{levelId}" id="level">
-                      <option value="">-- Chọn cấp độ --</option>
-                      <option th:each="l : ${levels}" th:value="${l.id}" th:text="${l.name}"></option>
-                  </select>
+                    <label for="level" class="form-label">Cấp độ:</label>
+                    <select class="form-select" name="levelId" id="level">
+                        <option value="">-- Chọn cấp độ --</option>
+                        <option th:each="l : ${levels}"
+                                th:value="${l.id}"
+                                th:text="${l.name}"
+                                th:selected="${document.levelId != null and document.levelId.id == l.id}">
+                        </option>
+                    </select>
               </div>
 
               <div class="mb-3">
