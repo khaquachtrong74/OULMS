@@ -28,4 +28,8 @@ public class UserResponseDTO {
     private String firstName;
     private String lastName;
     private String avatar;
+    
+    public String getFullName(){
+        return this.firstName + " " + this.lastName;
+    }
 }

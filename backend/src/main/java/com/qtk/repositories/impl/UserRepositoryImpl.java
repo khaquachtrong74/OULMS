@@ -131,4 +131,21 @@ public class UserRepositoryImpl implements UserRepository {
         s.merge(u);
         return u;
     }
+
+    @Override
+    public List<User> getLecturers() {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<User> query = builder.createQuery(User.class);
+        Root<User> root = query.from(User.class);
+        query.select(root);
+
+        Predicate p = builder.equal(root.get("role"), com.qtk.enums.UserRole.LECTURER);
+        query.where(p);
+
+        query.orderBy(builder.asc(root.get("firstName")));
+
+        var q = session.createQuery(query);
+        return q.getResultList();
+    }
 }

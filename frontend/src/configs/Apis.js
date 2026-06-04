@@ -8,14 +8,15 @@ export const endpoints = {
     logout:'/logout',
     profile:'/secure/profile',
     document: '/documents',
-    secureDocuments: (uploadBy)=> `/secure/documents/${uploadBy}`, 
-    secureDocument: '/secure/document',   
+    secureDocument: (documentId)=> `/secure/documents/${documentId}`, 
+    secureDocuments: '/secure/documents',   
     topic: '/topics',
     subject: '/subjects',
     level: '/levels',
     loginGoogle: '/auth/google',
-    tag: '/tags'
-
+    tag: '/tags',
+    courses: '/courses',
+    courseDetail: (courseId) => `/courses/${courseId}`
 }
 
 export default axios.create({

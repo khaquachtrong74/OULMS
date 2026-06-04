@@ -199,4 +199,21 @@ public class UserServiceImpl implements UserService {
         }
         return mapToResponseDTO(u);
     }
+    
+    @Override
+    public List<UserResponseDTO> getLecturers() {
+        // 1. Kéo Entity từ DB lên (Do UserRepository đảm nhiệm)
+        List<User> lecturers = this.userRepo.getLecturers();
+        
+        // 2. Map Entity -> DTO (Do Service đảm nhiệm)
+        return lecturers.stream().map(user -> {
+            UserResponseDTO dto = new UserResponseDTO();
+            dto.setId(user.getId());
+            dto.setFirstName(user.getFirstName());
+            dto.setLastName(user.getLastName());
+            dto.setEmail(user.getEmail());
+            dto.setRole(user.getRole());
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }

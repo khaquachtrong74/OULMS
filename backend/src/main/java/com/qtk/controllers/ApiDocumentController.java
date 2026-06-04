@@ -56,19 +56,6 @@ public class ApiDocumentController {
         }
     }
 
-    @GetMapping("/secure/documents/{uploadBy}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER')")
-    public ResponseEntity<List<DocumentResponseDTO>> getDocumentsByCreatedUser(
-            @RequestParam Map<String, String> params, @PathVariable(value = "uploadBy") int id) {
-        try {
-
-            List<DocumentResponseDTO> docs = this.docService.getDocumentsByUserId(id, params);
-            return new ResponseEntity<>(docs, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @PostMapping(value = "/secure/documents/{documentId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER')")
     public ResponseEntity<?> updateDocument(
@@ -155,9 +142,9 @@ public class ApiDocumentController {
         this.docService.updateDocumentStatus(id, status);
     }
     
-    @DeleteMapping("/secure/documents/{uploadBy}")
+    @DeleteMapping("/secure/documents/{documentId}")
     @PreAuthorize("hasAnyAuthority('LECTURER')")
-    public ResponseEntity<?> deleteDocument(@PathVariable("uploadBy") int id){
+    public ResponseEntity<?> deleteDocument(@PathVariable("documentId") int id){
         this.docService.deleteDocument(id);
         return ResponseEntity.noContent().build();
     }

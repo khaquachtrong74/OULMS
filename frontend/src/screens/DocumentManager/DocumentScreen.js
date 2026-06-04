@@ -75,7 +75,7 @@ const DocumentScreen = () => {
       if (kw.trim() !== '') params.kw = kw;
       if (filterLevel !== '') params.levelId = filterLevel;
 
-      const response = await Apis.get(endpoints['secureDocuments'](user.id), { params });
+      const response = await Apis.get(endpoints['secureDocuments'], { params });
       if (response.data) {
         setDocuments(response.data);
       }
@@ -157,7 +157,7 @@ const DocumentScreen = () => {
       }
 
       // ĐỒNG BỘ: Sử dụng POST thuần túy giúp đường truyền Multipart cực kỳ ổn định
-      await Apis.post(endpoints['secureDocuments'](editingDoc.id), formData, {
+      await Apis.post(endpoints['secureDocument'](editingDoc.id), formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -178,7 +178,7 @@ const DocumentScreen = () => {
     const confirmed = window.confirm(`Bạn có chắc muốn xóa tài liệu "${title}" không?`);
     if (!confirmed) return;
     try {
-      await Apis.delete(endpoints['secureDocuments'](docId));
+      await Apis.delete(endpoints['secureDocument'](docId));
 
       alert("Xóa tài liệu thành công!");
 

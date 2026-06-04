@@ -192,12 +192,15 @@
                             <li><a class="dropdown-item" th:href="@{/admin/documents/pending}">Tài liệu chờ duyệt</a></li>
                             <li><a class="dropdown-item" th:href="@{/admin/documents/active}">Tài liệu đã duyệt</a></li>
                             <li><a class="dropdown-item" th:href="@{/admin/documents/rejected}">Tài liệu từ chối duyệt</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/hidden}">Tài liệu bị ẩn</a></li>
 
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" th:href="@{/admin/documents/stats}">Thống kê tổng</a></li>
                         </ul>
                     </div>
-
+                <a th:href="@{/admin/courses}" class="nav-link-admin sub-menu">
+                        <i class="bi bi-mortarboard-fill"></i> Khóa học
+                    </a>
                 </div>
                 <!--
                                 <a href="#" class="nav-link-admin">
