@@ -133,7 +133,7 @@ public class ApiDocumentController {
         if (principal == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
+        
         try {
             String username = principal.getName();
 
@@ -146,17 +146,9 @@ public class ApiDocumentController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @PostMapping("/documents/{documentId}/{status}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateStatus(@PathVariable(value = "documentId") int id, @PathVariable("status") DocumentStatus status
-    ) {
-        this.docService.updateDocumentStatus(id, status);
-    }
     
     @DeleteMapping("/secure/documents/{uploadBy}")
-    @PreAuthorize("hasAnyAuthority('LECTURER')")
+    @PreAuthorize("hasAuthority('LECTURER')")
     public ResponseEntity<?> deleteDocument(@PathVariable("uploadBy") int id){
         this.docService.deleteDocument(id);
         return ResponseEntity.noContent().build();

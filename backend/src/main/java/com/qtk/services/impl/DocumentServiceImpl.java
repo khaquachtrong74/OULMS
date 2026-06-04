@@ -128,19 +128,41 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentResponseDTO getDocumentDetail(int id) {
         return this.toDTO(this.docRepo.getDocumentById(id));
     }
-
+  
     @Override
     public void addOrUpdateDocument(Document d) {
-        d.setUploadedBy(this.userRepo.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()));
+        if (d.getId() != null) {
+            Document old = this.docRepo.getDocumentById(d.getId());
 
-        if (d.getFile() != null && !d.getFile().isEmpty()) {
-            File driveFile = googleDriveService.uploadFile(d.getFile());
-            d.setFileUrl(driveFile.getWebViewLink());
-            d.setDriveFileId(driveFile.getId());
-            d.setFileType(d.getFile().getContentType());
-            d.setFileSize(d.getFile().getSize());
+            old.setTitle(d.getTitle());
+            old.setDescription(d.getDescription());
+            old.setTopicId(d.getTopicId());
+            old.setLevelId(d.getLevelId());
+            old.setStatus(DocumentStatus.PENDING);
+
+            if (d.getFile() != null && !d.getFile().isEmpty()) {
+                File driveFile = googleDriveService.uploadFile(d.getFile());
+
+                old.setFileUrl(driveFile.getWebViewLink());
+                old.setDriveFileId(driveFile.getId());
+                old.setFileType(d.getFile().getContentType());
+                old.setFileSize(d.getFile().getSize());
+            }
+
+            this.docRepo.addOrUpdateDocument(old);
+        } else {
+            d.setUploadedBy(this.userRepo.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()));
+            
+            if (d.getFile() != null && !d.getFile().isEmpty()) {
+                File driveFile = googleDriveService.uploadFile(d.getFile());
+                d.setFileUrl(driveFile.getWebViewLink());
+                d.setDriveFileId(driveFile.getId());
+                d.setFileType(d.getFile().getContentType());
+                d.setFileSize(d.getFile().getSize());
+            }
+            
+            this.docRepo.addOrUpdateDocument(d);
         }
-        this.docRepo.addOrUpdateDocument(d);
     }
 
     @Override

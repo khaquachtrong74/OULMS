@@ -7,7 +7,6 @@ package com.qtk.repositories.impl;
 import com.qtk.enums.DocumentStatus;
 import com.qtk.pojo.Document;
 import com.qtk.repositories.DocumentRepository;
-import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.JoinType;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
@@ -142,7 +142,15 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     @Override
     public Document getDocumentById(int id) {
         Session session = this.factory.getObject().getCurrentSession();
-        return session.get(Document.class, id);
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Document> query = builder.createQuery(Document.class);
+        Root root = query.from(Document.class);
+        
+        root.fetch("topicId", JoinType.LEFT);
+        root.fetch("levelId", JoinType.LEFT);
+        
+        query.select(root).where(builder.equal(root.get("id"), id));
+        return session.createQuery(query).getSingleResult();
     }
 
     @Override
