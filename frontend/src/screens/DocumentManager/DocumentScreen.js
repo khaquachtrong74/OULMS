@@ -200,6 +200,7 @@ const DocumentScreen = () => {
     if (lower.includes('.docx') || lower.includes('.doc')) return <FileEarmarkText size={24} className="text-info me-2" />;
     return <Files size={24} className="text-secondary me-2" />;
   };
+  
 
   return (
     <Container className="py-5">

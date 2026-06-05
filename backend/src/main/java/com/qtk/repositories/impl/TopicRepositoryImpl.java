@@ -6,14 +6,15 @@ package com.qtk.repositories.impl;
 
 import com.qtk.pojo.Topic;
 import com.qtk.repositories.TopicRepository;
-import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
@@ -36,7 +37,8 @@ public class TopicRepositoryImpl implements TopicRepository{
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Topic> query = builder.createQuery(Topic.class);
         Root root = query.from(Topic.class);
-        query.select(root);
+        root.fetch("subjectId", JoinType.LEFT);
+        query.select(root).distinct(true);
         if (params != null) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
@@ -61,7 +63,14 @@ public class TopicRepositoryImpl implements TopicRepository{
     @Override
     public Topic getTopicById(int id) {
         Session session = this.factory.getObject().getCurrentSession();
-        return session.get(Topic.class, id);
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Topic> query = builder.createQuery(Topic.class);
+        Root root = query.from(Topic.class);
+        root.fetch("subjectId", JoinType.LEFT);
+
+        query.select(root).where(builder.equal(root.get("id"), id));
+
+        return session.createQuery(query).getSingleResult();
     }
 
     @Override

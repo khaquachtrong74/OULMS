@@ -45,7 +45,7 @@ const HomeScreen = () => {
 
             const response = await Apis.get(endpoints['document'], { params });
             if (response.data) {
-                setLatestDocuments(response.data);
+                setLatestDocuments(response.data.data || []);
             }
         } catch (error) {
             console.error("Lỗi khi nạp tài liệu trang chủ:", error);

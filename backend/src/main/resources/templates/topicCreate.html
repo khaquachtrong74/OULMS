@@ -24,11 +24,15 @@
                 <div class="mb-3 mt-3">
                     <label for="cate" class="form-label">Thuộc môn học: </label>
 
-                    <select class="form-select" th:field="*{subjectId}" id="sub">
-                        <option th:each="s: ${subjects}" th:value="${s.id}" th:text="${s.name}"></option>
+                    <select class="form-select" name="subjectId" id="sub">
+                        <option th:each="s : ${subjects}"
+                                th:value="${s.id}"
+                                th:text="${s.name}"
+                                th:selected="${topic.subjectId != null and topic.subjectId.id == s.id}">
+                        </option>
                     </select>
                 </div>
-
+                
                 <button th:if="${topic.id == null}" class="btn btn-success mb-2">Thêm</button>
                 <button th:unless="${topic.id == null}" class="btn btn-success mb-2">Cập nhật</button>
 

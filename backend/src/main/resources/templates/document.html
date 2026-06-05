@@ -103,18 +103,18 @@
                                             <a th:href="@{/admin/documents/} + ${d.id}" class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center justify-content-center gap-2" style="width: 100px;">
                                                 <i class="bi bi-pencil-square"></i> Sửa
                                             </a>
-                                            <button th:onclick="'quickUpdateStatus(' + ${d.id} + ', \'HIDDEN\')'" class="btn btn-sm btn-outline-danger rounded-pill d-flex align-items-center justify-content-center gap-2" style="width: 100px;">
+                                            <button th:onclick="'updateStatusDocument(\'' + @{/admin/documents/} + ${d.id} + '/HIDDEN\')'" class="btn btn-sm btn-outline-danger rounded-pill d-flex align-items-center justify-content-center gap-2" style="width: 100px;">
                                                 <i class="bi bi-eye-slash"></i> Ẩn
                                             </button>
                                         </th:block>
 
                                         <th:block th:if="${status == 'PENDING'}">
-                                            <button th:onclick="'updateStatusDocument(\'' + @{/admin/documents/} + ${d.id} + '/ACTIVE\', ' + ${d.id} + ', \'ACTIVE\')'"
+                                            <button th:onclick="'updateStatusDocument(\'' + @{/admin/documents/} + ${d.id} + '/ACTIVE\')'"
                                                     class="btn btn-sm btn-outline-success rounded-pill d-flex align-items-center justify-content-center gap-2"
                                                     style="width: 100px;">
                                                 <i class="bi bi-check-circle"></i> Duyệt
                                             </button>
-                                            <button th:onclick="'updateStatusDocument(\'' + @{/admin/documents/} + ${d.id} + '/REJECTED\', ' + ${d.id} + ', \'REJECTED\')'"
+                                            <button th:onclick="'updateStatusDocument(\'' + @{/admin/documents/} + ${d.id} + '/REJECTED\')'"
                                                     class="btn btn-sm btn-outline-danger rounded-pill d-flex align-items-center justify-content-center gap-2"
                                                     style="width: 100px;">
                                                 <i class="bi bi-x-circle"></i> Từ chối
@@ -122,13 +122,15 @@
                                         </th:block>
 
                                         <th:block th:if="${status == 'REJECTED'}">
-                                            <button th:onclick="'updateStatusDocument(\'' + @{/admin/documents/} + ${d.id} + '/ACTIVE\', ' + ${d.id} + ', \'ACTIVE\')'" class="btn btn-sm btn-outline-success rounded-pill d-flex align-items-center justify-content-center gap-2" style="width: 100px;">
-                                                <i class="bi bi-arrow-counterclockwise"></i> Cứu xét
+                                            <button th:onclick="'updateStatusDocument(\'' + @{/admin/documents/} + ${d.id} + '/ACTIVE\')'"
+                                                    class="btn btn-sm btn-outline-success rounded-pill d-flex align-items-center justify-content-center gap-2" style="width: 100px;">
+                                                <i class="bi bi-arrow-counterclockwise"></i> Chấp nhận
                                             </button>
                                         </th:block>
 
                                         <th:block th:if="${status == 'HIDDEN'}">
-                                            <button th:onclick="'updateStatusDocument(' + ${d.id} + ', \'ACTIVE\')'" class="btn btn-sm btn-outline-success rounded-pill d-flex align-items-center justify-content-center gap-2" style="width: 100px;">
+                                            <button th:onclick="'updateStatusDocument(\'' + @{/admin/documents/} + ${d.id} + '/ACTIVE\')'"
+                                                    class="btn btn-sm btn-outline-success rounded-pill d-flex align-items-center justify-content-center gap-2" style="width: 100px;">
                                                 <i class="bi bi-unlock"></i> Mở lại
                                             </button>
                                         </th:block>
@@ -144,6 +146,18 @@
                             </tr>
                         </tbody>
                     </table>
+                    
+                    <div th:if="${totalPages > 1}" class="d-flex justify-content-center gap-2 p-4" >
+                        <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+                            <a class="btn rounded-pill"
+                                th:classappend="${i == currentPage} ? 'btn-primary' : 'btn-outline-primary'"
+                                th:href="${kw != null and !kw.isEmpty()}
+                                    ? @{'/admin/documents/' + ${#strings.toLowerCase(status)}(page=${i}, kw=${kw})}
+                                    : @{'/admin/documents/' + ${#strings.toLowerCase(status)}(page=${i})}"
+                                th:text="${i}">
+                            </a>
+                        </th:block>
+                    </div>
                 </div>
             </div>
         </div>
