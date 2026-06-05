@@ -72,7 +72,7 @@ const Header = () => {
 
                         <Nav.Link
                             as={NavLink}
-                            to="/documents"
+                            to="/explore"
                             className={getNavLinkClass}
                         >
                             Khám phá
