@@ -4,6 +4,7 @@
  */
 package com.qtk.controllers;
 
+import com.qtk.dto.PageResponseDTO;
 import com.qtk.dto.DocumentRequestDTO;
 import com.qtk.dto.DocumentResponseDTO;
 import com.qtk.enums.DocumentStatus;
@@ -46,13 +47,25 @@ public class ApiDocumentController {
     private UserService userService;
 
     @GetMapping("/documents")
-    public ResponseEntity<List<DocumentResponseDTO>> getPublicDocument(@RequestParam Map<String, String> params) {
+    public ResponseEntity<?> getPublicDocument(@RequestParam Map<String, String> params) {
         params.put("status", "ACTIVE");
+
         try {
+            int currentPage = Integer.parseInt(params.getOrDefault("page", "1"));
+            int pageSize = this.docService.getDocumentPageSize();
+
+            long totalItems = this.docService.countDocuments(params);
+            int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+
             List<DocumentResponseDTO> docs = this.docService.getPublicDocument(params);
-            return new ResponseEntity<>(docs, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+            PageResponseDTO<DocumentResponseDTO> res = 
+                    new PageResponseDTO<>(docs, currentPage, pageSize, totalPages, totalItems);
+
+            return new ResponseEntity<>(res, HttpStatus.OK);
+
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

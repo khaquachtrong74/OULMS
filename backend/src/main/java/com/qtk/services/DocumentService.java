@@ -27,4 +27,7 @@ public interface DocumentService {
     void updateDocument(int documentId, DocumentRequestDTO dto);
     Document getDocumentById(int id);
     void updateDocumentStatus(int id, DocumentStatus status);
+    
+    long countDocuments(Map<String, String> params);
+    int getDocumentPageSize();
 }

@@ -42,14 +42,40 @@ public class DocumentController {
     @RequestMapping("/documents/active")
     public String documentActiveView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "ACTIVE");
+
+        int currentPage = Integer.parseInt(params.getOrDefault("page", "1"));
+
+        int pageSize = this.docService.getDocumentPageSize();
+
+        long totalDocuments = this.docService.countDocuments(params);
+
+        int totalPages = (int) Math.ceil((double) totalDocuments / pageSize);
+        
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("kw", params.get("kw"));
+
         model.addAttribute("documents", this.docService.getAdminDocuments(params));
-        model.addAttribute("status", "ACTIVE");
+        model.addAttribute("status", "ACTIVE");        
         return "document";
     }
     
     @RequestMapping("/documents/pending")
     public String documentPendingView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "PENDING");
+        
+        int currentPage = Integer.parseInt(params.getOrDefault("page", "1"));
+
+        int pageSize = this.docService.getDocumentPageSize();
+
+        long totalDocuments = this.docService.countDocuments(params);
+
+        int totalPages = (int) Math.ceil((double) totalDocuments / pageSize);
+        
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
+//        model.addAttribute("kw", params.getOrDefault("kw", ""));
+        
         model.addAttribute("documents", this.docService.getAdminDocuments(params));
         model.addAttribute("status", "PENDING");
         return "document";
@@ -58,6 +84,19 @@ public class DocumentController {
     @RequestMapping("/documents/rejected")
     public String documentRejectedView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "REJECTED");
+        
+        int currentPage = Integer.parseInt(params.getOrDefault("page", "1"));
+
+        int pageSize = this.docService.getDocumentPageSize();
+
+        long totalDocuments = this.docService.countDocuments(params);
+
+        int totalPages = (int) Math.ceil((double) totalDocuments / pageSize);
+        
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
+//        model.addAttribute("kw", params.getOrDefault("kw", ""));
+        
         model.addAttribute("documents", this.docService.getAdminDocuments(params));
         model.addAttribute("status", "REJECTED");
         return "document";
@@ -66,6 +105,19 @@ public class DocumentController {
     @RequestMapping("/documents/hidden")
     public String documentHiddenView(Model model, @RequestParam Map<String, String> params) {
         params.put("status", "HIDDEN");
+        
+        int currentPage = Integer.parseInt(params.getOrDefault("page", "1"));
+
+        int pageSize = this.docService.getDocumentPageSize();
+
+        long totalDocuments = this.docService.countDocuments(params);
+
+        int totalPages = (int) Math.ceil((double) totalDocuments / pageSize);
+        
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
+//        model.addAttribute("kw", params.getOrDefault("kw", ""));
+        
         model.addAttribute("documents", this.docService.getAdminDocuments(params));
         model.addAttribute("status", "HIDDEN");
         return "document";

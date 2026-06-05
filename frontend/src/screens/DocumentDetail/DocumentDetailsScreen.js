@@ -1,21 +1,6 @@
-import {
-    useCallback,
-    useContext,
-    useEffect,
-    useState
-} from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-    Container,
-    Row,
-    Col,
-    Button,
-    Form,
-    Badge,
-    Card,
-    Spinner,
-    Alert
-} from "react-bootstrap";
+import { Container, Row, Col, Button, Form, Badge, Card, Spinner, Alert } from "react-bootstrap";
 
 import Apis, { endpoints } from "../../configs/Apis";
 import moment from "moment";
@@ -47,9 +32,7 @@ const DocumentDetailScreen = () => {
             try {
                 setLoading(true);
 
-                const res = await Apis.get(
-                    endpoints["documentDetail"](documentId)
-                );
+                const res = await Apis.get(endpoints["documentDetail"](documentId));
 
                 setDoc(res.data);
             } catch (err) {
@@ -58,7 +41,6 @@ const DocumentDetailScreen = () => {
                 setLoading(false);
             }
         };
-
         loadDocument();
     }, [documentId]);
 
@@ -68,10 +50,9 @@ const DocumentDetailScreen = () => {
         try {
             setLoadingComments(true);
 
-            const res = await Apis.get(
-                endpoints["documentComments"](documentId)
-            );
+            const res = await Apis.get(endpoints["documentComments"](documentId));
 
+            console.log("load");
             setComments(res.data);
             setCommentsLoaded(true);
         } catch (err) {
@@ -83,11 +64,15 @@ const DocumentDetailScreen = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            const scrollTop = window.scrollY;
-            const windowHeight = window.innerHeight;
-            const fullHeight = window.document.documentElement.scrollHeight;
+            if (commentsLoaded || loadingComments) return;
 
-            if (scrollTop + windowHeight >= fullHeight - 400) {
+            const commentSection = window.document.getElementById("comments-section");
+
+            if (!commentSection) return;
+
+            const rect = commentSection.getBoundingClientRect();
+
+            if (rect.top <= window.innerHeight + 100) {
                 loadComments();
             }
         };
@@ -97,7 +82,7 @@ const DocumentDetailScreen = () => {
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
-    }, [loadComments]);
+    }, [loadComments, commentsLoaded, loadingComments]);
 
     const goToLogin = () => {
         nav(`/login?next=/documents/${documentId}`);
@@ -115,7 +100,7 @@ const DocumentDetailScreen = () => {
 
         try {
             const res = await Apis.post(
-                endpoints["documentComments"](documentId),
+                endpoints["addcomment"](documentId),
                 {
                     content: comment
                 }
@@ -241,7 +226,7 @@ const DocumentDetailScreen = () => {
                     </Card.Body>
                 </Card>
 
-                <Card className="border-0 shadow-sm rounded-4">
+                <Card id="comments-section" className="border-0 shadow-sm rounded-4">
                     <Card.Body className="p-4 p-md-5">
                         <div className="d-flex justify-content-between align-items-center mb-4">
                             <div>
@@ -292,6 +277,7 @@ const DocumentDetailScreen = () => {
                                         type="submit"
                                         variant="primary"
                                         className="px-4 rounded-pill"
+                                        disabled={!comment.trim()}
                                     >
                                         Gửi bình luận
                                     </Button>

@@ -18,6 +18,8 @@ import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,11 +29,20 @@ import org.springframework.transaction.annotation.Transactional;
  * @author ngodo
  */
 @Repository
+@PropertySource("classpath:pagination.properties")
 @Transactional
 public class DocumentRepositoryImpl implements DocumentRepository {
+    
+    @Autowired
+    private Environment env;
 
     @Autowired
     private LocalSessionFactoryBean factory;
+
+    @Override
+    public int getDocumentPageSize() {
+        return this.env.getProperty("documents.pageSize", Integer.class);
+    }
 
     @Override
     public List<Document> getDocuments(Map<String, String> params) {
@@ -70,14 +81,7 @@ public class DocumentRepositoryImpl implements DocumentRepository {
             }
             String subjectId = params.get("subjectId");
             if (subjectId != null && !subjectId.isEmpty()) {
-                predicates.add(
-                        builder.equal(
-                                root.get("topicId")
-                                        .get("subjectId")
-                                        .get("id"),
-                                Integer.valueOf(subjectId)
-                        )
-                );
+                predicates.add(builder.equal(root.get("topicId").get("subjectId").get("id"), Integer.valueOf(subjectId)));
             }
         }
         if (!predicates.isEmpty()) {
@@ -86,6 +90,16 @@ public class DocumentRepositoryImpl implements DocumentRepository {
 
         query.orderBy(builder.desc(root.get("id")));
         Query q = session.createQuery(query);
+        
+        if (params != null) {
+            int page = Integer.parseInt(params.getOrDefault("page", "1"));
+            int pageSize = getDocumentPageSize();
+            int start = (page - 1) * pageSize;
+
+            q.setMaxResults(pageSize);
+            q.setFirstResult(start);
+        }
+        
         return q.getResultList();
     }
 
@@ -126,6 +140,16 @@ public class DocumentRepositoryImpl implements DocumentRepository {
         }
         query.orderBy(builder.desc(root.get("id")));
         Query q = session.createQuery(query);
+        
+        if (params != null) {
+            int page = Integer.parseInt(params.getOrDefault("page", "1"));
+            int pageSize = this.env.getProperty("documents.pageSize", Integer.class);
+            int start = (page - 1) * pageSize;
+
+            q.setMaxResults(pageSize);
+            q.setFirstResult(start);
+        }
+        
         return q.getResultList();
     }
 
@@ -174,6 +198,50 @@ public class DocumentRepositoryImpl implements DocumentRepository {
             throw new RuntimeException("Document not found with id: " + id);
         }
 
+    }
+    
+    @Override
+    public long countDocuments(Map<String, String> params) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<Document> root = query.from(Document.class);
+        query.select(builder.count(root));
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (params != null) {
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                predicates.add(builder.like(root.get("title"), String.format("%%%s%%", kw)));
+            }
+
+            String status = params.get("status");
+            if (status != null && !status.isEmpty()) {
+                predicates.add(builder.equal(root.get("status"), DocumentStatus.valueOf( status.trim().toUpperCase())));
+            }
+
+            String topicId = params.get("topicId");
+            if (topicId != null && !topicId.isEmpty()) {
+                predicates.add( builder.equal(root.get("topicId").get("id"), Integer.valueOf(topicId)));
+            }
+
+            String levelId = params.get("levelId");
+            if (levelId != null && !levelId.isEmpty()) {
+                predicates.add(builder.equal( root.get("levelId").get("id"), Integer.valueOf(levelId)));
+            }
+
+            String subjectId = params.get("subjectId");
+            if (subjectId != null && !subjectId.isEmpty()) {
+                predicates.add(builder.equal( root.get("topicId") .get("subjectId").get("id"), Integer.valueOf(subjectId)));
+            }
+        }
+
+        if (!predicates.isEmpty()) {
+            query.where(predicates.toArray(Predicate[]::new));
+        }
+
+        return session.createQuery(query).getSingleResult();
     }
 
 }
