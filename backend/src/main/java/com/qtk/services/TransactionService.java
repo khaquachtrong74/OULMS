@@ -10,7 +10,6 @@ package com.qtk.services;
  */
 import com.qtk.pojo.Transaction;
 import com.qtk.enums.TransactionPaymentMethod;
-import com.qtk.enums.TransactionStatus;
 
 public interface TransactionService {
     Transaction createPendingTransaction(int amount, TransactionPaymentMethod paymentMethod, int courseId, int userId);

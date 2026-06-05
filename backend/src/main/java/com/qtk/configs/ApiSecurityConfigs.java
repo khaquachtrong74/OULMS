@@ -35,10 +35,9 @@ public class ApiSecurityConfigs {
                     session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authorizeHttpRequests(auth -> auth
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/api/secure/**")
-                    .authenticated()
-                    .anyRequest()
-                    .permitAll()
+                    .requestMatchers("/api/secure/**").authenticated()
+                    .requestMatchers("/api/payment/zalopay/callback").permitAll() 
+                    .anyRequest().permitAll()
                 ).addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

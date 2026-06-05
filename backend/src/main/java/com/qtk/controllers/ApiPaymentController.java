@@ -38,7 +38,7 @@ public class ApiPaymentController {
 
             // 2. Gọi sang ZaloPay bằng mã transactionRef vừa sinh ra
             Map<String, Object> result = paymentService.createOrder(amount, "Thanh toan khoa hoc " + courseId, tx.getTransactionRef());
-            
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -62,22 +62,18 @@ public class ApiPaymentController {
 
             // 2. Parse dữ liệu ZaloPay gửi về
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, Object> parsedData = mapper.readValue(data, new TypeReference<Map<String, Object>>(){});
-            
+            Map<String, Object> parsedData = mapper.readValue(data, new TypeReference<Map<String, Object>>() {
+            });
+
             String appTransId = (String) parsedData.get("app_trans_id");
-            int returnCode = (int) parsedData.getOrDefault("return_code", -1);
 
-            // 3. Cập nhật Database
-            if (returnCode == 1) {
+            if (appTransId != null) {
                 transactionService.markTransactionAsSuccess(appTransId);
-            } else {
-                transactionService.markTransactionAsFailed(appTransId);
             }
-
             response.put("return_code", 1);
             response.put("return_message", "success");
             return ResponseEntity.ok(response);
-            
+
         } catch (JsonProcessingException e) {
             response.put("return_code", 0);
             response.put("return_message", e.getMessage());

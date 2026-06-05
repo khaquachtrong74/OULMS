@@ -24,7 +24,7 @@ public class ZaloPayServiceImpl implements PaymentService {
     private final String KEY1 = "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn"; 
     private final String KEY2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
     private final String CREATE_URL = "https://sb-openapi.zalopay.vn/v2/create";
-    private final String CALLBACK_URL = "https://quietly-untrashed-darby.ngrok-free.dev/api/payment/zalopay/callback";
+    private final String CALLBACK_URL = "https://quietly-untrashed-darby.ngrok-free.dev/backend/api/payment/zalopay/callback";
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();

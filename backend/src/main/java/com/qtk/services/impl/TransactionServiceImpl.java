@@ -79,8 +79,6 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.addTransaction(transaction);
         transaction.setTransactionRef(transRef);
 
-        // 3. Đẩy xuống Repository để lưu
-        transactionRepository.addTransaction(transaction);
         
         return transaction;
     }
