@@ -9,10 +9,8 @@ package com.qtk.controllers;
  * @author lossrunner
  */
 
-import com.qtk.dto.CourseDetailResponseDTO;
 import com.qtk.dto.CourseResponseDTO;
 import com.qtk.dto.UserResponseDTO;
-import com.qtk.pojo.Course;
 import com.qtk.services.CourseService;
 import com.qtk.services.CourseStudentService;
 import com.qtk.services.UserService;

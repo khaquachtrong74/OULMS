@@ -4,7 +4,6 @@
  */
 package com.qtk.services;
 
-import com.qtk.dto.CourseDetailResponseDTO;
 import com.qtk.dto.CourseRequestDTO;
 import com.qtk.dto.CourseResponseDTO;
 import com.qtk.pojo.Course;

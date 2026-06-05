@@ -4,7 +4,6 @@
  */
 package com.qtk.services.impl;
 
-import com.qtk.dto.CourseDetailResponseDTO;
 import com.qtk.dto.CourseRequestDTO;
 import com.qtk.dto.CourseResponseDTO;
 import com.qtk.pojo.Course;
@@ -12,7 +11,6 @@ import com.qtk.pojo.Subject;
 import com.qtk.pojo.User;
 import com.qtk.repositories.CourseRepository;
 import com.qtk.services.CourseService;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,24 +83,6 @@ public class CourseServiceImpl implements CourseService {
         if (c == null) {
             return null;
         }
-
-        String lecturerName = (c.getLecturerId() != null)
-                ? c.getLecturerId().getFirstName() + " " + c.getLecturerId().getLastName()
-                : "Chưa cập nhật";
-
-        String subjectName = (c.getSubjectId() != null) ? c.getSubjectId().getName() : "Chưa phân loại";
-
-
-
-        return CourseResponseDTO.builder()
-                .id(c.getId())
-                .name(c.getName())
-                .description(c.getDescription())
-                .price(c.getPrice())
-                .subjectName(subjectName)
-                .lecturerName(lecturerName)
-                .createdAt(c.getCreatedAt())
-                .updatedAt(c.getUpdatedAt())        
-                .build();
+        return toDTO(c);
     }
 }

@@ -66,7 +66,7 @@ const MyLearningScreen = () => {
                                 {/* Khi click vào sẽ đưa thẳng vào màn hình học nội dung chi tiết */}
                                 <CourseCard 
                                     course={course} 
-                                    onClick={() => nav(`/learning/${course.id}`)} 
+                                    onClick={() => nav(`/my-learning/${course.id}`)} 
                                 />
                             </Col>
                         ))}

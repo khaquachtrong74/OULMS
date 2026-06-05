@@ -17,6 +17,7 @@ import ExploreCourseScreen from "./screens/Explore/ExploreCourseScreen";
 import CourseDetailedScreen from "./screens/Courses/CourseDetailedScreen";
 import PaymentSuccessScreen from "./screens/Payment/PaymentSuccessScreen";
 import MyLearningScreen from "./screens/MyLearning/MyLearningScreen";
+import LearningScreen from "./screens/MyLearning/LearningScreen";
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load('user') || null);
@@ -37,6 +38,7 @@ function App() {
                     <Route path="/courses/:courseId" element={<CourseDetailedScreen />} />
                     <Route path="/payment/success" element={<PaymentSuccessScreen />} />
                     <Route path="/my-learning" element={<MyLearningScreen />} />
+                    <Route path="/my-learning/:courseId" element={<LearningScreen />} />
 
                 </Routes>
             

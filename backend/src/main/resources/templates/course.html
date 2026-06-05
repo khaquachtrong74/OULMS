@@ -79,7 +79,7 @@
 
                                 <td>
                                     <span class="badge bg-info-subtle text-info rounded-pill px-3 py-2"
-                                          th:text="${c.subjectId != null ? c.subjectId.name : 'Chưa phân bổ'}">
+                                          th:text="${c.subjectName}">
                                     </span>
                                 </td>
 
@@ -88,7 +88,7 @@
                                         <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style="width: 28px; height: 28px;">
                                             <i class="bi bi-person"></i>
                                         </div>
-                                        <span class="small" th:text="${c.lecturerId.firstName + ' ' + c.lecturerId.lastName}">Tên GV</span>
+                                        <span class="small" th:text="${c.lecturerName}">Tên GV</span>
                                     </div>
                                     <span class="text-muted small" th:if="${c.lecturerId == null}">Trống</span>
                                 </td>
