@@ -21,6 +21,9 @@ const DocumentDetailScreen = () => {
     const [loadingComments, setLoadingComments] = useState(false);
     const [commentsLoaded, setCommentsLoaded] = useState(false);
 
+    const [startingProgress, setStartingProgress] = useState(false);
+    const [progressStarted, setProgressStarted] = useState(false);
+
     const getFileId = (url) => {
         if (!url) return null;
         const match = url.match(/\/d\/([^/]+)/);
@@ -43,6 +46,28 @@ const DocumentDetailScreen = () => {
         };
         loadDocument();
     }, [documentId]);
+
+    const startLearning = async () => {
+        if (!user) {
+            goToLogin();
+            return;
+        }
+
+        try {
+            setStartingProgress(true);
+
+            const res = await Apis.post(
+                endpoints["createProgress"](documentId)
+            );
+
+            console.log("Progress created:", res.data);
+            setProgressStarted(true);
+        } catch (err) {
+            console.error("Lỗi bắt đầu học:", err);
+        } finally {
+            setStartingProgress(false);
+        }
+    };
 
     const loadComments = useCallback(async () => {
         if (commentsLoaded || loadingComments) return;
@@ -193,6 +218,21 @@ const DocumentDetailScreen = () => {
                         <p className="text-muted fs-5 mb-4">
                             {doc.description}
                         </p>
+
+                        <div className="mb-4">
+                            <Button
+                                variant={progressStarted ? "success" : "primary"}
+                                className="rounded-pill px-4"
+                                onClick={startLearning}
+                                disabled={startingProgress || progressStarted}
+                            >
+                                {startingProgress
+                                    ? "Đang bắt đầu..."
+                                    : progressStarted
+                                        ? "Đã bắt đầu học"
+                                        : "Bắt đầu học"}
+                            </Button>
+                        </div>
 
                         <Row className="g-3">
                             <Col md={6}>

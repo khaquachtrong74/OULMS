@@ -17,8 +17,10 @@ export const endpoints = {
     subject: '/subjects',
     level: '/levels',
     loginGoogle: '/auth/google',
-    tag: '/tags'
-
+    tag: '/tags',
+    createProgress: (documentId) => `/secure/documents/${documentId}/progress/start`,
+    updateProgress: (documentId) => `/secure/documents/${documentId}/progress/time`,
+    completeProgress: (documentId) => `/secure/documents/${documentId}/progress/complete`,
 }
 
 export default axios.create({

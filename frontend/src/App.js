@@ -15,6 +15,7 @@ import RegisterScreen from "./screens/Authentication/RegisterScreen";
 import ForumScreen from "./screens/Community/ForumScreen";
 import ForumCreate from "./screens/Community/ForumCreate";
 import DocumentDetailScreen from "./screens/DocumentDetail/DocumentDetailsScreen";
+import Progress from "./screens/Progress/ProgressScreen";
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load('user') || null);
@@ -32,6 +33,7 @@ function App() {
                     <Route path="/forum" element={<ForumScreen />}></Route>    
                     <Route path="/forum-create" element={<ForumCreate />}></Route>    
                     <Route path="/documents/:documentId" element={<DocumentDetailScreen />}></Route>
+                    <Route path="/my-learning" element={<Progress />}></Route>
                 </Routes>
             
             <Footer/>

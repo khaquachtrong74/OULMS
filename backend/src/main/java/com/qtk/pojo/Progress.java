@@ -4,19 +4,23 @@
  */
 package com.qtk.pojo;
 
+import com.qtk.enums.ProgressStatus;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -29,7 +33,12 @@ import org.hibernate.annotations.UpdateTimestamp;
  * @author ngodo
  */
 @Entity
-@Table(name = "progress")
+@Table(
+        name = "progress",
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"user_id", "document_id"})
+        }
+)
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Progress.findAll", query = "SELECT p FROM Progress p"),
@@ -48,7 +57,7 @@ public class Progress implements Serializable {
     private Integer id;
     @Size(max = 11)
     @Column(name = "status")
-    private String status;
+    private ProgressStatus status = ProgressStatus.IN_PROGRESS;
     @Column(name = "time_spent")
     private Integer timeSpent;
     @CreationTimestamp
@@ -60,10 +69,10 @@ public class Progress implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     @JoinColumn(name = "document_id", referencedColumnName = "id")
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Document documentId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User userId;
 
     public Progress() {
@@ -81,11 +90,11 @@ public class Progress implements Serializable {
         this.id = id;
     }
 
-    public String getStatus() {
+    public ProgressStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ProgressStatus status) {
         this.status = status;
     }
 
