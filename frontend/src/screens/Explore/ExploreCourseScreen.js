@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Container, Row, Col, Form, InputGroup, Button, Spinner, Nav } from 'react-bootstrap';
-import { Search, Filter } from 'react-bootstrap-icons';
+import { Search, Filter, ArrowLeft } from 'react-bootstrap-icons';
 import Apis, { endpoints } from '../../configs/Apis'; 
 import { useNavigate, useSearchParams } from 'react-router-dom'; // Bổ sung useSearchParams
 import DocumentCard from '../../components/DocumentCard';
@@ -22,6 +22,9 @@ const ExploreCourseScreen = () => {
     const [documents, setDocuments] = useState([]);
     const [courses, setCourses] = useState([]);
 
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
     const [filters, setFilters] = useState({ kw: '', subjectId: '', levelId: '', topicId: '' });
     const [debouncedKw, setDebouncedKw] = useState('');
     
@@ -35,12 +38,18 @@ const ExploreCourseScreen = () => {
         const currentParams = Object.fromEntries([...searchParams]);
         // Cập nhật lại param tab và đẩy lên URL
         setSearchParams({ ...currentParams, tab: tabName });
+                setPage(1);
+
     };
 
     useEffect(() => {
         const timer = setTimeout(() => setDebouncedKw(filters.kw), 500);
         return () => clearTimeout(timer);
     }, [filters.kw]);
+
+    useEffect(() => {
+        setPage(1);
+    }, [debouncedKw, filters.subjectId, filters.topicId, filters.levelId]);
 
     useEffect(() => {
         const fetchMetadata = async () => {
@@ -66,7 +75,7 @@ const ExploreCourseScreen = () => {
             const queryParams = new URLSearchParams();
             if (debouncedKw) queryParams.append('kw', debouncedKw);
             if (filters.subjectId) queryParams.append('subjectId', filters.subjectId);
-
+queryParams.append('page', page);
             if (activeTab === 'document') {
                 if (filters.topicId) queryParams.append('topicId', filters.topicId);
                 if (filters.levelId) queryParams.append('levelId', filters.levelId);
@@ -96,6 +105,7 @@ const ExploreCourseScreen = () => {
     return (
         <Container fluid className="py-4 bg-light min-vh-100">
             <Container>
+               
                 <Row>
                     {/* ... (Phần Sidebar Filter giữ nguyên code cũ) ... */}
                     <Col md={3} className="mb-4">
@@ -219,12 +229,12 @@ const ExploreCourseScreen = () => {
                         ) : (
                             <Row xs={1} md={2} lg={3} className="g-4">
                                 {activeTab === 'document' 
-                                    ? documents.map(doc => (
+                                    ? documents.data.map(doc => (
                                         <Col key={doc.id}>
                                             <DocumentCard doc={doc} onClick={() => nav(`/documents/${doc.id}`)} />
                                         </Col>
                                     ))
-                                    : courses.map(course => (
+                                    : courses.data.map(course => (
                                         <Col key={course.id}>
                                             <CourseCard course={course} onClick={() => nav(`/courses/${course.id}`)} />
                                         </Col>

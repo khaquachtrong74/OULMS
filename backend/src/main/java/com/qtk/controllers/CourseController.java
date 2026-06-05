@@ -31,6 +31,19 @@ public class CourseController {
 
     @GetMapping("/admin/courses")
     public String listCourses(Model model, @RequestParam Map<String, String> params) {
+        int currentPage = Integer.parseInt(params.getOrDefault("page", "1"));
+        int pageSize = this.courseService.getCoursePageSize();
+
+        // Tính tổng số trang (TotalPages) = Làm tròn lên (Tổng số Course / Kích thước 1 trang)
+        // Ví dụ: 13 khóa học, mỗi trang 6 -> 13/6 = 2.16 -> Làm tròn lên là 3 trang.
+        long totalCourses = this.courseService.countCourses(params);
+        int totalPages = (int) Math.ceil((double) totalCourses / pageSize);
+
+        // Gửi qua Thymeleaf
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("kw", params.get("kw")); // Giữ lại keyword trên thanh search khi chuyển trang
+
         model.addAttribute("courses", this.courseService.getCourses(params));
         return "course";
     }

@@ -28,6 +28,16 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
+    @Override
+    public long countCourses(Map<String, String> params) {
+        return this.courseRepository.countCourses(params);
+    }
+
+    @Override
+    public int getCoursePageSize() {
+        return this.courseRepository.getCoursePageSize();
+    }
+
     private CourseResponseDTO toDTO(Course c) {
         return CourseResponseDTO.builder().id(c.getId())
                 .name(c.getName())

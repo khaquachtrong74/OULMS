@@ -19,6 +19,7 @@ public interface CourseService {
     void addOrUpdateCourse(CourseRequestDTO dto);
     Course getCourseById(int id);
     void deleteCourse(int id);
-    
+    long countCourses(Map<String, String> params);
+    int getCoursePageSize();
     CourseResponseDTO getCourseDetailById(int id);
 }

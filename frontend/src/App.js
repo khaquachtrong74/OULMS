@@ -35,7 +35,6 @@ function App() {
                     <Route path="/profile" element={<ProfileScreen />}></Route>    
                     <Route path="/forum" element={<ForumScreen />}></Route>    
                     <Route path="/forum-create" element={<ForumCreate />}></Route>    
-                    {/* <Route path="/courses" element={<CourseScreen />}></Route>     */}
                     <Route path="/courses/:courseId" element={<CourseDetailedScreen />} />
                     <Route path="/payment/success" element={<PaymentSuccessScreen />} />
                     <Route path="/my-learning" element={<MyLearningScreen />} />

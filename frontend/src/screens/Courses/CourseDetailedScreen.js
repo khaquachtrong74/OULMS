@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Container, Row, Col, Button, Spinner, Alert, Card, Badge, Pagination } from 'react-bootstrap';
 import { ShieldCheck, CheckCircleFill, Clock, Person, ArrowLeft, Tag, Lightbulb } from 'react-bootstrap-icons';
 import Apis, { endpoints } from '../../configs/Apis';
@@ -70,12 +70,15 @@ const useRelatedCourses = (subjectId, currentCourseId) => {
 
 const CourseMainContent = ({ course, onBack }) => {
     const nav = useNavigate();
+    const [searchParams] = useSearchParams();
+
+    const page = searchParams.get("page") || 1;
     return (
         <div className="pe-lg-4">
             <CourseHeader
                 course={course}
-                onBack={() => nav('/my-learning')}
-                backText="Quay lại Góc học tập"
+                onBack={() => nav(`/explore?tab=course&page=${page}`)}
+                backText="Quay lại khám phá"
             />
 
             <div

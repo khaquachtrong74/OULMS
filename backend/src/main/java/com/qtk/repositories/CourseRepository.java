@@ -17,4 +17,6 @@ public interface CourseRepository {
     public void addOrUpdateCourse(Course c);
     public Course getCourseById(int id);
     public void deleteCourse(int id);
+    public long countCourses(Map<String, String> params);
+    public int getCoursePageSize();
 }

@@ -8,8 +8,8 @@ package com.qtk.controllers;
  *
  * @author lossrunner
  */
-
 import com.qtk.dto.CourseResponseDTO;
+import com.qtk.dto.PageResponseDTO;
 import com.qtk.dto.UserResponseDTO;
 import com.qtk.services.CourseService;
 import com.qtk.services.CourseStudentService;
@@ -39,57 +39,67 @@ public class ApiCourseController {
 
     @Autowired
     private CourseService courseService;
-    
-    @Autowired
-private UserService userService;
 
-@Autowired
-private CourseStudentService courseStudentService;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private CourseStudentService courseStudentService;
 
     @GetMapping("/courses")
-    public ResponseEntity<List<CourseResponseDTO>> getCourses(@RequestParam Map<String, String> params){
+    public ResponseEntity<?> getCourses(@RequestParam Map<String, String> params) {
         try {
-            return new ResponseEntity<>(this.courseService.getCourses(params), HttpStatus.OK);
+            int currentPage = Integer.parseInt(params.getOrDefault("page", "1"));
+            int pageSize = this.courseService.getCoursePageSize();
+            long totalItems = this.courseService.countCourses(params);
+            int totalPages = (int) Math.ceil((double) totalItems / pageSize);
 
-        } catch (Exception e) {
+            List<CourseResponseDTO> courses = this.courseService.getCourses(params);
+
+            // Sử dụng DTO phân trang mà bạn đã có sẵn
+            PageResponseDTO<CourseResponseDTO> res
+                    = new PageResponseDTO<>(courses, currentPage, pageSize, totalPages, totalItems);
+
+            return new ResponseEntity<>(res, HttpStatus.OK);
+
+        } catch (NumberFormatException e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
     }
-    
-    
+
     @PostMapping(value = "/courses/{id}/enroll", produces = "application/json")
     public ResponseEntity<?> enrollCourse(@PathVariable(value = "id") int id) {
         try {
 
             Map<String, String> responseBody = new HashMap<>();
             responseBody.put("message", "Ghi danh khóa học thành công!");
-            
+
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
-            
+
         } catch (Exception e) {
             Map<String, String> errorBody = new HashMap<>();
             errorBody.put("message", "Hệ thống đang gặp lỗi khi xử lý thanh toán/ghi danh.");
-            
+
             return new ResponseEntity<>(errorBody, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @GetMapping("/secure/courses/my-learning")
     @PreAuthorize("isAuthenticated()") // Bắt buộc phải đăng nhập và có JWT hợp lệ
     public ResponseEntity<List<CourseResponseDTO>> getMyEnrolledCourses(Principal principal) {
         try {
             UserResponseDTO currentUser = this.userService.getUserByUserEmail(principal.getName());
             List<CourseResponseDTO> enrolledCourses = this.courseStudentService.getEnrolledCoursesByUser(currentUser.getId());
-            
+
             return new ResponseEntity<>(enrolledCourses, HttpStatus.OK);
 
         } catch (Exception e) {
-          
+
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/courses/{id}")
     public ResponseEntity<CourseResponseDTO> getCourseDetailed(@PathVariable(value = "id") int id) {
         try {
@@ -103,9 +113,9 @@ private CourseStudentService courseStudentService;
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @DeleteMapping("/courses/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT) 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCourse(@PathVariable(value = "id") int id) {
         this.courseService.deleteCourse(id);
     }
