@@ -146,6 +146,18 @@
                             </tr>
                         </tbody>
                     </table>
+                    
+                    <div th:if="${totalPages > 1}" class="d-flex justify-content-center gap-2 p-4" >
+                        <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+                            <a class="btn rounded-pill"
+                                th:classappend="${i == currentPage} ? 'btn-primary' : 'btn-outline-primary'"
+                                th:href="${kw != null and !kw.isEmpty()}
+                                    ? @{'/admin/documents/' + ${#strings.toLowerCase(status)}(page=${i}, kw=${kw})}
+                                    : @{'/admin/documents/' + ${#strings.toLowerCase(status)}(page=${i})}"
+                                th:text="${i}">
+                            </a>
+                        </th:block>
+                    </div>
                 </div>
             </div>
         </div>

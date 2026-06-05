@@ -221,6 +221,15 @@ public class DocumentServiceImpl implements DocumentService {
     public void deleteDocument(int id) {
         this.docRepo.deleteDocument(id);
     }
-    
+
+    @Override
+    public long countDocuments(Map<String, String> params) {
+        return this.docRepo.countDocuments(params);
+    }
+
+    @Override
+    public int getDocumentPageSize() {
+        return this.docRepo.getDocumentPageSize();
+    }
     
 }

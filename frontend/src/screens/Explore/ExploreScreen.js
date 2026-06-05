@@ -23,6 +23,12 @@ const ExploreScreen = () => {
     const [subjects, setSubjects] = useState([]);
     const [levels, setLevels] = useState([]);
     const [topics, setTopics] = useState([]);
+
+    // PHÂN TRANG
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedKw(filters.kw);
@@ -30,6 +36,7 @@ const ExploreScreen = () => {
 
         return () => clearTimeout(timer);
     }, [filters.kw]);
+    
     useEffect(() => {
         const fetchMetadata = async () => {
             try {
@@ -57,12 +64,17 @@ const ExploreScreen = () => {
         try {
             const queryParams = new URLSearchParams();
 
+            queryParams.append('page', page);
+
             if (debouncedKw)
                 queryParams.append('kw', debouncedKw);
 
             if (filters.subjectId)
                 queryParams.append('subjectId', filters.subjectId);
-            if (filters.topicId) queryParams.append('topicId', filters.topicId);
+
+            if (filters.topicId)
+                queryParams.append('topicId', filters.topicId);
+
             if (filters.levelId)
                 queryParams.append('levelId', filters.levelId);
 
@@ -70,7 +82,10 @@ const ExploreScreen = () => {
                 `${endpoints.document}?${queryParams.toString()}`
             );
 
-            setDocuments(res.data);
+            setDocuments(res.data.data || []);
+            setTotalPages(res.data.totalPages || 1);
+            setTotalItems(res.data.totalItems || 0);
+
         } catch (err) {
             console.error(err);
         } finally {
@@ -80,7 +95,8 @@ const ExploreScreen = () => {
         debouncedKw,
         filters.subjectId,
         filters.topicId,
-        filters.levelId
+        filters.levelId,
+        page
     ]);
 
     useEffect(() => {
@@ -89,7 +105,8 @@ const ExploreScreen = () => {
 
     // Xử lý sự kiện thay đổi
     const handleFilterChange = (type, value) => {
-        setFilters(prev => ({ ...prev, [type]: value }));
+        setPage(1);
+        setFilters(prev => ({...prev, [type]: value}));
     };
 
     return (
@@ -98,7 +115,7 @@ const ExploreScreen = () => {
                 <Row>
                     {/* CỘT TRÁI: Bộ lọc (Sidebar) */}
                     <Col md={3} className="mb-4">
-                        <div className="bg-white p-3 rounded shadow-sm border border-secondary border-opacity-25 " style={{ top: '80px' }}>
+                        <div className="bg-white p-3 rounded shadow-sm border border-secondary border-opacity-25">
                             <h5 className="fw-bold d-flex align-items-center gap-2 mb-4 text-dark">
                                 <Filter size={20} /> Bộ lọc tài liệu
                             </h5>
@@ -108,8 +125,9 @@ const ExploreScreen = () => {
                                 <Form.Label className="fw-semibold text-secondary">Môn học</Form.Label>
                                 <Form.Select
                                     value={filters.subjectId}
-                                    onChange={(e) => handleFilterChange('subjectId', e.target.value)}
-                                    className="border-secondary shadow-none focus-ring focus-ring-info"
+                                    onChange={(e) =>
+                                        handleFilterChange('subjectId', e.target.value)
+                                    }
                                 >
                                     <option value="">Tất cả môn học</option>
                                     {subjects.map(sub => (
@@ -117,12 +135,15 @@ const ExploreScreen = () => {
                                     ))}
                                 </Form.Select>
                             </Form.Group>
+
+                            {/* TOPIC */}
                             <Form.Group className="mb-4">
                                 <Form.Label className="fw-semibold text-secondary">Chủ đề</Form.Label>
                                 <Form.Select
                                     value={filters.topicId}
-                                    onChange={(e) => handleFilterChange('topicId', e.target.value)}
-                                    className="border-secondary shadow-none focus-ring focus-ring-info"
+                                    onChange={(e) =>
+                                        handleFilterChange('topicId', e.target.value)
+                                    }
                                 >
                                     <option value="">Tất cả chủ đề</option>
                                     {topics.map(topic => (
@@ -141,8 +162,8 @@ const ExploreScreen = () => {
                                         name="level"
                                         checked={filters.levelId === ''}
                                         onChange={() => handleFilterChange('levelId', '')}
-                                        className="custom-radio"
                                     />
+
                                     {levels.map(lvl => (
                                         <Form.Check
                                             key={lvl.id}
@@ -152,13 +173,26 @@ const ExploreScreen = () => {
                                             name="level"
                                             checked={filters.levelId === lvl.id.toString()}
                                             onChange={() => handleFilterChange('levelId', lvl.id.toString())}
-                                            className="custom-radio"
                                         />
                                     ))}
                                 </div>
                             </Form.Group>
 
-                            <Button variant="outline-danger" className="w-100 fw-bold" onClick={() => setFilters({ kw: '', subjectId: '', levelId: '',    topicId: '' })}>
+                            {/* RESET */}
+                            <Button
+                                variant="outline-danger"
+                                className="w-100 fw-bold"
+                                onClick={() => {
+                                    setPage(1);
+
+                                    setFilters({
+                                        kw: '',
+                                        subjectId: '',
+                                        levelId: '',
+                                        topicId: ''
+                                    });
+                                }}
+                            >
                                 Xóa bộ lọc
                             </Button>
                         </div>
@@ -177,7 +211,7 @@ const ExploreScreen = () => {
                                     placeholder="Nhập tên tài liệu, từ khóa..."
                                     value={filters.kw}
                                     onChange={(e) => handleFilterChange('kw', e.target.value)}
-                                    className="border-start-0 shadow-none focus-ring focus-ring-info"
+                                    className="border-start-0 shadow-none"
                                 />
                             </InputGroup>
                         </div>
@@ -185,9 +219,12 @@ const ExploreScreen = () => {
                         {/* Vùng hiển thị kết quả */}
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h5 className="fw-bold m-0">Kết quả tìm kiếm</h5>
-                            <span className="text-secondary">{documents.length} tài liệu được tìm thấy</span>
+                            <span className="text-secondary">
+                                {totalItems} tài liệu được tìm thấy
+                            </span>
                         </div>
 
+                        {/* LOADING */}
                         {loading ? (
                             <div className="text-center py-5">
                                 <Spinner animation="border" variant="info" />
@@ -195,38 +232,69 @@ const ExploreScreen = () => {
                             </div>
                         ) : documents.length === 0 ? (
                             <div className="text-center py-5 bg-white rounded shadow-sm border border-secondary border-opacity-25">
-                                <p className="text-secondary mb-0 fw-medium">Không tìm thấy tài liệu nào phù hợp với bộ lọc hiện tại.</p>
+                                <p className="text-secondary mb-0 fw-medium">Không tìm thấy tài liệu nào phù hợp.</p>
                             </div>
                         ) : (
-                            <Row xs={1} md={2} lg={3} className="g-4">
-                                {documents.map(doc => (
-                                    <Col key={doc.id}>
-                                        <Card className="h-100 shadow-sm border-0 document-card cursor-pointer" onClick={() => nav(`/documents/${doc.id}`)}>
-                                            <div className="bg-light border-bottom" style={{ height: '140px', position: 'relative' }}>
+                            <>
+                                <Row xs={1} md={2} lg={3} className="g-4">
+                                    {documents.map(doc => (
+                                        <Col key={doc.id}>
+                                            <Card className="h-100 shadow-sm border-0 document-card cursor-pointer" onClick={() => nav(`/documents/${doc.id}`)}>
+                                                <div className="bg-light border-bottom" style={{ height: '140px', position: 'relative' }}>
                                                 <Badge bg={doc.level?.name === 'Nâng cao' ? 'danger' : 'info'} className="position-absolute top-0 start-0 m-2 text-dark shadow-sm">
                                                     {doc.level?.name || 'Cơ bản'}
-                                                </Badge>
-                                            </div>
-                                            <Card.Body className="d-flex flex-column">
+                                                    </Badge>
+                                                </div>
+                                                <Card.Body className="d-flex flex-column">
                                                 <Card.Title className="fw-bold fs-6 text-dark">{doc.title}</Card.Title>
                                                 <Card.Text className="text-secondary small mb-3 flex-grow-1" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                                    {doc.description || 'Chưa có mô tả cho tài liệu này.'}
-                                                </Card.Text>
+                                                    {doc.description || 'Chưa có mô tả.'}
+                                                    </Card.Text>
 
-                                                <div className="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                                                     <span className=" fw-bold fs-6">
-                                                        { !doc.topicName ? 'Chưa phân chủ đề' : doc.topicName}
-                                                    </span>
-                                                    <span className="text-primary small fw-semibold d-flex align-items-center gap-1">
+                                                    <div className="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                                        <span className="fw-bold fs-6">
+                                                            {doc.topicName || 'Chưa phân chủ đề'}
+                                                        </span>
+                                                        <span className="text-primary small fw-semibold d-flex align-items-center gap-1">
                                                         <Book size={14} /> {doc.levelName || 'Chưa phân cấp'}
-                                                    </span>
-                                                   
-                                                </div>
-                                            </Card.Body>
-                                        </Card>
-                                    </Col>
-                                ))}
-                            </Row>
+                                                        </span>
+
+                                                    </div>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                    ))}
+                                </Row>
+
+                                {/* PAGINATION */}
+                                {totalPages > 1 && (
+                                    <div className="d-flex justify-content-center gap-2 mt-4 flex-wrap">
+
+                                        {[...Array(totalPages)].map((_, index) => {
+                                            const pageNumber = index + 1;
+
+                                            return (
+                                                <Button
+                                                    key={pageNumber}
+                                                    variant={
+                                                        pageNumber === page
+                                                            ? "primary"
+                                                            : "outline-primary"
+                                                    }
+                                                    className="rounded-pill"
+                                                    onClick={() =>
+                                                        setPage(pageNumber)
+                                                    }
+                                                >
+                                                    {pageNumber}
+                                                </Button>
+                                            );
+                                        })}
+
+                                    </div>
+                                )}
+
+                            </>
                         )}
                     </Col>
                 </Row>

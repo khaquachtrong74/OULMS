@@ -20,4 +20,7 @@ public interface DocumentRepository {
     Document getDocumentById(int id);
     void deleteDocument(int id);
     void updateDocumentStatus(int id, DocumentStatus status);
+    
+    long countDocuments(Map<String, String> params);
+    int getDocumentPageSize();
 }
