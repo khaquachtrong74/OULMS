@@ -231,5 +231,15 @@ public class DocumentServiceImpl implements DocumentService {
     public int getDocumentPageSize() {
         return this.docRepo.getDocumentPageSize();
     }
+
+    @Override
+    public List<Document> getPendingDocuments(int limit) {
+        return this.docRepo.getPendingDocuments(limit);
+    }
+    
+    @Override
+    public Long countPendingDocuments() {
+        return this.docRepo.countPendingDocuments();
+    }
     
 }

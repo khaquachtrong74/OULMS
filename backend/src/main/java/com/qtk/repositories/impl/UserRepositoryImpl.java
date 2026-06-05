@@ -148,4 +148,24 @@ public class UserRepositoryImpl implements UserRepository {
         var q = session.createQuery(query);
         return q.getResultList();
     }
+    
+    @Override
+    public List<User> getNewUsers(int limit) {
+        Session session = this.factory.getObject().getCurrentSession();
+        Query query = session.createNamedQuery("User.findAll", User.class);
+        return  query.setMaxResults(limit).getResultList();
+    }
+    
+    @Override
+    public Long countTotalUsers() {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<User> root = query.from(User.class);
+        
+        query.select(builder.count(root.get("id")));
+        
+        return session.createQuery(query).getSingleResult();
+    }
 }

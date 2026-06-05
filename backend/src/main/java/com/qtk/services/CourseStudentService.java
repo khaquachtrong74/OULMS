@@ -15,4 +15,5 @@ public interface CourseStudentService {
     void enrollStudent(int courseId, int studentId);
     
     List<CourseResponseDTO> getEnrolledCoursesByUser(int userId);
+    Long countTotalEnrollments();
 }

@@ -244,4 +244,32 @@ public class DocumentRepositoryImpl implements DocumentRepository {
         return session.createQuery(query).getSingleResult();
     }
 
+    @Override
+    public List<Document> getPendingDocuments(int limit) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Document> query = builder.createQuery(Document.class);
+        Root<Document> root = query.from(Document.class);
+
+        query.select(root);
+        query.where(builder.equal(root.get("status"), DocumentStatus.PENDING)); 
+
+        query.orderBy(builder.desc(root.get("createdAt")));
+
+        return session.createQuery(query).setMaxResults(limit).getResultList();
+    }
+    
+    @Override
+    public Long countPendingDocuments() {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<Document> root = query.from(Document.class);
+        
+        query.select(builder.count(root.get("id")));
+        query.where(builder.equal(root.get("status"), com.qtk.enums.DocumentStatus.PENDING));
+        
+        return session.createQuery(query).getSingleResult();
+    }
+
 }

@@ -7,6 +7,7 @@ package com.qtk.services;
 import com.qtk.dto.UserCreateRequestDTO;
 import com.qtk.dto.UserResponseDTO;
 import com.qtk.dto.UserUpdateRequestDTO;
+import com.qtk.pojo.User;
 import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,4 +27,6 @@ public interface UserService extends UserDetailsService{
     UserResponseDTO updateUser(UserUpdateRequestDTO dto);
     void deleteUser(int id);
     boolean authenticate(String userEmail, String password);
+    List<User> getNewUsers(int limit);
+    Long countTotalUsers();
 }

@@ -16,4 +16,6 @@ public interface CourseStudentRepository {
     void addCourseStudent(CourseStudent courseStudent);
     boolean isStudentEnrolled(int courseId, int studentId);
     List<Course> getCoursesByUserId(int userId);
+    
+    Long countTotalEnrollments();
 }

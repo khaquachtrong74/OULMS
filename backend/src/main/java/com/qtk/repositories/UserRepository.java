@@ -24,4 +24,6 @@ public interface UserRepository {
     
     public void deleteUser(int id);
     public boolean authenticate(String userEmail, String password);
+    public List<User> getNewUsers(int limit);
+    public Long countTotalUsers();
 }

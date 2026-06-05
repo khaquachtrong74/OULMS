@@ -8,6 +8,7 @@ package com.qtk.services.impl;
  *
  * @author lossrunner
  */
+import com.qtk.dto.RevenueChartDTO;
 import com.qtk.enums.TransactionPaymentMethod;
 import com.qtk.enums.TransactionStatus;
 import com.qtk.pojo.Course;
@@ -20,6 +21,7 @@ import com.qtk.repositories.UserRepository;
 import com.qtk.services.CourseStudentService;
 import com.qtk.services.TransactionService;
 import java.util.Date;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
@@ -107,4 +109,26 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction getTransactionByRef(String transactionRef) {
         return transactionRepository.getTransactionByRef(transactionRef);
     }
+    
+    @Override
+    public Long getTotalRevenue() {
+        return this.transactionRepository.getTotalRevenue();
+    }
+
+    @Override
+    public Long countSuccessTransactions() {
+        return this.transactionRepository.countTransactions(TransactionStatus.SUCCESS.getStauts());
+    }
+
+    @Override
+    public Long countPendingTransactions() {
+        return this.transactionRepository.countTransactions(TransactionStatus.PENDING.getStauts());
+    }
+
+    @Override
+    public List<RevenueChartDTO> getRevenueStatistics(int lastMonths) {
+        return this.transactionRepository.getRevenueStatistics(lastMonths);
+    }
+    
+    
 }

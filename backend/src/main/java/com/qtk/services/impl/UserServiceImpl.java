@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,7 +28,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -163,7 +161,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDTO> getAllUsers(Map<String, String> params) {
         List<User> results = this.userRepo.getAllUsers(params);
         if (results.isEmpty()) {
-            return new ArrayList<UserResponseDTO>();
+            return new ArrayList<>();
         }
         return results.stream()
                 .map(user -> this.mapToResponseDTO(user))
@@ -206,14 +204,16 @@ public class UserServiceImpl implements UserService {
         List<User> lecturers = this.userRepo.getLecturers();
         
         // 2. Map Entity -> DTO (Do Service đảm nhiệm)
-        return lecturers.stream().map(user -> {
-            UserResponseDTO dto = new UserResponseDTO();
-            dto.setId(user.getId());
-            dto.setFirstName(user.getFirstName());
-            dto.setLastName(user.getLastName());
-            dto.setEmail(user.getEmail());
-            dto.setRole(user.getRole());
-            return dto;
-        }).collect(Collectors.toList());
+        return lecturers.stream().map(this::mapToResponseDTO).toList();
+    }
+
+    @Override
+    public List<User> getNewUsers(int limit) {
+        return this.userRepo.getNewUsers(limit);
+    }
+    
+    @Override
+    public Long countTotalUsers() {
+        return this.userRepo.countTotalUsers();
     }
 }

@@ -30,6 +30,18 @@ public class CourseStudentServiceImpl implements CourseStudentService {
     @Autowired
     private CourseStudentRepository courseStudentRepository;
 
+    
+    private CourseResponseDTO toDTO(Course c) {
+        return CourseResponseDTO.builder().id(c.getId())
+                .name(c.getName())
+                .description(c.getDescription())
+                .price(c.getPrice())
+                .subjectId(c.getSubjectId().getId())
+                .lecturerId(c.getLecturerId().getId())
+                .subjectName(c.getSubjectId().getName())
+                .lecturerName(c.getLecturerId().getFirstName() + " "
+                        + c.getLecturerId().getLastName()).build();
+    }
     @Override
     public void enrollStudent(int courseId, int studentId) {
         // 1. Guard Clause (Bảo vệ dữ liệu): Kiểm tra xem sinh viên đã có trong lớp chưa
@@ -62,16 +74,11 @@ public class CourseStudentServiceImpl implements CourseStudentService {
         List<Course> enrolledCourses = this.courseStudentRepository.getCoursesByUserId(userId);
 
         // 2. Tiến hành Mapping dữ liệu Entity sang DTO (Data Transfer Object) bằng Stream API
-        return enrolledCourses.stream().map(c -> 
-            CourseResponseDTO.builder()
-                .id(c.getId())
-                .name(c.getName())
-                .description(c.getDescription())
-                .price(c.getPrice())
-                .subjectName(c.getSubjectId() != null ? c.getSubjectId().getName() : "Chưa phân loại")
-                .lecturerName(c.getLecturerId() != null ? 
-                    c.getLecturerId().getFirstName() + " " + c.getLecturerId().getLastName() : "Đang cập nhật")
-                .build()
-        ).collect(Collectors.toList());
+        return enrolledCourses.stream().map(this::toDTO).toList();
+    }
+    
+    @Override
+    public Long countTotalEnrollments() {
+        return this.courseStudentRepository.countTotalEnrollments();
     }
 }

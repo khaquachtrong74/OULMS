@@ -82,4 +82,16 @@ public class CourseStudentRepositoryImpl implements CourseStudentRepository {
         Query q = session.createQuery(query);
         return q.getResultList();
     }
+    
+    @Override
+    public Long countTotalEnrollments() {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<CourseStudent> root = query.from(CourseStudent.class);
+        
+        query.select(builder.count(root.get("id")));
+        
+        return session.createQuery(query).getSingleResult();
+    }
 }
