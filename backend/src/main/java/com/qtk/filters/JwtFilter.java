@@ -38,6 +38,25 @@ public class JwtFilter implements Filter{
             chain.doFilter(request, response);
             return;
         }
+        
+        String jwt = null;
+
+
+    // 3. Tìm trong Header trước (Dành cho Mobile App hoặc Postman)
+    String authHeader = httpRequest.getHeader("Authorization");
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        jwt = authHeader.substring(7);
+    }
+
+    // 4. Nếu không có trong Header, thì moi trong Cookie ra (Dành cho web React)
+    if (jwt == null && httpRequest.getCookies() != null) {
+        for (jakarta.servlet.http.Cookie cookie : httpRequest.getCookies()) {
+            if ("jwtToken".equals(cookie.getName())) {
+                jwt = cookie.getValue();
+                break; // Tìm thấy thì dừng vòng lặp ngay
+            }
+        }
+    }
         if(httpRequest.getRequestURI().startsWith(String.format("%s/api/secure", httpRequest.getContextPath()))){
             String token = null;
             

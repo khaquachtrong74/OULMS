@@ -162,8 +162,8 @@ const ExploreScreen = () => {
                                         name="level"
                                         checked={filters.levelId === ''}
                                         onChange={() => handleFilterChange('levelId', '')}
+                                        className="custom-radio"
                                     />
-
                                     {levels.map(lvl => (
                                         <Form.Check
                                             key={lvl.id}
@@ -173,6 +173,7 @@ const ExploreScreen = () => {
                                             name="level"
                                             checked={filters.levelId === lvl.id.toString()}
                                             onChange={() => handleFilterChange('levelId', lvl.id.toString())}
+                                            className="custom-radio"
                                         />
                                     ))}
                                 </div>
@@ -211,7 +212,7 @@ const ExploreScreen = () => {
                                     placeholder="Nhập tên tài liệu, từ khóa..."
                                     value={filters.kw}
                                     onChange={(e) => handleFilterChange('kw', e.target.value)}
-                                    className="border-start-0 shadow-none"
+                                    className="border-start-0 shadow-none focus-ring focus-ring-info"
                                 />
                             </InputGroup>
                         </div>

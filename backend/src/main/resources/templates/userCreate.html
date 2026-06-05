@@ -1,6 +1,6 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+    <head>
     <th:block th:replace="index :: head"></th:block>
 </head>
 <body>
@@ -12,8 +12,11 @@
             <h1 class="h3 fw-bold mb-0">
                 <span th:text="${user.id == null ? 'Thêm người dùng mới' : 'Cập nhật người dùng'}"></span>
             </h1>
+            <a th:href="@{/admin/users}" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
+                <i class="bi bi-arrow-left me-2"></i>Quay lại danh sách
+            </a>
         </header>
-        
+
         <div>
             <!-- Chú ý: enctype="multipart/form-data" để có thể đóng gói file upload dạng nhị phân -->
             <form method="post" th:object="${user}" th:action="@{/admin/user}" enctype="multipart/form-data">
@@ -27,18 +30,18 @@
                         <input type="text" class="form-control" id="lastName" placeholder="Nhập họ" th:field="*{lastName}" required />
                     </div>
                 </div>
-                
+
                 <div class="mb-3">
                     <label for="email" class="form-label">Email:</label>
                     <input type="email" class="form-control" id="email" placeholder="example@edudocs.vn" th:field="*{email}" required />
                 </div>
-                
+
                 <!-- Chỉ hiển thị ô nhập mật khẩu khi tạo mới (id == null) -->
                 <div class="mb-3" th:if="${user.id == null}">
                     <label for="password" class="form-label">Mật khẩu:</label>
                     <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu" th:field="*{password}" required />
                 </div>
-                
+
                 <div class="mb-3">
                     <label for="role" class="form-label">Vai trò (Role):</label>
                     <select class="form-select" id="role" th:field="*{role}">
@@ -46,20 +49,20 @@
                         <option value="LECTURER">LECTURER</option>
                     </select>
                 </div>
-                
+
                 <!-- Input file không map trực tiếp vào Entity User mà đẩy lên qua request parameter -->
                 <div class="mb-4">
                     <label for="avatar" class="form-label">Ảnh đại diện (Avatar):</label>
                     <input type="file" class="form-control" id="file" name="avatar" accept="image/png, image/jpeg, image/jpg" />
                 </div>
-                
+
                 <button th:if="${user.id == null}" class="btn btn-primary mb-2 px-4 rounded-pill shadow-sm">
                     <i class="bi bi-person-plus me-2"></i>Thêm người dùng
                 </button>
                 <button th:unless="${user.id == null}" class="btn btn-primary mb-2 px-4 rounded-pill shadow-sm">
                     <i class="bi bi-save me-2"></i>Lưu thay đổi
                 </button>
-                
+
                 <!-- Trường ẩn giữ ID để Spring biết đây là thao tác Update thay vì Insert -->
                 <input type="hidden" th:field="*{id}" />
             </form>

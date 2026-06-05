@@ -9,11 +9,15 @@ import HomeScreen from "./screens/Home/HomeScreen";
 import LoginPage from "./screens/Authentication/LoginScreen";
 import './App.css';
 import DocumentScreen from "./screens/DocumentManager/DocumentScreen";
-import ExploreScreen from "./screens/Explore/ExploreScreen";
 import ProfileScreen from "./screens/Authentication/ProfileScreen";
 import RegisterScreen from "./screens/Authentication/RegisterScreen";
 import ForumScreen from "./screens/Community/ForumScreen";
 import ForumCreate from "./screens/Community/ForumCreate";
+import ExploreCourseScreen from "./screens/Explore/ExploreCourseScreen";
+import CourseDetailedScreen from "./screens/Courses/CourseDetailedScreen";
+import PaymentSuccessScreen from "./screens/Payment/PaymentSuccessScreen";
+import MyLearningScreen from "./screens/MyLearning/MyLearningScreen";
+import LearningScreen from "./screens/MyLearning/LearningScreen";
 import DocumentDetailScreen from "./screens/DocumentDetail/DocumentDetailsScreen";
 
 function App() {
@@ -27,11 +31,18 @@ function App() {
                     <Route path="/login" element={<LoginPage />}></Route>    
                     <Route path="/register" element={<RegisterScreen />}></Route>
                     <Route path="/documents-manage" element={<DocumentScreen />}></Route>
-                    <Route path="/documents" element={<ExploreScreen />}></Route>    
+                    <Route path="/explore" element={<ExploreCourseScreen />}></Route>    
                     <Route path="/profile" element={<ProfileScreen />}></Route>    
                     <Route path="/forum" element={<ForumScreen />}></Route>    
                     <Route path="/forum-create" element={<ForumCreate />}></Route>    
+                    {/* <Route path="/courses" element={<CourseScreen />}></Route>     */}
+                    <Route path="/courses/:courseId" element={<CourseDetailedScreen />} />
+                    <Route path="/payment/success" element={<PaymentSuccessScreen />} />
+                    <Route path="/my-learning" element={<MyLearningScreen />} />
+                    <Route path="/my-learning/:courseId" element={<LearningScreen />} />
                     <Route path="/documents/:documentId" element={<DocumentDetailScreen />}></Route>
+
+
                 </Routes>
             
             <Footer/>

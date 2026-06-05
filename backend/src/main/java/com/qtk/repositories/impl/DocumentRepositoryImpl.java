@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @PropertySource("classpath:pagination.properties")
 @Transactional
 public class DocumentRepositoryImpl implements DocumentRepository {
-    
+
     @Autowired
     private Environment env;
 

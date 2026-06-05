@@ -72,7 +72,7 @@ const Header = () => {
 
                         <Nav.Link
                             as={NavLink}
-                            to="/documents"
+                            to="/explore"
                             className={getNavLinkClass}
                         >
                             Khám phá
@@ -122,6 +122,8 @@ const Header = () => {
                                         width={42}
                                         height={42}
                                         className="object-fit-cover"
+                                        referrerPolicy="no-referrer" 
+                                        crossOrigin="anonymous"
                                     />
 
                                     <div className="d-none d-md-block">

@@ -4,15 +4,12 @@ import {
     Card,
     Col,
     Container,
-    Form,
-    InputGroup,
     Row,
     Badge,
     Spinner,
     Pagination
 } from "react-bootstrap";
 import {
-    Search,
     Book,
     Cpu,
     Database,
@@ -26,14 +23,12 @@ import "./HomePage.css";
 import Apis, { endpoints } from '../../configs/Apis';
 
 const HomeScreen = () => {
-    // 1. Quản lý trạng thái dữ liệu từ API
     const [latestDocuments, setLatestDocuments] = useState([]);
-    const [subjects, setSubjects] = useState([]); // State mới cho Danh mục môn học
+    const [subjects, setSubjects] = useState([]); 
 
     const [loadingDocs, setLoadingDocs] = useState(true);
-    const [loadingSubjects, setLoadingSubjects] = useState(true); // State loading cho Danh mục
+    const [loadingSubjects, setLoadingSubjects] = useState(true); 
 
-    const [kw, setKw] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 6;
     const pagedDocuments = latestDocuments.slice(
@@ -42,7 +37,6 @@ const HomeScreen = () => {
     );
 
     const totalPages = Math.ceil(latestDocuments.length / ITEMS_PER_PAGE);
-    // 2. Hàm fetch tài liệu công khai từ Database
     const fetchLatestDocs = async (searchKey = '') => {
         try {
             setLoadingDocs(true);
@@ -60,13 +54,11 @@ const HomeScreen = () => {
         }
     };
 
-    // 3. Hàm fetch danh mục môn học (Subject) từ Database
     const fetchSubjects = async () => {
         try {
             setLoadingSubjects(true);
             const response = await Apis.get(endpoints['subject']);
             if (response.data) {
-                // Tùy theo API của bạn cấu trúc trả về list hay object có phân trang
                 setSubjects(Array.isArray(response.data) ? response.data : response.data.content || []);
             }
         } catch (error) {
@@ -76,20 +68,12 @@ const HomeScreen = () => {
         }
     };
 
-    // Tự động nạp dữ liệu khi mở trang
     useEffect(() => {
         fetchLatestDocs();
         fetchSubjects();
     }, []);
 
-    // Xử lý sự kiện khi bấm nút Tìm kiếm
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        setCurrentPage(1);
-        fetchLatestDocs(kw);
-    };
 
-    // Hàm random icon cho các môn học (vì DB của bạn có thể không lưu icon)
     const renderSubjectIcon = (index) => {
         const icons = [
             <Lightbulb size={28} />,
@@ -138,7 +122,6 @@ const HomeScreen = () => {
                     ) : (
                         <Row className="g-4">
                             {subjects.length > 0 ? (
-                                // Lấy 4 môn học hoặc render tất cả (tùy bạn chỉnh slice)
                                 subjects.slice(0, 4).map((s, index) => (
                                     <Col lg={3} md={6} key={s.id || index}>
                                         <Card className="category-card h-100">
@@ -146,10 +129,8 @@ const HomeScreen = () => {
                                                 <div className="category-icon">
                                                     {renderSubjectIcon(index)}
                                                 </div>
-                                                {/* Đổi s.subjectName hoặc s.name tùy thuộc vào field entity Subject trên backend của bạn */}
                                                 <h5>{s.subjectName || s.name || "Tên môn học"}</h5>
 
-                                                {/* Nếu backend chưa có API đếm số bài viết, ta tạm để như sau */}
                                                 <p className="text-muted text-sm mt-2">
                                                     {s.description || "Tài liệu học thuật chuyên ngành"}
                                                 </p>
@@ -167,7 +148,6 @@ const HomeScreen = () => {
                 </Container>
             </section>
 
-            {/* DOCUMENT SECTION */}
             <section className="section-spacing pt-0">
                 <Container>
                     <div className="section-header">
@@ -175,7 +155,6 @@ const HomeScreen = () => {
                         <p>Cập nhật kiến thức mới nhất từ cộng đồng</p>
                     </div>
 
-                    {/* Vùng điều kiện: Hiển thị loading hoặc danh sách dữ liệu thật */}
                     {loadingDocs ? (
                         <div className="text-center py-5">
                             <Spinner animation="border" variant="primary" className="mb-2" />
@@ -262,7 +241,6 @@ const HomeScreen = () => {
                         <Col md={4}>
                             <div className="stats-card">
                                 <GraphUp size={32} />
-                                {/* Nếu cần bạn có thể bind số liệu thực vào đây `latestDocuments.length` (nếu API trả về tất cả) */}
                                 <h3>{latestDocuments.length > 0 ? `${latestDocuments.length}+` : "0"}</h3>
                                 <p>Tài liệu học tập học phần</p>
                             </div>

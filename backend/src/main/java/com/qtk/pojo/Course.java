@@ -84,9 +84,7 @@ public class Course implements Serializable {
     private Set<Quizzes> quizzesSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseId")
     private Set<Transaction> transactionSet;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "courseId")
-    private CourseStudent courseStudent;
-
+  
     public Course() {
     }
 
@@ -182,13 +180,6 @@ public class Course implements Serializable {
         this.transactionSet = transactionSet;
     }
 
-    public CourseStudent getCourseStudent() {
-        return courseStudent;
-    }
-
-    public void setCourseStudent(CourseStudent courseStudent) {
-        this.courseStudent = courseStudent;
-    }
 
     @Override
     public int hashCode() {
