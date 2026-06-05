@@ -12,6 +12,7 @@ import com.qtk.dto.RevenueChartDTO;
 import com.qtk.enums.TransactionStatus;
 import com.qtk.pojo.Transaction;
 import java.util.List;
+import java.util.Map;
 //import java.util.List;
 
 public interface TransactionRepository {
@@ -23,4 +24,5 @@ public interface TransactionRepository {
     Long getTotalRevenue();
     Long countTransactions(String status);
     List<RevenueChartDTO> getRevenueStatistics(int lastMonths);
+    List<Transaction> getTransactions(Map<String, String> params);
 }

@@ -12,6 +12,7 @@ import com.qtk.dto.RevenueChartDTO;
 import com.qtk.pojo.Transaction;
 import com.qtk.enums.TransactionPaymentMethod;
 import java.util.List;
+import java.util.Map;
 
 public interface TransactionService {
     Transaction createPendingTransaction(int amount, TransactionPaymentMethod paymentMethod, int courseId, int userId);
@@ -23,5 +24,6 @@ public interface TransactionService {
     Long countSuccessTransactions();
     Long countPendingTransactions();
     List<RevenueChartDTO> getRevenueStatistics(int lastMonths);
+    List<Transaction> getTransactions(Map<String, String> params);
 
 }

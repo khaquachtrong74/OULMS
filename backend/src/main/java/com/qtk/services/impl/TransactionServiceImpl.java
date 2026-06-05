@@ -22,6 +22,7 @@ import com.qtk.services.CourseStudentService;
 import com.qtk.services.TransactionService;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
@@ -130,5 +131,8 @@ public class TransactionServiceImpl implements TransactionService {
         return this.transactionRepository.getRevenueStatistics(lastMonths);
     }
     
-    
+    @Override
+    public List<Transaction> getTransactions(Map<String, String> params) {
+        return this.transactionRepository.getTransactions(params);
+    }
 }

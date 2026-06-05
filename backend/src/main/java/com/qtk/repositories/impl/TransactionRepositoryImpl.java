@@ -11,12 +11,18 @@ package com.qtk.repositories.impl;
 import com.qtk.dto.RevenueChartDTO;
 import com.qtk.enums.TransactionStatus;
 import com.qtk.pojo.Transaction;
+import com.qtk.pojo.User;
 import com.qtk.repositories.TransactionRepository;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -117,6 +123,58 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         query.setParameter("status", com.qtk.enums.TransactionStatus.SUCCESS.getStauts());
         query.setMaxResults(lastMonths);
         return query.getResultList();
+    }
+
+    @Override
+    public List<Transaction> getTransactions(Map<String, String> params) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Transaction> query = builder.createQuery(Transaction.class);
+
+        // root đại diện cho bảng Transaction (FROM Transaction t)
+        Root<Transaction> root = query.from(Transaction.class);
+
+        // [Suy luận] Dựa trên file HTML bạn cung cấp, bạn cần hiển thị email. 
+        // Ta phải JOIN (nối bảng) với User để có thể tìm kiếm theo email.
+        Join<Transaction, User> userJoin = root.join("userId", JoinType.LEFT);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Xử lý tham số tìm kiếm (kw)
+        if (params != null) {
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                // WHERE t.transactionRef LIKE '%kw%' OR u.email LIKE '%kw%'
+                Predicate matchRef = builder.like(root.get("transactionRef"), String.format("%%%s%%", kw));
+
+                // [Suy luận] Giả định entity User của bạn có trường tên là "email"
+                Predicate matchEmail = builder.like(userJoin.get("email"), String.format("%%%s%%", kw));
+
+                predicates.add(builder.or(matchRef, matchEmail));
+            }
+        }
+
+        // Gắn các điều kiện vào truy vấn
+        if (!predicates.isEmpty()) {
+            query.where(predicates.toArray(new Predicate[0]));
+        }
+
+        // Sắp xếp mới nhất lên đầu
+        query.orderBy(builder.desc(root.get("createdAt")));
+
+        Query q = session.createQuery(query);
+
+        if (params != null) {
+            String pageStr = params.get("page");
+            if (pageStr != null && !pageStr.isEmpty()) {
+                int page = Integer.parseInt(pageStr);
+                int pageSize = 5; 
+                q.setFirstResult((page - 1) * pageSize);
+                q.setMaxResults(pageSize);
+            }
+        }
+
+        return q.getResultList();
     }
 
 }
