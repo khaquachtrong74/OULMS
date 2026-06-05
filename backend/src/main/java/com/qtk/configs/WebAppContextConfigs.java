@@ -56,7 +56,7 @@ public class WebAppContextConfigs implements WebMvcConfigurer{
     public void addFormatters(FormatterRegistry registry) {
         registry.addFormatter(new SubjectFormatter());
         registry.addFormatter(new TopicFormatter());
-        registry.addFormatter(new LevelFormatter());
+        registry.addFormatter(new LevelFormatter());   
     }
     
     

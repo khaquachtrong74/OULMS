@@ -11,7 +11,6 @@ import com.qtk.pojo.User;
 import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -23,9 +22,11 @@ public interface UserService extends UserDetailsService{
     UserResponseDTO addUser(UserCreateRequestDTO dto);
     UserResponseDTO addOAuth2User(String email, String name, String avatarUrl);
     List<UserResponseDTO> getAllUsers(Map<String, String> params);
-
+    List<UserResponseDTO> getLecturers();
     UserResponseDTO getUserById(int id);
     UserResponseDTO updateUser(UserUpdateRequestDTO dto);
     void deleteUser(int id);
     boolean authenticate(String userEmail, String password);
+    List<User> getNewUsers(int limit);
+    Long countTotalUsers();
 }

@@ -17,9 +17,13 @@ public interface UserRepository {
     public User getUserByUserEmail(String userEmail);
     public User addUser(User u);
     public List<User> getAllUsers(Map<String, String> params);
+    public List<User> getLecturers();
     
     public User getUserById(int id);
     public User updateUser(User u);
+    
     public void deleteUser(int id);
     public boolean authenticate(String userEmail, String password);
+    public List<User> getNewUsers(int limit);
+    public Long countTotalUsers();
 }

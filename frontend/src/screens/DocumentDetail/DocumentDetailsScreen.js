@@ -1,14 +1,19 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Container, Row, Col, Button, Form, Badge, Card, Spinner, Alert } from "react-bootstrap";
 
 import Apis, { endpoints } from "../../configs/Apis";
 import moment from "moment";
 import "moment/locale/vi";
 import { MyUserContext } from "../../configs/Contexts";
+import { ArrowLeft } from "react-bootstrap-icons";
 
 const DocumentDetailScreen = () => {
     const { documentId } = useParams();
+    const [searchParams] = useSearchParams();
+
+    const page = searchParams.get("page") || 1;
+
     const nav = useNavigate();
 
     const [user] = useContext(MyUserContext);
@@ -162,10 +167,21 @@ const DocumentDetailScreen = () => {
 
     return (
         <div className="bg-light min-vh-100 py-4">
+
             <Container>
+
                 <Card className="border-0 shadow-sm rounded-4 mb-4">
                     <Card.Body className="p-4 p-md-5">
+                        <Button
+                            onClick={() => {
+                                nav(`/explore?tab=documents&page=${page}`)
+                            }}
+                            variant="link"
+                            className="text-decoration-none text-dark px-0 mb-3 d-flex align-items-center gap-2">
+                            <ArrowLeft /> Quay lại
+                        </Button>
                         <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+
                             <div>
                                 <Badge
                                     bg="primary"

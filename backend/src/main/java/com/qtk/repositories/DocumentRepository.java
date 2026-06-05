@@ -23,4 +23,8 @@ public interface DocumentRepository {
     
     long countDocuments(Map<String, String> params);
     int getDocumentPageSize();
+
+    public List<Document> getPendingDocuments(int limit);
+    public Long countPendingDocuments();
+
 }

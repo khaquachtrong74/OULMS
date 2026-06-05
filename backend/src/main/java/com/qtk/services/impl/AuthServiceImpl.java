@@ -7,7 +7,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.nimbusds.jose.JOSEException;
 import com.qtk.dto.GoogleLoginRequestDTO;
 import com.qtk.dto.UserResponseDTO;
-import com.qtk.enums.UserRole;
 import com.qtk.services.AuthService;
 import com.qtk.services.UserService;
 import com.qtk.utils.JwtUtils;
@@ -17,9 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import org.hibernate.cfg.Environment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 

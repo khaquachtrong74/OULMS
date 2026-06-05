@@ -37,7 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
+@CrossOrigin(origins = {"http://localhost:3000", "https://quietly-untrashed-darby.ngrok-free.dev"}, allowCredentials = "true")
 public class ApiDocumentController {
 
     @Autowired
@@ -160,9 +160,10 @@ public class ApiDocumentController {
         }
     }
     
-    @DeleteMapping("/secure/documents/{uploadBy}")
-    @PreAuthorize("hasAuthority('LECTURER')")
-    public ResponseEntity<?> deleteDocument(@PathVariable("uploadBy") int id){
+
+    @DeleteMapping("/secure/documents/{documentId}")
+    @PreAuthorize("hasAnyAuthority('LECTURER')")
+    public ResponseEntity<?> deleteDocument(@PathVariable("documentId") int id){
         this.docService.deleteDocument(id);
         return ResponseEntity.noContent().build();
     }

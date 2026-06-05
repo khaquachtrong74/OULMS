@@ -148,57 +148,5 @@ public class DocumentController {
         model.addAttribute("document", this.docService.getDocumentById(id));
         return "documentCreate";
     }
-    
-    @GetMapping("/documents/view/{id}")
-    public String handleDocumentClick(@PathVariable int id, Model model) {
-        Document doc = docService.getDocumentById(id);
-        model.addAttribute("document", doc);
 
-        return switch (doc.getStatus()) {
-            case PENDING -> "documentReview";
-            case ACTIVE, REJECTED -> "documentDetail";
-            default -> "documentCreate";
-        }; 
-    }
-    
-    @PostMapping(
-            value = "/documents/{documentId}/{status}",
-            produces = "text/plain;charset=UTF-8"
-    )
-    @ResponseBody
-    public ResponseEntity<String> updateStatus(
-            @PathVariable("documentId") int id,
-            @PathVariable("status") DocumentStatus status) {
-
-        this.docService.updateDocumentStatus(id, status);
-
-        return ResponseEntity.ok("Cập nhật trạng thái thành công");
-    }
-    
-//    @PostMapping("/documents/{id}/{status}")
-//    @ResponseBody
-//    public ResponseEntity<String> quickUpdateStatus(
-//            @PathVariable("id") int id, 
-//            @PathVariable("status") String statusStr) {
-//        
-//        try {
-//            // 1. Ép kiểu String thành Enum. 
-//            // Nếu chữ truyền lên không khớp với Enum (VD: truyền "ABC"), nó sẽ văng ra IllegalArgumentException.
-//            DocumentStatus newStatus = DocumentStatus.valueOf(statusStr.toUpperCase());
-//            
-//            // 2. Gọi hàm từ Service của bạn. Vì hàm trả về void, nếu không văng lỗi (Exception) nghĩa là thành công.
-//            this.docService.updateDocumentStatus(id, newStatus);
-//            
-//            return ResponseEntity.ok("Cập nhật trạng thái thành công");
-//
-//        } catch (IllegalArgumentException e) {
-//            // Lỗi do Client truyền sai tên Status
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                                 .body("Trạng thái không hợp lệ: " + statusStr);
-//        } catch (Exception e) {
-//            // Lỗi trong quá trình thao tác Database (VD: không tìm thấy ID tài liệu, mất kết nối DB)
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                                 .body("Lỗi máy chủ khi cập nhật tài liệu");
-//        }
-//    }
 }

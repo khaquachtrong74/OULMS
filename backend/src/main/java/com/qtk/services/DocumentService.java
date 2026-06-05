@@ -30,4 +30,8 @@ public interface DocumentService {
     
     long countDocuments(Map<String, String> params);
     int getDocumentPageSize();
+    
+    List<Document> getPendingDocuments(int limit);
+    Long countPendingDocuments();
+
 }
