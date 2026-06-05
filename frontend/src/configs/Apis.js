@@ -13,11 +13,15 @@ export const endpoints = {
     documentDetail: (documentId) => `/documents/${documentId}`,
     documentComments: (documentId) => `/documents/${documentId}/comments`,
     addcomment: (documentId) => `/secure/documents/${documentId}/comments`,
+    deleteComment: (documentId) => `/secure/comments/${documentId}`,
     topic: '/topics',
     subject: '/subjects',
     level: '/levels',
     loginGoogle: '/auth/google',
-    tag: '/tags'
+    tag: '/tags',
+    createForumPost:'/secure/forumPosts',
+    forumPosts: '/forumPosts',
+    deleteForum: (forumPostId) => `/secure/forumPosts/${forumPostId}`
 
 }
 
