@@ -57,9 +57,12 @@ public class ApiCommentController {
         }
     }
     
-    @DeleteMapping("/comments/{commentId}")
+    @DeleteMapping(
+            path = "/secure/comments/{commentId}",
+            produces = "text/plain;charset=UTF-8"
+    )
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> deleteComment(@PathVariable(value = "documentId") int documentId) {
+    public ResponseEntity<?> deleteComment(@PathVariable(value = "commentId") int documentId) {
         try {
             this.commentService.deleteComment(documentId);
             return ResponseEntity.ok().build();

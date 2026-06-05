@@ -35,6 +35,7 @@ public class CommentServiceImpl implements CommentService{
     
     private CommentResponseDTO todto(Comment c) {
         CommentResponseDTO dto = new CommentResponseDTO();
+        dto.setId(c.getId());
         dto.setContent(c.getContent());
         dto.setEmail(c.getUserId().getEmail());
         dto.setAvatar(c.getUserId().getAvatar());

@@ -13,12 +13,14 @@ import ProfileScreen from "./screens/Authentication/ProfileScreen";
 import RegisterScreen from "./screens/Authentication/RegisterScreen";
 import ForumScreen from "./screens/Community/ForumScreen";
 import ForumCreate from "./screens/Community/ForumCreate";
+import DocumentDetailScreen from "./screens/DocumentDetail/DocumentDetailsScreen";
+import ForumDetail from "./screens/Community/ForumDetail";
 import ExploreCourseScreen from "./screens/Explore/ExploreCourseScreen";
 import CourseDetailedScreen from "./screens/Courses/CourseDetailedScreen";
 import PaymentSuccessScreen from "./screens/Payment/PaymentSuccessScreen";
 import MyLearningScreen from "./screens/MyLearning/MyLearningScreen";
 import LearningScreen from "./screens/MyLearning/LearningScreen";
-import DocumentDetailScreen from "./screens/DocumentDetail/DocumentDetailsScreen";
+
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load('user') || null);
@@ -40,7 +42,7 @@ function App() {
                     <Route path="/my-learning" element={<MyLearningScreen />} />
                     <Route path="/my-learning/:courseId" element={<LearningScreen />} />
                     <Route path="/documents/:documentId" element={<DocumentDetailScreen />}></Route>
-
+                    <Route path="/forum/:forumPostId" element={<ForumDetail />}></Route>
 
                 </Routes>
             

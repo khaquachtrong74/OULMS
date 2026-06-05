@@ -26,7 +26,6 @@ const DocumentDetailScreen = () => {
     const [loadingComments, setLoadingComments] = useState(false);
     const [commentsLoaded, setCommentsLoaded] = useState(false);
 
-
     const getFileId = (url) => {
         if (!url) return null;
         const match = url.match(/\/d\/([^/]+)/);
@@ -89,6 +88,31 @@ const DocumentDetailScreen = () => {
             window.removeEventListener("scroll", handleScroll);
         };
     }, [loadComments, commentsLoaded, loadingComments]);
+
+    const deleteComent = async (commentId) => {
+        const confirmDelete = window.confirm(
+            "Bạn có chắc chắn muốn xoá comment này?"
+        );
+
+        if (!confirmDelete) return;
+
+        try {
+            await Apis.delete(
+                endpoints["deleteComment"](commentId)
+            );
+
+            setComments((prev) =>
+                prev.filter((p) => p.id !== commentId)
+            );
+        } catch (err) {
+            console.error("Lỗi xoá forum:", err);
+
+            alert(
+                err.response?.data ||
+                "Không thể xoá bình luận."
+            );
+        }
+    };
 
     const goToLogin = () => {
         nav(`/login?next=/documents/${documentId}`);
@@ -331,9 +355,9 @@ const DocumentDetailScreen = () => {
                                 </p>
                             </div>
                         ) : (
-                            comments.map((c, index) => (
+                            comments.map((c) => (
                                 <div
-                                    key={index}
+                                    key={c.id}
                                     className="d-flex gap-3 py-3 border-bottom"
                                 >
                                     <img
@@ -348,19 +372,32 @@ const DocumentDetailScreen = () => {
                                     />
 
                                     <div className="flex-grow-1">
-                                        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                            <div className="fw-semibold">
-                                                {c.email}
+                                        <div className="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                            <div>
+                                                <div className="fw-semibold">
+                                                    {c.email}
+                                                </div>
+
+                                                <small className="text-muted">
+                                                    {moment(c.createdAt).fromNow()}
+                                                </small>
                                             </div>
 
-                                            <small className="text-muted">
-                                                {moment(c.createdAt).fromNow()}
-                                            </small>
+                                            {user && user.email === c.email && (
+                                                <Button
+                                                    variant="light"
+                                                    size="sm"
+                                                    className="border text-danger rounded-pill px-3 py-1"
+                                                    onClick={() => deleteComent(c.id)}
+                                                >
+                                                    Xoá
+                                                </Button>
+                                            )}
                                         </div>
 
                                         <div className="bg-light rounded-4 p-3 mt-2">
                                             {c.content}
-                                        </div>
+                                        </div>                                      
                                     </div>
                                 </div>
                             ))

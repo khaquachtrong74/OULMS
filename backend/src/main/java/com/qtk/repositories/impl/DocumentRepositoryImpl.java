@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @PropertySource("classpath:pagination.properties")
 @Transactional
 public class DocumentRepositoryImpl implements DocumentRepository {
-
+    
     @Autowired
     private Environment env;
 
@@ -243,6 +243,7 @@ public class DocumentRepositoryImpl implements DocumentRepository {
 
         return session.createQuery(query).getSingleResult();
     }
+
 
     @Override
     public List<Document> getPendingDocuments(int limit) {

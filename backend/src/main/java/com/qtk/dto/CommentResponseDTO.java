@@ -19,6 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentResponseDTO {
+    private int id;
     private String content;
     private String email;
     private String avatar;
