@@ -112,7 +112,7 @@ const DocumentScreen = () => {
       formData.append('levelId', newDoc.levelId);
       formData.append('file', newDoc.file);
 
-      await Apis.post(endpoints['secureDocument'], formData, {
+      await Apis.post(endpoints['createDocument'], formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
