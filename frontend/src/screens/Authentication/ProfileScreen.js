@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Card, Form, Button, Spinner, Badge, Image } from 'react-bootstrap';
-import { Person,  Telephone, ShieldLock, PencilSquare, XCircle, Save, Camera } from 'react-bootstrap-icons';
+import { Person,  ShieldLock, PencilSquare, XCircle, Save, Camera } from 'react-bootstrap-icons';
 import { MyUserContext } from '../../configs/Contexts';
 import Apis, { endpoints } from '../../configs/Apis';
 import { ACTION_TYPE } from '../../configs/constants';
@@ -10,12 +10,9 @@ const ProfileScreen = () => {
   
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  
-  // 1. Khai báo thêm State cho File và Preview
   const [avatarFile, setAvatarFile] = useState(null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
   
-  // 2. Tạo một tham chiếu (Ref) móc nối thẳng vào thẻ input HTML
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -38,21 +35,19 @@ const ProfileScreen = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // 3. Hàm xử lý khi người dùng chọn file
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setAvatarFile(file); // Lưu file thật để chuẩn bị gửi API
-      setPreviewAvatar(URL.createObjectURL(file)); // Tạo một URL ảo để hiển thị ngay lập tức
+      setAvatarFile(file); 
+      setPreviewAvatar(URL.createObjectURL(file)); 
     }
   };
 
-  // Hàm xử lý khi ấn nút Hủy
   const handleCancelEdit = () => {
     setIsEditing(false);
     setAvatarFile(null);
     if (previewAvatar) {
-      URL.revokeObjectURL(previewAvatar); // Giải phóng bộ nhớ RAM
+      URL.revokeObjectURL(previewAvatar); 
       setPreviewAvatar(null);
     }
   };
@@ -65,7 +60,6 @@ const ProfileScreen = () => {
       form.append("firstName", formData.firstName);
       form.append("lastName", formData.lastName);
       
-      // Đẩy file nhị phân vào gói tin FormData
       if (avatarFile) {
         form.append("avatar", avatarFile);
       }
@@ -94,16 +88,14 @@ const ProfileScreen = () => {
             <Card className="border-0 shadow-sm text-center h-100">
               <Card.Body className="d-flex flex-column align-items-center justify-content-center py-5">
                 
-                {/* Khu vực xử lý Avatar */}
                 <div className="position-relative mb-4" style={{ width: '150px', height: '150px' }}>
                   <Image 
-                    // Ưu tiên hiển thị ảnh Preview, nếu không có thì lấy ảnh của User
                     src={previewAvatar || user.avatar || 'https://res.cloudinary.com/dsjxgri1t/image/upload/v1780048454/nxi0lpgryarwav9i5lej.png'} 
                     roundedCircle 
                     width={150} 
                     height={150} 
                     className={`object-fit-cover shadow border border-3 ${isEditing ? 'border-primary cursor-pointer' : 'border-info'}`}
-                    onClick={() => isEditing && fileInputRef.current.click()} // Kích hoạt thẻ input ẩn
+                    onClick={() => isEditing && fileInputRef.current.click()}
                     style={{ transition: 'all 0.3s ease', cursor: isEditing ? 'pointer' : 'default' }}
                   />
                   
@@ -117,7 +109,6 @@ const ProfileScreen = () => {
                     </div>
                   )}
 
-                  {/* Thẻ input ẩn (Invisible DOM Element) */}
                   <input 
                     type="file" 
                     accept="image/*" 

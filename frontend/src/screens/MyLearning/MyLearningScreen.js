@@ -14,7 +14,6 @@ const MyLearningScreen = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Bảo vệ route: Nếu chưa đăng nhập thì đẩy về trang login
         if (!user) {
             nav('/login');
             return;

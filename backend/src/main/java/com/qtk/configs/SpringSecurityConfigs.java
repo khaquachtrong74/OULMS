@@ -54,7 +54,7 @@ public class SpringSecurityConfigs {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/admin/**", "/", "/login", "/logout")
-                .csrf(csrf -> csrf.disable())
+//                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/admin/login").permitAll()
                 .requestMatchers("/", "/admin/**").hasAuthority("ADMIN")

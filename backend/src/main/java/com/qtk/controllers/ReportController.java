@@ -60,27 +60,22 @@ public class ReportController {
 
     @GetMapping("/transactions")
     public String transactionReport(Model model, @RequestParam Map<String, String> params) {
-        // 1. Lấy trang hiện tại từ request, mặc định là trang 1 nếu trống
         int currentPage = Integer.parseInt(params.getOrDefault("page", "1"));
         params.put("page", String.valueOf(currentPage));
 
-        // 2. Lấy danh sách giao dịch đã được phân trang (tối đa 10 dòng từ Repository)
         List<com.qtk.pojo.Transaction> transactions = this.transactionService.getTransactions(params);
         model.addAttribute("transactions", transactions);
 
-        // 3. Tính toán tổng số trang (totalPages) dựa trên tổng số lượng kết quả tìm được
-        // Loại bỏ tham số "page" để lấy toàn bộ danh sách khớp điều kiện từ khóa phục vụ việc đếm dữ liệu
         Map<String, String> countParams = new java.util.HashMap<>(params);
         countParams.remove("page");
         long totalItems = this.transactionService.getTransactions(countParams).size();
 
-        int pageSize = 10; // Đồng bộ với thuộc tính pageSize khai báo cố định trong TransactionRepositoryImpl
+        int pageSize = 10; 
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
 
-        // 4. Đẩy các thuộc tính điều hướng sang View
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("totalPages", totalPages);
-        model.addAttribute("kw", params.get("kw")); // Giữ từ khóa trên ô tìm kiếm
+        model.addAttribute("kw", params.get("kw"));
 
         return "transactions";
     }

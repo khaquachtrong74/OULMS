@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService {
             return new ArrayList<>();
         }
         return results.stream()
-                .map(user -> this.mapToResponseDTO(user))
+                .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
@@ -200,10 +200,7 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public List<UserResponseDTO> getLecturers() {
-        // 1. Kéo Entity từ DB lên (Do UserRepository đảm nhiệm)
         List<User> lecturers = this.userRepo.getLecturers();
-        
-        // 2. Map Entity -> DTO (Do Service đảm nhiệm)
         return lecturers.stream().map(this::mapToResponseDTO).toList();
     }
 

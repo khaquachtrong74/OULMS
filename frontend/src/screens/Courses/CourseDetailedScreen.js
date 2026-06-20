@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Button, Spinner, Alert, Card, Badge, Pagination } from 'react-bootstrap';
-import { ShieldCheck, CheckCircleFill, Clock, Person, ArrowLeft, Tag, Lightbulb } from 'react-bootstrap-icons';
+import { Container, Row, Col, Button, Spinner, Alert, Card, Pagination } from 'react-bootstrap';
+import { ShieldCheck, CheckCircleFill, Lightbulb } from 'react-bootstrap-icons';
 import Apis, { endpoints } from '../../configs/Apis';
 import { MyUserContext } from '../../configs/Contexts';
 import CourseCard from '../../components/CourseCard';
@@ -48,13 +48,11 @@ const useRelatedCourses = (subjectId, currentCourseId) => {
             try {
                 const res = await Apis.get(`${endpoints['courses']}?subjectId=${subjectId}`);
 
-                // Lọc bỏ chính nó
                 const filtered = res.data.data.filter(
                     c => c.id.toString() !== currentCourseId.toString()
                 );
              
 
-                // TRẢ VỀ TOÀN BỘ (Để Client tự phân trang)
                 setRelatedCourses(filtered);
             } catch (err) {
                 console.error("Lỗi khi tải khóa học liên quan:", err);
@@ -101,11 +99,9 @@ const RelatedCoursesSection = ({ subjectId, currentCourseId }) => {
     const { relatedCourses, loadingRelated } = useRelatedCourses(subjectId, currentCourseId);
     const nav = useNavigate();
 
-    // Khai báo State cho Pagination
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 3; // Đặt là 3 để hiển thị đúng 1 hàng ngang trên PC, dễ thấy phân trang hơn
+    const pageSize = 3; 
 
-    // Reset lại trang 1 mỗi khi chuyển sang môn học khác
     useEffect(() => {
         setCurrentPage(1);
     }, [subjectId]);
@@ -120,15 +116,12 @@ const RelatedCoursesSection = ({ subjectId, currentCourseId }) => {
 
     if (!relatedCourses?.length) return null;
 
-    // --- BẮT ĐẦU: Logic Toán học Trích xuất Mảng ---
     const totalItems = relatedCourses.length;
     const totalPages = Math.ceil(totalItems / pageSize); // Hàm trần (Ceil)
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
 
-    // Mảng dữ liệu chỉ dành riêng cho trang hiện tại
     const currentData = relatedCourses.slice(startIndex, endIndex);
-    // --- KẾT THÚC: Logic Toán học ---
 
     return (
         <div className="mt-5 pt-4 border-top border-2">

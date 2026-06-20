@@ -14,6 +14,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
@@ -39,7 +40,7 @@ public class JwtUtils {
             EXPIRATION_MS = Long.parseLong(
                     props.getProperty("jwt.expiration")
             );
-        } catch (Exception e) {
+        } catch (IOException | NumberFormatException e) {
             throw new RuntimeException("Cannot load properties file", e);
         }
     }

@@ -9,4 +9,4 @@ export const COOKIE_KEYS = Object.freeze({
     USER: 'user',
 })
 
-export const GOOGLE_CLIENT_ID = '1040366378422-eoormsur8eqoungkj00mf0sjnkt4k55a.apps.googleusercontent.com';
+export const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;

@@ -13,7 +13,6 @@
         </header>
         
         <div>
-            <!-- Form action trỏ đến endpoint cập nhật theo chuẩn RESTful -->
             <form method="post" th:object="${user}" th:action="@{/admin/users/{id}(id=${user.id})}" enctype="multipart/form-data">
                 <div class="row mt-3">
                     <div class="col-md-6 mb-3">
@@ -28,7 +27,6 @@
                 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email:</label>
-                    <!-- Email thường không được phép thay đổi tùy tiện, nên set readonly -->
                     <input type="email" class="form-control" id="email" th:field="*{email}" required readonly style="background-color: #e9ecef;" />
                 </div>
                 
@@ -53,7 +51,6 @@
                     Hủy
                 </a>
                 
-                <!-- Lưu giữ ID để truyền xuống Backend -->
                 <input type="hidden" th:field="*{id}" />
             </form>
         </div>

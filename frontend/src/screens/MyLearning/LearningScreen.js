@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Spinner, Badge, Alert } from 'react-bootstrap';
-import { CameraVideo, PersonVideo3, Clock, InfoCircle, ArrowLeft, Tag } from 'react-bootstrap-icons';
+import { Container, Row, Col, Card, Button, Spinner,  Alert } from 'react-bootstrap';
+import { CameraVideo, PersonVideo3,  InfoCircle } from 'react-bootstrap-icons';
 import Apis, { endpoints } from '../../configs/Apis';
 import CourseHeader from '../../components/CourseHeader';
 

@@ -33,8 +33,8 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)       // Bắt buộc true cho ngrok (HTTPS)
                 .path("/")
-                .maxAge(24 * 60 * 60) // Đã sửa: Cho phép Cookie sống trong 1 ngày (86400 giây)
-                .sameSite("None")     // Cho phép gửi Cookie xuyên domain
+                .maxAge(24 * 60 * 60) 
+                .sameSite("None")  
                 .build();
 
         return ResponseEntity.ok()

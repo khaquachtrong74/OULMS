@@ -18,8 +18,6 @@ import java.util.Map;
  */
 @Service
 public class ZaloPayServiceImpl implements PaymentService {
-    
-    // Đưa các config này vào file properties trong thực tế
     private final String APP_ID = "2554";
     private final String KEY1 = "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn"; 
     private final String KEY2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
@@ -27,7 +25,6 @@ public class ZaloPayServiceImpl implements PaymentService {
     private final String CALLBACK_URL = "https://quietly-untrashed-darby.ngrok-free.dev/backend/api/payment/zalopay/callback";
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public Map<String, Object> createOrder(int amount, String orderInfo, String appTransId) {
@@ -35,13 +32,10 @@ public class ZaloPayServiceImpl implements PaymentService {
         String embedData = "{\"redirecturl\": \"http://localhost:3000/payment/success\"}";
         String item = "[]"; 
 
-        // 1. Tạo chuỗi Data (Theo đúng quy tắc của ZaloPay)
         String rawData = APP_ID + "|" + appTransId + "|lms_user|" + amount + "|" + appTime + "|" + embedData + "|" + item;
         
-        // 2. Tính MAC với KEY1
         String mac = HmacUtils.HMacHexString(rawData, KEY1);
 
-        // 3. Build payload
         Map<String, Object> order = new HashMap<>();
         order.put("app_id", Integer.parseInt(APP_ID));
         order.put("app_trans_id", appTransId);
@@ -54,7 +48,6 @@ public class ZaloPayServiceImpl implements PaymentService {
         order.put("mac", mac);
         order.put("callback_url", CALLBACK_URL);
 
-        // 4. Bắn Request sang ZaloPay
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(order, headers);
@@ -65,7 +58,6 @@ public class ZaloPayServiceImpl implements PaymentService {
 
     @Override
     public boolean verifyCallback(String data, String mac) {
-        // Tính lại MAC từ data ZaloPay gửi sang bằng KEY2
         String calcMac = HmacUtils.HMacHexString(data, KEY2);
         return calcMac.equals(mac);
     }

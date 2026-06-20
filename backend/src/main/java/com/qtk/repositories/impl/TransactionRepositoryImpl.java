@@ -39,10 +39,6 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     @Override
     public void addTransaction(Transaction transaction) {
         Session session = this.factory.getObject().getCurrentSession();
-        // Chuyện gì xảy ra ở đây?
-        // session.save() chưa gửi SQL INSERT xuống DB ngay lập tức.
-        // Nó đưa đối tượng 'transaction' vào Persistence Context (L1 Cache).
-        // Chỉ khi giao dịch (transaction) commit, Hibernate mới "flush" dữ liệu và tạo lệnh INSERT.
         session.save(transaction);
     }
 
@@ -60,7 +56,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         try {
             return (Transaction) query.getSingleResult();
         } catch (Exception e) {
-            return null; // Không tìm thấy
+            return null;
         }
     }
 
@@ -70,7 +66,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         Transaction t = this.getTransactionByRef(transactionRef);
         if (t != null) {
             t.setStatus(status);
-            session.update(t); // Đánh dấu dirty, Hibernate sẽ sinh lệnh UPDATE khi flush
+            session.update(t); 
             return true;
         }
         return false;
@@ -87,7 +83,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         query.select(builder.sumAsLong(root.get("amount")));
 
-        query.where(builder.equal(root.get("status"), com.qtk.enums.TransactionStatus.SUCCESS.getStauts()));
+        query.where(builder.equal(root.get("status"), TransactionStatus.SUCCESS.getStauts()));
 
         Long total = session.createQuery(query).getSingleResult();
         return total != null ? total : 0L;
@@ -131,35 +127,28 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Transaction> query = builder.createQuery(Transaction.class);
 
-        // root đại diện cho bảng Transaction (FROM Transaction t)
         Root<Transaction> root = query.from(Transaction.class);
 
-        // [Suy luận] Dựa trên file HTML bạn cung cấp, bạn cần hiển thị email. 
-        // Ta phải JOIN (nối bảng) với User để có thể tìm kiếm theo email.
+   
         Join<Transaction, User> userJoin = root.join("userId", JoinType.LEFT);
 
         List<Predicate> predicates = new ArrayList<>();
 
-        // Xử lý tham số tìm kiếm (kw)
         if (params != null) {
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
-                // WHERE t.transactionRef LIKE '%kw%' OR u.email LIKE '%kw%'
                 Predicate matchRef = builder.like(root.get("transactionRef"), String.format("%%%s%%", kw));
 
-                // [Suy luận] Giả định entity User của bạn có trường tên là "email"
                 Predicate matchEmail = builder.like(userJoin.get("email"), String.format("%%%s%%", kw));
 
                 predicates.add(builder.or(matchRef, matchEmail));
             }
         }
 
-        // Gắn các điều kiện vào truy vấn
         if (!predicates.isEmpty()) {
             query.where(predicates.toArray(new Predicate[0]));
         }
 
-        // Sắp xếp mới nhất lên đầu
         query.orderBy(builder.desc(root.get("createdAt")));
 
         Query q = session.createQuery(query);

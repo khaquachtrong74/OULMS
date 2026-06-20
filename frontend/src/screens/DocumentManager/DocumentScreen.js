@@ -9,17 +9,14 @@ import { Pagination } from 'react-bootstrap';
 const DocumentScreen = () => {
   const [user] = useContext(MyUserContext);
 
-  // States quản lý danh sách tài liệu
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [kw, setKw] = useState('');
   const [filterLevel, setFilterLevel] = useState('');
 
-  // States quản lý Metadata phân loại
   const [topics, setTopics] = useState([]);
   const [levels, setLevels] = useState([]);
 
-  // States quản lý Modal Tải lên (Upload)
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [newDoc, setNewDoc] = useState({
@@ -30,7 +27,6 @@ const DocumentScreen = () => {
     file: null
   });
 
-  // States quản lý Modal Cập nhật (Edit)
   const [showEditModal, setShowEditModal] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const [editingDoc, setEditingDoc] = useState({
@@ -39,7 +35,7 @@ const DocumentScreen = () => {
     description: '',
     topicId: '',
     levelId: '',
-    file: null // Tùy chọn: chỉ truyền lên nếu giảng viên muốn thay file mới
+    file: null
   });
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
@@ -49,7 +45,6 @@ const DocumentScreen = () => {
   );
 
   const totalPages = Math.ceil(documents.length / ITEMS_PER_PAGE);
-  // 1. Fetch dữ liệu Metadata cho các Form Dropdown
   useEffect(() => {
     const fetchMetadata = async () => {
       try {
@@ -66,7 +61,6 @@ const DocumentScreen = () => {
     fetchMetadata();
   }, []);
 
-  // 2. Gọi API nạp danh sách tài liệu cá nhân dựa trên userId (Xác thực Session)
   const fetchMyDocuments = useCallback(async () => {
     if (!user) return;
     try {
@@ -95,7 +89,6 @@ const DocumentScreen = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [kw, filterLevel]);
-  // 3. Xử lý logic Form Tải lên tài liệu mới
   const handleUploadSubmit = async (e) => {
     e.preventDefault();
     if (!newDoc.file) {
@@ -128,7 +121,6 @@ const DocumentScreen = () => {
     }
   };
 
-  // 4. Kích hoạt Modal Sửa và đổ dữ liệu cũ vào form
   const handleOpenEditModal = (doc) => {
     setEditingDoc({
       id: doc.id,
@@ -136,7 +128,7 @@ const DocumentScreen = () => {
       description: doc.description || '',
       topicId: doc.topicId || '',
       levelId: doc.levelId || '',
-      file: null // Mặc định không chọn file mới trừ khi người dùng chủ động tải đè
+      file: null 
     });
     setShowEditModal(true);
   };
@@ -151,12 +143,10 @@ const DocumentScreen = () => {
       formData.append('topicId', editingDoc.topicId);
       formData.append('levelId', editingDoc.levelId);
 
-      // Chỉ đính kèm file nếu người dùng chọn file mới thay thế
       if (editingDoc.file) {
         formData.append('file', editingDoc.file);
       }
 
-      // ĐỒNG BỘ: Sử dụng POST thuần túy giúp đường truyền Multipart cực kỳ ổn định
       await Apis.post(endpoints['secureDocument'](editingDoc.id), formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -192,7 +182,6 @@ const DocumentScreen = () => {
       alert(error.response?.data || "Không thể xóa tài liệu!");
     }
   }
-  // Hàm render Icon nhận diện định dạng tệp tin trực quan
   const renderFileIcon = (title = "") => {
     const lower = title.toLowerCase();
     if (lower.includes('.pdf')) return <FileEarmarkPdf size={24} className="text-danger me-2" />;

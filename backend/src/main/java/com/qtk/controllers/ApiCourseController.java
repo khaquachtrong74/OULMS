@@ -56,7 +56,6 @@ public class ApiCourseController {
 
             List<CourseResponseDTO> courses = this.courseService.getCourses(params);
 
-            // Sử dụng DTO phân trang mà bạn đã có sẵn
             PageResponseDTO<CourseResponseDTO> res
                     = new PageResponseDTO<>(courses, currentPage, pageSize, totalPages, totalItems);
 

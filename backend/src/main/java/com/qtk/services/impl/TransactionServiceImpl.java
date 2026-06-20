@@ -46,7 +46,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction createPendingTransaction(int amount, TransactionPaymentMethod paymentMethod, int courseId, int userId) {
-        // 1. Kiểm tra tính hợp lệ của dữ liệu (Validate)
         if (amount <= 0) {
             throw new IllegalArgumentException("Số tiền không hợp lệ");
         }
@@ -58,27 +57,22 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalArgumentException("Khóa học hoặc Người dùng không tồn tại");
         }
 
-        // 2. Khởi tạo đối tượng
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
         transaction.setCourseId(course);
         transaction.setUserId(user);
         
-        // Sử dụng Enum đã định nghĩa
         transaction.setPaymentMethod(paymentMethod.getPaymentMethod());
         transaction.setStatus(TransactionStatus.PENDING.getStauts()); 
 
-        // 1. Lấy chuỗi thời gian chuẩn YYMMDD (Ví dụ: 260604)
+        // 260604
         String timeStamp = new java.text.SimpleDateFormat("yyMMdd").format(new java.util.Date());
 
-        // 2. Sinh chuỗi ngẫu nhiên 8 ký tự (Bỏ dấu gạch ngang của UUID cho đẹp)
         String randomId = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8);
 
-        // 3. Ghép lại thành mã giao dịch chuẩn
         String transRef = timeStamp + "_" + randomId; 
         transaction.setTransactionRef(transRef);
 
-        // 3. Đẩy xuống Repository để lưu
         transactionRepository.addTransaction(transaction);
         transaction.setTransactionRef(transRef);
 
@@ -102,7 +96,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public boolean markTransactionAsFailed(String transactionRef) {
-         // Cập nhật trạng thái thành FAILED
         return transactionRepository.updateTransactionStatus(transactionRef, TransactionStatus.FAILED.getStauts());
     }
 

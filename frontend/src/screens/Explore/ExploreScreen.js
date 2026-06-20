@@ -7,11 +7,9 @@ import { useNavigate } from 'react-router-dom';
 const ExploreScreen = () => {
     const nav = useNavigate();
 
-    // 1. Lớp Trạng thái (State)
     const [loading, setLoading] = useState(false);
     const [documents, setDocuments] = useState([]);
 
-    // Trạng thái cho bộ lọc
     const [filters, setFilters] = useState({
         kw: '',
         subjectId: '',
@@ -19,12 +17,10 @@ const ExploreScreen = () => {
         topicId: ''
     });
     const [debouncedKw, setDebouncedKw] = useState('');
-    // Dữ liệu Sidebar
     const [subjects, setSubjects] = useState([]);
     const [levels, setLevels] = useState([]);
     const [topics, setTopics] = useState([]);
 
-    // PHÂN TRANG
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -43,12 +39,12 @@ const ExploreScreen = () => {
                 const [resSub, resLev, resTop] = await Promise.all([
                     Apis.get(endpoints['subject']),
                     Apis.get(endpoints['level']),
-                    Apis.get(endpoints['topic']) // Fetch danh sách Topic
+                    Apis.get(endpoints['topic']) 
                 ]);
 
                 setSubjects(resSub.data);
                 setLevels(resLev.data);
-                setTopics(resTop.data); // Lưu vào state
+                setTopics(resTop.data);
             } catch (error) {
                 console.error("Lỗi khi tải metadata:", error);
             }
@@ -57,7 +53,6 @@ const ExploreScreen = () => {
         fetchMetadata();
     }, []);
 
-    // 3. Tải danh sách tài liệu dựa trên filters
     const loadDocuments = useCallback(async () => {
         setLoading(true);
 
@@ -103,7 +98,6 @@ const ExploreScreen = () => {
         loadDocuments();
     }, [loadDocuments]);
 
-    // Xử lý sự kiện thay đổi
     const handleFilterChange = (type, value) => {
         setPage(1);
         setFilters(prev => ({...prev, [type]: value}));

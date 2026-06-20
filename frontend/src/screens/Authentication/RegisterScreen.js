@@ -5,7 +5,6 @@ import Apis, { endpoints } from "../../configs/Apis";
 import { HttpStatusCode } from "axios";
 import "./LoginPage.css"; 
 
-// Hook quản lý Logic và State
 const useRegisterForm = () => {
     const [user, setUser] = useState({
         firstName: "",
@@ -14,8 +13,8 @@ const useRegisterForm = () => {
         password: "",
         confirmPassword: ""
     });
-    const [avatar, setAvatar] = useState(null); // State riêng cho file
-    const [avatarPreview, setAvatarPreview] = useState(null); // State cho URL preview ảnh
+    const [avatar, setAvatar] = useState(null); 
+    const [avatarPreview, setAvatarPreview] = useState(null); 
     const [err, setErr] = useState("");
 
     const validate = () => {
@@ -64,7 +63,6 @@ const useRegisterForm = () => {
         const file = e.target.files[0];
         if (file) {
             setAvatar(file);
-            // Tạo URL tạm thời trong bộ nhớ trình duyệt để preview ảnh
             setAvatarPreview(URL.createObjectURL(file)); 
         }
     };
@@ -72,7 +70,6 @@ const useRegisterForm = () => {
     return { user, avatar, avatarPreview, err, setErr, validate, handleChange, handleFileChange };
 };
 
-// Component Giao diện
 const RegisterScreen = () => {
     const { user, avatar, avatarPreview, err, setErr, validate, handleChange, handleFileChange } = useRegisterForm();
     const [loading, setLoading] = useState(false);
@@ -86,19 +83,16 @@ const RegisterScreen = () => {
             try {
                 setLoading(true);
                 
-                // Bản chất: Đóng gói dữ liệu thành multipart/form-data
                 const formData = new FormData();
                 formData.append("firstName", user.firstName);
                 formData.append("lastName", user.lastName);
                 formData.append("email", user.email);
                 formData.append("password", user.password);
                 
-                // [Phỏng đoán] Backend Spring của bạn nhận field file tên là "avatar"
                 if (avatar) {
                     formData.append("avatar", avatar);
                 }
 
-                // Axios sẽ tự động nhận diện FormData và set Content-Type là multipart/form-data
                 let res = await Apis.post(endpoints["register"], formData);
 
                 if (res.status === HttpStatusCode.Created || res.status === HttpStatusCode.Ok) {

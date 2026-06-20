@@ -21,10 +21,10 @@ import java.util.Map;
 public class ApiPaymentController {
 
     @Autowired
-    private PaymentService paymentService; // ZaloPay logic (đã viết ở bước 1)
+    private PaymentService paymentService;
 
     @Autowired
-    private TransactionService transactionService; // DB logic (vừa viết)
+    private TransactionService transactionService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createPayment(@RequestBody Map<String, Object> payload) {
@@ -33,10 +33,8 @@ public class ApiPaymentController {
             int courseId = Integer.parseInt(payload.get("courseId").toString());
             int userId = Integer.parseInt(payload.get("userId").toString());
 
-            // 1. Tạo Transaction PENDING trong Database
             Transaction tx = transactionService.createPendingTransaction(amount, TransactionPaymentMethod.ZALOPAY, courseId, userId);
 
-            // 2. Gọi sang ZaloPay bằng mã transactionRef vừa sinh ra
             Map<String, Object> result = paymentService.createOrder(amount, "Thanh toan khoa hoc " + courseId, tx.getTransactionRef());
 
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -52,7 +50,6 @@ public class ApiPaymentController {
             String data = (String) payload.get("data");
             String mac = (String) payload.get("mac");
 
-            // 1. Xác thực nguồn gốc (ZaloPay gọi hay hacker gọi?)
             boolean isValid = paymentService.verifyCallback(data, mac);
             if (!isValid) {
                 response.put("return_code", -1);
@@ -60,7 +57,6 @@ public class ApiPaymentController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // 2. Parse dữ liệu ZaloPay gửi về
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> parsedData = mapper.readValue(data, new TypeReference<Map<String, Object>>() {
             });

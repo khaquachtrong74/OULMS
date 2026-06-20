@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Container, Row, Col, Form, InputGroup, Button, Spinner, Nav } from 'react-bootstrap';
-import { Search, Filter, ArrowLeft } from 'react-bootstrap-icons';
+import { Search, Filter } from 'react-bootstrap-icons';
 import Apis, { endpoints } from '../../configs/Apis'; 
 import { useNavigate, useSearchParams } from 'react-router-dom'; // Bổ sung useSearchParams
 import DocumentCard from '../../components/DocumentCard';
@@ -10,20 +10,16 @@ import { MyUserContext } from '../../configs/Contexts';
 const ExploreCourseScreen = () => {
     const nav = useNavigate();
     const [user] = useContext(MyUserContext);
-    // 1. Khởi tạo useSearchParams để tương tác với URL
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // 2. Lấy giá trị tab từ URL. Nếu không có (null) hoặc gõ bậy bạ, mặc định là 'document'
     const activeTab = searchParams.get('tab') === 'course' ? 'course' : 'document';
 
-    // Bỏ dòng này: const [activeTab, setActiveTab] = useState('document'); 
 
     const [loading, setLoading] = useState(false);
     const [documents, setDocuments] = useState([]);
     const [courses, setCourses] = useState([]);
 
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
 
     const [filters, setFilters] = useState({ kw: '', subjectId: '', levelId: '', topicId: '' });
     const [debouncedKw, setDebouncedKw] = useState('');
@@ -32,11 +28,8 @@ const ExploreCourseScreen = () => {
     const [levels, setLevels] = useState([]);
     const [topics, setTopics] = useState([]);
 
-    // 3. Hàm chuyển tab: Ghi đè tham số 'tab' lên URL
     const handleTabChange = (tabName) => {
-        // Lấy tất cả các param hiện tại trên URL (để không làm mất các param khác nếu có)
         const currentParams = Object.fromEntries([...searchParams]);
-        // Cập nhật lại param tab và đẩy lên URL
         setSearchParams({ ...currentParams, tab: tabName });
                 setPage(1);
 
@@ -92,7 +85,7 @@ queryParams.append('page', page);
         } finally {
             setLoading(false);
         }
-    }, [activeTab, debouncedKw, filters.subjectId, filters.topicId, filters.levelId]);
+    }, [activeTab, debouncedKw, filters.subjectId, filters.topicId, filters.levelId, page, user.id]);
 
     useEffect(() => {
         loadData();
@@ -175,7 +168,6 @@ queryParams.append('page', page);
                             <Nav.Item>
                                 <Nav.Link 
                                     className={`fw-bold ${activeTab === 'document' ? 'bg-primary text-white' : 'text-dark'}`}
-                                    // 4. Gọi hàm handleTabChange thay vì setActiveTab
                                     onClick={() => handleTabChange('document')}
                                     style={{ cursor: 'pointer', borderRadius: '8px' }}
                                 >
@@ -185,7 +177,6 @@ queryParams.append('page', page);
                             <Nav.Item>
                                 <Nav.Link 
                                     className={`fw-bold ${activeTab === 'course' ? 'bg-primary text-white' : 'text-dark'}`}
-                                    // 4. Gọi hàm handleTabChange
                                     onClick={() => handleTabChange('course')}
                                     style={{ cursor: 'pointer', borderRadius: '8px' }}
                                 >

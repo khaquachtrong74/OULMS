@@ -67,7 +67,6 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
     
-    // Thêm vào UserController.java
     @GetMapping("/users/{id}")
     public String updateView(Model model, @PathVariable("id") int id) {
         UserResponseDTO user = this.userService.getUserById(id);
@@ -80,7 +79,7 @@ public class UserController {
 
     @PostMapping("/users/{id}")
     public String update(@PathVariable("id") int id, @ModelAttribute("user") UserUpdateRequestDTO u) {
-        u.setId(id); // Đảm bảo ID đồng nhất
+        u.setId(id); 
         this.userService.updateUser(u);
         return "redirect:/admin/users";
     }

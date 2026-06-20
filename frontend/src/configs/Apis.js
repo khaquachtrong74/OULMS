@@ -2,7 +2,7 @@ import axios from "axios"
 
 
 export const endpoints = {
-    baseURL: 'http://localhost:8080/backend/api',
+    baseURL: 'https://quietly-untrashed-darby.ngrok-free.dev/backend/api',
     login: '/login',
     register: '/users',
     logout: '/logout',

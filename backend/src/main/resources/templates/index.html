@@ -242,20 +242,7 @@
             <header class="d-flex justify-content-between align-items-center mb-5">
                 <h1 class="h3 fw-bold mb-0">Bảng điều khiển quản trị</h1>
 
-                <div class="d-flex gap-3 align-items-center">
-                    <div class="position-relative">
-                        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                        <input type="text"
-                               class="form-control ps-5 border-0 bg-white shadow-sm rounded-pill"
-                               placeholder="Tìm kiếm..."
-                               style="width: 300px;">
-                    </div>
 
-                    <button class="btn btn-white shadow-sm rounded-circle position-relative">
-                        <i class="bi bi-bell fs-5"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
-                    </button>
-                </div>
             </header>
 
             <div class="row g-3 mb-3">
@@ -304,23 +291,6 @@
                                 <p class="text-muted small mb-0">Hệ thống cung cấp công cụ thống kê chi tiết về tình hình thanh toán và sử dụng dịch vụ. Người quản trị có thể xuất báo cáo theo nhiều tiêu chí khác nhau như doanh thu theo thời gian, số lượng giao dịch, hoặc phân loại theo nhóm người dùng.</p>
                             </div>
 
-                            <div class="dropdown">
-                                <button class="btn btn-primary d-flex align-items-center gap-2 dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-file-earmark-arrow-down"></i> Xuất Báo Cáo
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="min-width: 250px;">
-                                    <li><h6 class="dropdown-header text-uppercase fw-bold">Tiêu chí xuất</h6></li>
-                                    <li><a class="dropdown-item py-2" th:href="@{/admin/export/revenue}">
-                                            <i class="bi bi-graph-up-arrow text-success me-2"></i> Doanh thu theo thời gian
-                                        </a></li>
-                                    <li><a class="dropdown-item py-2" th:href="@{/admin/export/transactions}">
-                                            <i class="bi bi-receipt-cutoff text-primary me-2"></i> Số lượng giao dịch
-                                        </a></li>
-                                    <li><a class="dropdown-item py-2" th:href="@{/admin/export/users}">
-                                            <i class="bi bi-pie-chart text-warning me-2"></i> Phân loại theo nhóm người dùng
-                                        </a></li>
-                                </ul>
-                            </div>
                         </div>
 
                         <div class="row g-4 mb-4">
@@ -473,25 +443,20 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <script>
-            // Hàm được gọi ngay khi DOM (giao diện) load xong
             document.addEventListener("DOMContentLoaded", function () {
                 fetchChartData();
             });
 
-            // 1. Dùng Fetch API gọi xuống server lấy cục JSON
             function fetchChartData() {
                 fetch('http://localhost:8080/backend/api/charts/revenue')
                         .then(response => response.json())
                         .then(data => {
-                            // data lúc này là một mảng object JS: [{period: "Tháng 1", totalRevenue: 5000, transactionCount: 10}, ...]
                             renderChart(data);
                         })
                         .catch(error => console.error("Lỗi khi tải dữ liệu biểu đồ:", error));
             }
 
-            // 2. Chế biến dữ liệu JSON và nạp vào Chart.js
             function renderChart(apiData) {
-                // Bóc tách JSON thành các mảng riêng biệt cho trục X và Y
                 const labels = apiData.map(item => item.period);
                 const revenueData = apiData.map(item => item.totalRevenue);
                 const txCountData = apiData.map(item => item.transactionCount);
@@ -499,28 +464,28 @@
                 const ctx = document.getElementById('revenueChart').getContext('2d');
 
                 new Chart(ctx, {
-                    type: 'bar', // Loại biểu đồ gốc là Bar (Cột)
+                    type: 'bar',
                     data: {
-                        labels: labels, // Trục X (Thời gian)
+                        labels: labels, 
                         datasets: [
                             {
                                 label: 'Doanh thu (VNĐ)',
-                                type: 'bar', // Dataset này vẽ dạng cột
+                                type: 'bar',
                                 data: revenueData,
-                                backgroundColor: 'rgba(0, 74, 173, 0.7)', // Màu xanh primary
+                                backgroundColor: 'rgba(0, 74, 173, 0.7)',
                                 borderColor: 'rgba(0, 74, 173, 1)',
                                 borderWidth: 1,
-                                yAxisID: 'y' // Trục Y bên trái
+                                yAxisID: 'y'
                             },
                             {
                                 label: 'Số lượng giao dịch',
-                                type: 'line', // Dataset này vẽ dạng đường đè lên cột
+                                type: 'line', 
                                 data: txCountData,
-                                backgroundColor: 'rgba(255, 193, 7, 1)', // Màu vàng warning
+                                backgroundColor: 'rgba(255, 193, 7, 1)',
                                 borderColor: 'rgba(255, 193, 7, 1)',
                                 borderWidth: 2,
-                                tension: 0.4, // Làm cong đường line
-                                yAxisID: 'y1' // Trục Y bên phải (để scale độc lập với số tiền lớn)
+                                tension: 0.4,
+                                yAxisID: 'y1' 
                             }
                         ]
                     },
@@ -539,7 +504,7 @@
                                 display: true,
                                 position: 'right',
                                 title: {display: true, text: 'Số lượng'},
-                                grid: {drawOnChartArea: false} // Ẩn đường lưới của trục Y2 để đỡ rối
+                                grid: {drawOnChartArea: false} 
                             }
                         }
                     }

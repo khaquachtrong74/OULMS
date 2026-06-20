@@ -148,5 +148,19 @@ public class DocumentController {
         model.addAttribute("document", this.docService.getDocumentById(id));
         return "documentCreate";
     }
+    
+    @PostMapping(
+            value = "/documents/{documentId}/{status}",
+            produces = "text/plain;charset=UTF-8"
+    )
+    @ResponseBody
+    public ResponseEntity<String> updateStatus(
+            @PathVariable("documentId") int id,
+            @PathVariable("status") DocumentStatus status) {
+
+        this.docService.updateDocumentStatus(id, status);
+
+        return ResponseEntity.ok("Cập nhật trạng thái thành công");
+    }
 
 }
