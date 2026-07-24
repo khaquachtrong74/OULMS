@@ -1,0 +1,136 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="index :: head"></th:block>
+</head>
+<body>
+    <aside>
+        <th:block th:replace="index :: sidebar"></th:block>
+    </aside>
+    
+    <main class="main-content bg-light min-vh-100 p-4">
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">
+                    <i class="bi bi-mortarboard text-primary me-2"></i>
+                    Quản lý khóa học
+                </h1>
+                <p class="text-muted mb-0">Danh sách các khóa học trong hệ thống</p>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center">
+                <form th:action="@{/admin/courses}" method="get" class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input type="text"
+                           name="kw"
+                           class="form-control ps-5 border-0 bg-white shadow-sm rounded-pill"
+                           placeholder="Tìm kiếm khóa học..."
+                           style="width: 300px;">
+                </form>
+                
+                <button class="btn btn-light shadow-sm rounded-circle">
+                    <i class="bi bi-bell fs-5"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-semibold mb-0">Danh sách khóa học</h5>
+
+            <a th:href="@{/admin/course}"
+               class="btn btn-primary rounded-pill px-4 shadow-sm">
+                <i class="bi bi-plus-circle me-2"></i>
+                Thêm khóa học
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Khóa học</th>
+                                <th>Môn học</th>
+                                <th>Giảng viên</th>
+                                <th>Mức giá</th>
+                                <th class="text-end pe-4">Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:each="c : ${courses}">
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center"
+                                             style="width: 42px; height: 42px;">
+                                            <i class="bi bi-collection-play fs-5"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold" th:text="${c.name}">Tên khóa học</div>
+                                            <small class="text-muted d-inline-block text-truncate" 
+                                                   style="max-width: 200px;" 
+                                                   th:text="${c.description}">
+                                                Mô tả
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-info-subtle text-info rounded-pill px-3 py-2"
+                                          th:text="${c.subjectName}">
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex align-items-center gap-2" th:if="${c.lecturerId != null}">
+                                        <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style="width: 28px; height: 28px;">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+                                        <span class="small" th:text="${c.lecturerName}">Tên GV</span>
+                                    </div>
+                                    <span class="text-muted small" th:if="${c.lecturerId == null}">Trống</span>
+                                </td>
+
+                                <td>
+                                    <span class="fw-semibold text-success" 
+                                          th:text="${#numbers.formatDecimal(c.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                    </span>
+                                </td>
+
+                                <td class="text-end pe-4">
+                                    <div class="d-flex flex-column align-items-end gap-2">
+                                        <a th:href="@{/admin/courses/} + ${c.id}"
+                                           class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                           style="width: 100px;">
+                                            <i class="bi bi-pencil-square me-1"></i> Sửa
+                                        </a>
+
+                                        <button class="btn btn-sm btn-outline-danger rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                                style="width: 100px;"
+                                                th:onclick="'deleteCourse(\'' + @{/api/courses/} + ${c.id} + '\')'">
+                                            <i class="bi bi-trash me-1"></i> Xóa
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(courses)}">
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    Chưa có khóa học nào trong hệ thống
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script th:src="@{/js/script.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

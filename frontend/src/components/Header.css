@@ -1,0 +1,107 @@
+.header-navbar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e9ecef;
+    padding: 0.9rem 0;
+}
+
+.brand-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(
+        135deg,
+        #0d6efd,
+        #4dabf7
+    );
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-title {
+    color: #212529;
+    font-weight: 700;
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.brand-subtitle {
+    color: #6c757d;
+    font-size: 0.75rem;
+}
+
+.header-link {
+    color: #495057 !important;
+    font-weight: 500;
+    transition: all .2s ease;
+    position: relative;
+    white-space: nowrap;
+}
+.navbar-nav .nav-link {
+    white-space: nowrap;
+}
+.header-link:hover {
+    color: #0d6efd !important;
+}
+
+.active-link {
+    color: #0d6efd !important;
+    font-weight: 600;
+}
+
+.active-link::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #0d6efd;
+    border-radius: 999px;
+}
+
+.user-trigger {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 12px;
+    transition: background .2s ease;
+}
+
+.user-trigger:hover {
+    background: #f8f9fa;
+}
+
+.user-trigger img {
+    border: 2px solid #dee2e6;
+}
+
+.user-name {
+    color: #212529;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.user-role {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.login-btn {
+    background: #0d6efd !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600 !important;
+    border-radius: 999px !important;
+    padding: 0.55rem 1.3rem !important;
+    transition: all .2s ease;
+}
+
+.login-btn:hover {
+    background: #0b5ed7 !important;
+    transform: translateY(-1px);
+}

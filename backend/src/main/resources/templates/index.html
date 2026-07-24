@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    <head th:fragment="head">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin Dashboard - EduDocs</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+        <style>
+            :root {
+                --primary-color: #004aad;
+                --secondary-color: #003a8c;
+                --sidebar-width: 280px;
+                --surface-bg: #f8f9ff;
+            }
+
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: var(--surface-bg);
+            }
+
+            /* Sidebar */
+            .sidebar {
+                width: var(--sidebar-width);
+                height: 100vh;
+                position: fixed;
+                left: 0;
+                top: 0;
+                background: white;
+                border-right: 1px solid #e2e8f0;
+                z-index: 1000;
+                overflow-y: auto;
+            }
+
+            .nav-link-admin {
+                padding: 12px 24px;
+                color: #64748b;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                text-decoration: none;
+                transition: all 0.2s;
+                border-radius: 8px;
+                margin: 4px 16px;
+            }
+
+            .nav-link-admin:hover,
+            .nav-link-admin.active {
+                background-color: #f1f3ff;
+                color: var(--primary-color);
+            }
+
+            .nav-link-admin.active {
+                font-weight: 600;
+            }
+
+            /* Main */
+            .main-content {
+                margin-left: var(--sidebar-width);
+                padding: 32px;
+            }
+
+            /* Stats */
+            .stat-card {
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 16px;
+                padding: 24px;
+                height: 100%;
+            }
+
+            .stat-icon {
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                margin-bottom: 16px;
+            }
+
+            /* Table */
+            .table-container {
+                background: white;
+                border-radius: 16px;
+                border: 1px solid #e2e8f0;
+                overflow: hidden;
+            }
+
+            .table thead th {
+                background-color: #f8fafc;
+                border-bottom: 1px solid #e2e8f0;
+                padding: 16px;
+                font-weight: 600;
+                font-size: 13px;
+                color: #64748b;
+            }
+
+            .table tbody td {
+                padding: 16px;
+                vertical-align: middle;
+                border-bottom: 1px solid #f1f5f9;
+            }
+
+            .btn-action {
+                width: 32px;
+                height: 32px;
+                padding: 0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+            }
+
+            .sub-menu {
+                font-size: 14px;
+                padding-left: 20px;
+            }
+
+            .sub-menu i {
+                font-size: 13px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <aside class="sidebar d-flex flex-column" th:fragment="sidebar">
+            <div class="p-4 mb-4">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-primary p-2 rounded-3 text-white">
+                        <i class="bi bi-book-half fs-4"></i>
+                    </div>
+                    <span class="fs-4 fw-bold text-primary">EduDocs</span>
+                </div>
+            </div>
+
+            <nav class="flex-grow-1">
+                <a th:href="@{/}" class="nav-link-admin">
+                    <i class="bi bi-grid-fill"></i> Tổng quan
+                </a>
+
+                <a th:href="@{/admin/users}" class="nav-link-admin">
+                    <i class="bi bi-people"></i> Quản lý người dùng
+                </a>
+
+                <a class="nav-link-admin d-flex justify-content-between align-items-center"
+                   data-bs-toggle="collapse"
+                   href="#documentMenu"
+                   role="button"
+                   aria-expanded="false">
+                    <span>
+                        <i class="bi bi-folder"></i> Quản lý tài liệu
+                    </span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse ps-3" id="documentMenu">
+                    <a th:href="@{/admin/subjects}" class="nav-link-admin sub-menu">
+                        <i class="bi bi-book"></i> Môn học
+                    </a>
+                    <a th:href="@{/admin/topics}" class="nav-link-admin sub-menu">
+                        <i class="bi bi-tags"></i> Chủ đề
+                    </a>
+                    <div class="nav-item dropdown" data-bs-auto-close="true">
+                        <a href="#" class="nav-link-admin sub-menu dropdown-toggle" 
+                           data-bs-toggle="dropdown" 
+                           aria-expanded="false">
+                            <i class="bi bi-file-earmark-text"></i> Tài liệu
+                        </a>
+                        <ul class="dropdown-menu" >
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/active}">Quản lý tài liệu</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/pending}">Tài liệu chờ duyệt</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/hidden}">Tài liệu đã ẩn</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/rejected}">Tài liệu từ chối duyệt</a></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/hidden}">Tài liệu bị ẩn</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/admin/documents/stats}">Thống kê tổng</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <a th:href="@{/admin/courses}" class="nav-link-admin">
+                    <i class="bi bi-mortarboard-fill"></i> Khóa học
+                </a>
+
+                <a class="nav-link-admin d-flex justify-content-between align-items-center"
+                   data-bs-toggle="collapse"
+                   href="#reportMenu"
+                   role="button"
+                   aria-expanded="false">
+                    <span>
+                        <i class="bi bi-bar-chart-line"></i> Thống kê & Báo cáo
+                    </span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse ps-3 show" id="reportMenu">
+                    <a th:href="@{/admin/reports/revenue}" class="nav-link-admin sub-menu">
+                        <i class="bi bi-graph-up-arrow"></i> Doanh thu & Dịch vụ
+                    </a>
+                    <a th:href="@{/admin/reports/transactions}" class="nav-link-admin sub-menu">
+                        <i class="bi bi-receipt"></i> Lịch sử Giao dịch
+                    </a>
+                </div>
+            </nav>
+
+            <div class="p-4 mt-auto border-top" sec:authorize="isAuthenticated()">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" 
+                         style="width: 40px; height: 40px; flex-shrink: 0;">
+                        <i class="bi bi-person-badge fs-5"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="mb-0 fw-bold small text-truncate" 
+                           sec:authentication="name">
+                            admin@edudocs.vn
+                        </p>
+                    </div>
+                </div>
+                <form th:action="@{/logout}" method="post" class="mt-3">
+                    <button type="submit"
+                            class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Đăng xuất
+                    </button>
+                </form>
+            </div>
+
+            <div class="p-4 mt-auto border-top" sec:authorize="isAnonymous()">
+                <a th:href="@{/admin/login}" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập hệ thống
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="d-flex justify-content-between align-items-center mb-5">
+                <h1 class="h3 fw-bold mb-0">Bảng điều khiển quản trị</h1>
+
+
+            </header>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <p class="text-muted small mb-1">Tổng người dùng</p>
+                        <h3 class="fw-bold mb-1" th:text="${totalUsers != null ? #numbers.formatInteger(totalUsers, 0, 'COMMA') : '0'}">24,850</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <p class="text-muted small mb-1">Tài liệu chờ duyệt</p>
+                        <h3 class="fw-bold mb-1" th:text="${totalPendingDocs != null ? totalPendingDocs : '0'}">142</h3>
+                        <span class="badge bg-warning text-dark">Ưu tiên</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-info bg-opacity-10 text-info">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                        <p class="text-muted small mb-1">Giao dịch đang chờ</p>
+                        <h3 class="fw-bold mb-1" th:text="${totalPendingTransactions != null ? totalPendingTransactions : '0'}">28</h3>
+                        <p class="text-info small mb-0">
+                            <i class="bi bi-arrow-repeat"></i> Chờ đối soát
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1">Tình hình Thanh toán & Dịch vụ</h5>
+                                <p class="text-muted small mb-0">Hệ thống cung cấp công cụ thống kê chi tiết về tình hình thanh toán và sử dụng dịch vụ. Người quản trị có thể xuất báo cáo theo nhiều tiêu chí khác nhau như doanh thu theo thời gian, số lượng giao dịch, hoặc phân loại theo nhóm người dùng.</p>
+                            </div>
+
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded-3 border d-flex align-items-center gap-3">
+                                    <div class="bg-white p-2 rounded shadow-sm text-success"><i class="bi bi-wallet2 fs-4"></i></div>
+                                    <div>
+                                        <p class="text-muted small fw-semibold mb-1">Tổng doanh thu</p>
+                                        <h4 class="fw-bold mb-0" th:text="${totalRevenue != null ? #numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT') + ' ₫' : '0 ₫'}">125,500,000 ₫</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded-3 border d-flex align-items-center gap-3">
+                                    <div class="bg-white p-2 rounded shadow-sm text-primary"><i class="bi bi-arrow-left-right fs-4"></i></div>
+                                    <div>
+                                        <p class="text-muted small fw-semibold mb-1">Tổng giao dịch thành công</p>
+                                        <h4 class="fw-bold mb-0" th:text="${totalSuccessTransactions != null ? totalSuccessTransactions : 0}">1,842</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded-3 border d-flex align-items-center gap-3">
+                                    <div class="bg-white p-2 rounded shadow-sm text-warning"><i class="bi bi-star-fill fs-4"></i></div>
+                                    <div>
+                                        <p class="text-muted small fw-semibold mb-1">Học viên tham gia khóa học</p>
+                                        <h4 class="fw-bold mb-0" th:text="${totalEnrolledStudents != null ? totalEnrolledStudents : 0}">456</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border rounded p-4" style="height: 350px;">
+                            <canvas id="revenueChart" width="100%" height="100%"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-xl-8">
+                    <div class="table-container">
+                        <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold mb-0">Tài liệu đang trong trạng thái chờ duyệt</h5>
+                            <a th:href="@{/admin/documents/pending}" class="text-primary small text-decoration-none fw-bold">Xem tất cả</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Tài liệu (Mã/Tiêu đề)</th>
+                                        <th>Mô tả</th>
+                                        <th>Chủ đề</th>
+                                        <th>Cấp độ</th>
+                                        <th>Người đăng</th>
+                                        <th class="text-end pe-4">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(pendingDocs)}">
+                                        <td colspan="6" class="text-center py-5 text-muted">
+                                            <i class="bi bi-inbox fs-1 d-block mb-2 text-black-50"></i>
+                                            Không có tài liệu nào đang chờ duyệt.
+                                        </td>
+                                    </tr>
+
+                                    <tr th:each="d : ${pendingDocs}" th:id="'doc-row-' + ${d.id}">
+
+                                        <td class="ps-4">
+                                            <a th:href="@{/admin/documents/view/} + ${d.id}" class="text-decoration-none text-dark d-block">
+                                                <div class="fw-bold text-primary" th:text="${d.title}">Tiêu đề</div>
+                                                <small class="text-muted">ID: <span th:text="${d.id}"></span></small>
+                                            </a>
+                                        </td>
+
+                                        <td class="text-muted text-truncate" style="max-width: 220px;" th:text="${d.description}"></td>
+
+                                        <td><span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2" th:text="${d.topicId.name}"></span></td>
+                                        <td><span class="badge bg-success-subtle text-success rounded-pill px-3 py-2" th:text="${d.levelId.name}"></span></td>
+
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style="width: 30px; height: 30px;">
+                                                    <i class="bi bi-person"></i>
+                                                </div>
+                                                <span class="small" th:text="${d.uploadedBy.email}"></span>
+                                            </div>
+                                        </td>
+
+                                        <td class="text-end pe-4">
+                                            <div class="d-flex flex-column align-items-end gap-2">
+                                                <a th:href="${d.fileUrl}" target="_blank" class="btn btn-sm btn-outline-info rounded-pill d-flex align-items-center justify-content-center gap-2" style="width: 100px;">
+                                                    <i class="bi bi-file-earmark-text"></i> Xem File
+                                                </a>
+                                                <button th:onclick="'updateStatusDocument(\'' + @{/admin/documents/} + ${d.id} + '/ACTIVE\')'"
+                                                        class="btn btn-sm btn-outline-success rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                                        style="width: 100px;">
+                                                    <i class="bi bi-check-circle"></i> Duyệt
+                                                </button>
+                                                <button th:onclick="'updateStatusDocument(\'' + @{/admin/documents/} + ${d.id} + '/REJECTED\')'"
+                                                        class="btn btn-sm btn-outline-danger rounded-pill d-flex align-items-center justify-content-center gap-2"
+                                                        style="width: 100px;">
+                                                    <i class="bi bi-x-circle"></i> Từ chối
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4">
+                    <div class="stat-card mb-4">
+                        <h5 class="fw-bold mb-4">Người dùng mới</h5>
+
+                        <div th:if="${#lists.isEmpty(newUsers)}" class="text-center text-muted small py-3">
+                            Chưa có người dùng đăng ký mới.
+                        </div>
+
+                        <div class="d-flex flex-column gap-3">
+                            <div class="d-flex align-items-center justify-content-between" th:each="user : ${newUsers}">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img th:src="${user.avatar != null and !user.avatar.isEmpty() ? user.avatar : 'https://ui-avatars.com/api/?name=' + user.firstName + '+' + user.lastName + '&background=random'}"
+                                         class="rounded-circle object-fit-cover" 
+                                         width="36" height="36" 
+                                         alt="User Avatar">
+                                    <div>
+                                        <p class="mb-0 small fw-bold" th:text="${user.lastName + ' ' + user.firstName}">Hoàng Nam</p>
+                                        <p class="mb-0 text-muted" style="font-size: 11px;" th:text="${user.email}">
+                                            email@example.com
+                                        </p>
+                                    </div>
+                                </div>
+                                <span class="text-muted" style="font-size: 11px;" 
+                                      th:text="${user.createdAt != null ? #dates.format(user.createdAt, 'HH:mm - dd/MM') : 'Gần đây'}">
+                                    2 phút trước
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+        <script th:src="@{/js/script.js}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                fetchChartData();
+            });
+
+            function fetchChartData() {
+                fetch('http://localhost:8080/backend/api/charts/revenue')
+                        .then(response => response.json())
+                        .then(data => {
+                            renderChart(data);
+                        })
+                        .catch(error => console.error("Lỗi khi tải dữ liệu biểu đồ:", error));
+            }
+
+            function renderChart(apiData) {
+                const labels = apiData.map(item => item.period);
+                const revenueData = apiData.map(item => item.totalRevenue);
+                const txCountData = apiData.map(item => item.transactionCount);
+
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels, 
+                        datasets: [
+                            {
+                                label: 'Doanh thu (VNĐ)',
+                                type: 'bar',
+                                data: revenueData,
+                                backgroundColor: 'rgba(0, 74, 173, 0.7)',
+                                borderColor: 'rgba(0, 74, 173, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Số lượng giao dịch',
+                                type: 'line', 
+                                data: txCountData,
+                                backgroundColor: 'rgba(255, 193, 7, 1)',
+                                borderColor: 'rgba(255, 193, 7, 1)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                yAxisID: 'y1' 
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {display: true, text: 'Doanh thu'}
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {display: true, text: 'Số lượng'},
+                                grid: {drawOnChartArea: false} 
+                            }
+                        }
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>

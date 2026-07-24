@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+  <!-- Define Persistence Unit -->
+  <persistence-unit name="my_persistence_unit">
+    <class>com.qtk.pojo.Tag</class>
+    <class>com.qtk.pojo.Topic</class>
+    <class>com.qtk.pojo.Transaction</class>
+    <class>com.qtk.pojo.Chat</class>
+    <class>com.qtk.pojo.Question</class>
+    <class>com.qtk.pojo.StudentAnswer</class>
+    <class>com.qtk.pojo.User</class>
+    <class>com.qtk.pojo.Course</class>
+    <class>com.qtk.pojo.Quizzes</class>
+    <class>com.qtk.pojo.Comment</class>
+    <class>com.qtk.pojo.ForumPost</class>
+    <class>com.qtk.pojo.Subject</class>
+    <class>com.qtk.pojo.CourseStudent</class>
+    <class>com.qtk.pojo.Progress</class>
+    <class>com.qtk.pojo.Level</class>
+    <class>com.qtk.pojo.Document</class>
+    <class>com.qtk.pojo.QuizzesResult</class>
+    <class>com.qtk.pojo.ForumComment</class>
+  </persistence-unit>
+</persistence>

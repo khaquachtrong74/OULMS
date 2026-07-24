@@ -1,0 +1,81 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="index :: head"></th:block>
+</head>
+<body>
+    <aside>
+        <th:block th:replace="index :: sidebar"></th:block>
+    </aside>
+    
+    <main class="main-content bg-light min-vh-100 p-4">
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">
+                    <i class="bi bi-graph-up-arrow text-primary me-2"></i>
+                    Báo cáo Doanh thu
+                </h1>
+                <p class="text-muted mb-0">Thống kê dòng tiền từ khóa học và tài liệu</p>
+            </div>
+            <div class="d-flex gap-3 align-items-center">
+                <button class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+                    <i class="bi bi-download me-2"></i> Xuất báo cáo (Excel)
+                </button>
+            </div>
+        </header>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                    <p class="text-muted small fw-semibold mb-1">Tổng doanh thu tháng này</p>
+                    <h3 class="fw-bold text-primary mb-0" th:text="${#numbers.formatDecimal(currentMonthRevenue, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                    <p class="text-muted small fw-semibold mb-1">Tăng trưởng so với tháng trước</p>
+                    <h3 class="fw-bold text-success mb-0">
+                        <i class="bi bi-arrow-up-right-circle"></i> <span th:text="${growthRate}">0</span>%
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biểu đồ -->
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-4">Biểu đồ doanh thu theo năm</h5>
+            <div style="height: 400px;">
+                <canvas id="detailedRevenueChart" width="100%" height="100%"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script th:src="@{/js/script.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('http://localhost:8080/backend/admin/reports/revenue/monthly')
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.getElementById('detailedRevenueChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line', 
+                        data: {
+                            labels: data.map(item => item.month),
+                            datasets: [{
+                                label: 'Doanh thu (VNĐ)',
+                                data: data.map(item => item.amount),
+                                borderColor: 'rgba(0, 74, 173, 1)', 
+                                backgroundColor: 'rgba(0, 74, 173, 0.1)', 
+                                fill: true,
+                                tension: 0.4 
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                });
+        });
+    </script>
+</body>
+</html>

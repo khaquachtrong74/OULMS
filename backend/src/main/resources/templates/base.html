@@ -1,0 +1,47 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    <head>
+        <title>OULMS</title>
+        <th:block th:fragment="css">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        </th:block>
+    </head>
+    <body>
+   
+            <!-- Header Fragment for EduDocs (Bootstrap 5 + Thymeleaf) -->
+        <header th:fragment="header" class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-3 px-4 px-md-5">
+            <div class="container-fluid max-w-container">
+                <!-- Logo & Brand -->
+                <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+                    <div class="bg-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-book-half" viewBox="0 0 16 16">
+                            <path d="M8.5 2.687c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.909-.348-2.139-.744-3.388-.744-1.514 0-3.087.593-4.112 1.154V2.687zM3 1.714c.15-.027.322-.047.512-.057 1.33-.06 2.458.137 3.112.826v10.15c-1.025-.561-2.598-1.154-4.112-1.154-1.25 0-2.479.396-3.388.744V2.607c.885-.37 2.154-.769 3.388-.893z"/>
+                        </svg>
+                    </div>
+                    <span class="fs-4 fw-bold text-primary mb-0">EduDocs</span>
+                </a>
+
+                <!-- Mobile Toggle -->
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </header>
+    
+        
+        <footer th:fragment="footer">
+            <div class="alert alert-info">OULMS Website &copy; 2026</div>
+        </footer>
+    </body>
+    <style>
+        .text-primary { color: #004aad !important; }
+        .bg-primary { background-color: #004aad !important; }
+        .btn-primary { background-color: #004aad !important; border-color: #004aad !important; }
+        .btn-primary:hover { background-color: #003a8c !important; }
+        .hover-primary:hover { color: #004aad !important; }
+        .max-w-container { max-width: 1400px; }
+        .nav-link { transition: all 0.2s ease-in-out; }
+    </style>
+</html>

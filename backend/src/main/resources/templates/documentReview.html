@@ -1,0 +1,94 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{index :: head}"></th:block>
+</head>
+<body>
+    <div class="wrapper">
+        <aside th:replace="~{index :: sidebar}"></aside>
+        
+        <main class="main-content p-4 bg-light min-vh-100">
+            <header class="mb-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold mb-1">Hệ thống Kiểm duyệt Tài liệu</h2>
+                    <p class="text-muted mb-0">Trạng thái: <span class="badge bg-warning text-dark">PENDING</span></p>
+                </div>
+                <a th:href="@{/admin/documents}" class="btn btn-outline-secondary rounded-pill">
+                    <i class="bi bi-arrow-left"></i> Quay lại danh sách
+                </a>
+            </header>
+
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm p-4 rounded-4 h-100">
+                        <h4 class="text-primary fw-bold mb-4" th:text="${document.title}"></h4>
+                        
+                        <div class="mb-3">
+                            <label class="text-muted small d-block fw-semibold">Mô tả nội dung</label>
+                            <p class="fs-6" th:text="${document.description}"></p>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="text-muted small d-block fw-semibold">Chủ đề</label>
+                                <span class="badge bg-primary-subtle text-primary" th:text="${document.topicId.name}"></span>
+                            </div>
+                            <div class="col-6">
+                                <label class="text-muted small d-block fw-semibold">Cấp độ học lý</label>
+                                <span class="badge bg-success-subtle text-success" th:text="${document.levelId.name}"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="text-muted small d-block fw-semibold">Tác giả gửi lên</label>
+                            <p class="mb-0" th:text="${document.uploadedBy.email}"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm p-4 rounded-4 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <label class="text-muted small d-block fw-semibold mb-2">Tệp tin đính kèm</label>
+                            <div class="bg-dark rounded-3 d-flex align-items-center justify-content-center p-5 mb-4" style="min-height: 250px;">
+                                <a th:href="${document.fileUrl}" target="_blank" class="btn btn-light rounded-pill px-4">
+                                    <i class="bi bi-file-earmark-pdf me-2"></i>Xem toàn bộ file ở tab mới
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end border-top pt-3">
+                            <button type="button" class="btn btn-danger px-4 rounded-pill shadow-sm"
+                                    th:onclick="'processReview(\'' + @{/api/documents/} + ${document.id} + '/REJECTED\')'">
+                                <i class="bi bi-x-circle me-2"></i>Từ chối phê duyệt
+                            </button>
+                            
+                            <button type="button" class="btn btn-success px-4 rounded-pill shadow-sm"
+                                    th:onclick="'processReview(\'' + @{/api/documents/} + ${document.id} + '/ACTIVE\')'">
+                                <i class="bi bi-check-circle me-2"></i>Phê duyệt phát hành
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script th:src="@{/js/script.js}"></script>
+    <script>
+        // Hàm bổ trợ đồng bộ trạng thái Client-Server mà không làm vỡ trải nghiệm điều hướng
+        function processReview(apiUrl) {
+            // Thực thi hàm gọi API Fetch/Axios có sẵn trong script.js của bạn
+            if (typeof updateStatusDocument === 'function') {
+                updateStatusDocument(apiUrl);
+                // Tạo độ trễ ngắn cho Transaction của Database hoàn tất, sau đó chuyển hướng an toàn
+                setTimeout(() => {
+                    window.location.href = '/admin/documents';
+                }, 400);
+            } else {
+                console.error("Hàm updateStatusDocument chưa được định nghĩa trong script.js");
+            }
+        }
+    </script>
+</body>
+</html>

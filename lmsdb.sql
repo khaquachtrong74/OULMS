@@ -38,6 +38,15 @@ CREATE TABLE `chat` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `chat`
+--
+
+LOCK TABLES `chat` WRITE;
+/*!40000 ALTER TABLE `chat` DISABLE KEYS */;
+/*!40000 ALTER TABLE `chat` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `comment`
 --
 
@@ -58,6 +67,15 @@ CREATE TABLE `comment` (
   CONSTRAINT `fk_comment_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `comment`
+--
+
+LOCK TABLES `comment` WRITE;
+/*!40000 ALTER TABLE `comment` DISABLE KEYS */;
+/*!40000 ALTER TABLE `comment` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `course`
@@ -84,6 +102,15 @@ CREATE TABLE `course` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `course`
+--
+
+LOCK TABLES `course` WRITE;
+/*!40000 ALTER TABLE `course` DISABLE KEYS */;
+/*!40000 ALTER TABLE `course` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `course_student`
 --
 
@@ -98,12 +125,23 @@ CREATE TABLE `course_student` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `course_id_UNIQUE` (`course_id`),
+  UNIQUE KEY `student_id_UNIQUE` (`student_id`),
   KEY `fk_course_student_course_idx` (`course_id`),
   KEY `fk_course_student_student_idx` (`student_id`),
   CONSTRAINT `fk_course_student_course` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
   CONSTRAINT `fk_course_student_student` FOREIGN KEY (`student_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `course_student`
+--
+
+LOCK TABLES `course_student` WRITE;
+/*!40000 ALTER TABLE `course_student` DISABLE KEYS */;
+/*!40000 ALTER TABLE `course_student` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `document`
@@ -119,22 +157,29 @@ CREATE TABLE `document` (
   `url` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `type` enum('PDF','VIDEO','SLIDE','DOC') DEFAULT NULL,
   `topic_id` int NOT NULL,
-  `subject_id` int NOT NULL,
   `level_id` int NOT NULL,
   `uploaded_by` int NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
+  `status` enum('ACTIVE','HIDDEN','DELETE') DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `topic_id_idx` (`topic_id`),
-  KEY `subject_id_idx` (`subject_id`),
   KEY `level_id_idx` (`level_id`),
   KEY `user_id_idx` (`uploaded_by`),
   CONSTRAINT `fk_document_level` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`),
-  CONSTRAINT `fk_document_subject` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`id`),
   CONSTRAINT `fk_document_topic` FOREIGN KEY (`topic_id`) REFERENCES `topic` (`id`),
   CONSTRAINT `fk_document_user` FOREIGN KEY (`uploaded_by`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `document`
+--
+
+LOCK TABLES `document` WRITE;
+/*!40000 ALTER TABLE `document` DISABLE KEYS */;
+/*!40000 ALTER TABLE `document` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `document_tag`
@@ -154,6 +199,15 @@ CREATE TABLE `document_tag` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `document_tag`
+--
+
+LOCK TABLES `document_tag` WRITE;
+/*!40000 ALTER TABLE `document_tag` DISABLE KEYS */;
+/*!40000 ALTER TABLE `document_tag` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `forum_comment`
 --
 
@@ -170,10 +224,48 @@ CREATE TABLE `forum_comment` (
   PRIMARY KEY (`id`),
   KEY `fk_forum_comment_post_idx` (`post_id`),
   KEY `fk_forum_comment_user_idx` (`user_id`),
-  CONSTRAINT `fk_forum_comment_post` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`),
+  CONSTRAINT `fk_forum_comment_post` FOREIGN KEY (`post_id`) REFERENCES `forum_post` (`id`),
   CONSTRAINT `fk_forum_comment_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `forum_comment`
+--
+
+LOCK TABLES `forum_comment` WRITE;
+/*!40000 ALTER TABLE `forum_comment` DISABLE KEYS */;
+/*!40000 ALTER TABLE `forum_comment` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `forum_post`
+--
+
+DROP TABLE IF EXISTS `forum_post`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `forum_post` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `content` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `user_id` int NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_post_user_idx` (`user_id`),
+  CONSTRAINT `fk_post_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `forum_post`
+--
+
+LOCK TABLES `forum_post` WRITE;
+/*!40000 ALTER TABLE `forum_post` DISABLE KEYS */;
+/*!40000 ALTER TABLE `forum_post` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `level`
@@ -192,47 +284,13 @@ CREATE TABLE `level` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `payment`
+-- Dumping data for table `level`
 --
 
-DROP TABLE IF EXISTS `payment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `payment` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `course_id` int NOT NULL,
-  `amount` int NOT NULL,
-  `status` enum('SUCCESS','FAILED','PENDING') DEFAULT NULL,
-  `created_at` datetime DEFAULT NULL,
-  `updated_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_payment_user_idx` (`user_id`),
-  KEY `fk_payment_course_idx` (`course_id`),
-  CONSTRAINT `fk_payment_course` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
-  CONSTRAINT `fk_payment_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `post`
---
-
-DROP TABLE IF EXISTS `post`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `post` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `content` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `user_id` int NOT NULL,
-  `created_at` datetime DEFAULT NULL,
-  `updated_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_post_user_idx` (`user_id`),
-  CONSTRAINT `fk_post_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+LOCK TABLES `level` WRITE;
+/*!40000 ALTER TABLE `level` DISABLE KEYS */;
+/*!40000 ALTER TABLE `level` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `progress`
@@ -250,12 +308,23 @@ CREATE TABLE `progress` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id_UNIQUE` (`user_id`),
+  UNIQUE KEY `document_id_UNIQUE` (`document_id`),
   KEY `fk_progress_user_idx` (`user_id`),
   KEY `fk_progress_document_idx` (`document_id`),
   CONSTRAINT `fk_progress_document` FOREIGN KEY (`document_id`) REFERENCES `document` (`id`),
   CONSTRAINT `fk_progress_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `progress`
+--
+
+LOCK TABLES `progress` WRITE;
+/*!40000 ALTER TABLE `progress` DISABLE KEYS */;
+/*!40000 ALTER TABLE `progress` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `question`
@@ -278,6 +347,15 @@ CREATE TABLE `question` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `question`
+--
+
+LOCK TABLES `question` WRITE;
+/*!40000 ALTER TABLE `question` DISABLE KEYS */;
+/*!40000 ALTER TABLE `question` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `quizzes`
 --
 
@@ -295,6 +373,15 @@ CREATE TABLE `quizzes` (
   CONSTRAINT `fk_quizzes_course` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `quizzes`
+--
+
+LOCK TABLES `quizzes` WRITE;
+/*!40000 ALTER TABLE `quizzes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `quizzes` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `quizzes_result`
@@ -317,6 +404,15 @@ CREATE TABLE `quizzes_result` (
   CONSTRAINT `fk_quizzes_result_user` FOREIGN KEY (`student_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `quizzes_result`
+--
+
+LOCK TABLES `quizzes_result` WRITE;
+/*!40000 ALTER TABLE `quizzes_result` DISABLE KEYS */;
+/*!40000 ALTER TABLE `quizzes_result` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `student_answer`
@@ -342,6 +438,15 @@ CREATE TABLE `student_answer` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `student_answer`
+--
+
+LOCK TABLES `student_answer` WRITE;
+/*!40000 ALTER TABLE `student_answer` DISABLE KEYS */;
+/*!40000 ALTER TABLE `student_answer` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `subject`
 --
 
@@ -357,6 +462,15 @@ CREATE TABLE `subject` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `subject`
+--
+
+LOCK TABLES `subject` WRITE;
+/*!40000 ALTER TABLE `subject` DISABLE KEYS */;
+/*!40000 ALTER TABLE `subject` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `tag`
@@ -375,6 +489,15 @@ CREATE TABLE `tag` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `tag`
+--
+
+LOCK TABLES `tag` WRITE;
+/*!40000 ALTER TABLE `tag` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tag` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `topic`
 --
 
@@ -386,9 +509,21 @@ CREATE TABLE `topic` (
   `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `subject_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_topic_subject_idx` (`subject_id`),
+  CONSTRAINT `fk_topic_subject` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `topic`
+--
+
+LOCK TABLES `topic` WRITE;
+/*!40000 ALTER TABLE `topic` DISABLE KEYS */;
+/*!40000 ALTER TABLE `topic` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `transaction`
@@ -398,19 +533,31 @@ DROP TABLE IF EXISTS `transaction`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `transaction` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `payment_id` int NOT NULL,
+  `id` int NOT NULL,
   `amount` int NOT NULL,
-  `status` enum('SUCCESS','FAILED') DEFAULT NULL,
-  `payment_method` enum('MOMO','ZALOPAY','VNPAY') DEFAULT NULL,
-  `transaction_ref` varchar(50) DEFAULT NULL,
+  `status` enum('SUCCESS','PENDING','FAILED') NOT NULL DEFAULT 'PENDING',
+  `payment_method` enum('MOMO','ZALOPAY','VNPAY') NOT NULL,
+  `course_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `transaction_ref` varchar(100) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_transaction_payment_idx` (`payment_id`),
-  CONSTRAINT `fk_transaction_payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`)
+  KEY `fk_transaction_course_idx` (`course_id`),
+  KEY `fk_transaction_user_idx` (`user_id`),
+  CONSTRAINT `fk_transaction_course` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
+  CONSTRAINT `fk_transaction_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `transaction`
+--
+
+LOCK TABLES `transaction` WRITE;
+/*!40000 ALTER TABLE `transaction` DISABLE KEYS */;
+/*!40000 ALTER TABLE `transaction` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `user`
@@ -421,16 +568,27 @@ DROP TABLE IF EXISTS `user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `email` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `password` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `email` varchar(50) CHARACTER UNIQUE SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `role` enum('STUDENT','LECTURER','ADMIN') DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
+  `last_name` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `avatar` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user`
+--
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -441,4 +599,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-24 10:41:42
+-- Dump completed on 2026-05-26 11:07:38
