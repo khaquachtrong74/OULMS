@@ -4,6 +4,7 @@ import { Container, Row, Col, Card, Button, Spinner,  Alert } from 'react-bootst
 import { CameraVideo, PersonVideo3,  InfoCircle } from 'react-bootstrap-icons';
 import Apis, { endpoints } from '../../configs/Apis';
 import CourseHeader from '../../components/CourseHeader';
+import courseApi from '../../configs/api/courseApi';
 
 const LearningScreen = () => {
     const { courseId } = useParams();
@@ -17,7 +18,7 @@ const LearningScreen = () => {
     const loadCourseData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await Apis.get(`${endpoints['courses']}/${courseId}`);
+            const res = await courseApi.getDetail(courseId);
             setCourse(res.data);
         } catch (err) {
             console.error("Lỗi khi tải dữ liệu học tập:", err);

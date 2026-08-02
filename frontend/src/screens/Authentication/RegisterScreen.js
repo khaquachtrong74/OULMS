@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Apis, { endpoints } from "../../configs/Apis";
 import { HttpStatusCode } from "axios";
 import "./LoginPage.css"; 
+import authApi from "../../configs/api/authApi";
 
 const useRegisterForm = () => {
     const [user, setUser] = useState({
@@ -93,7 +94,7 @@ const RegisterScreen = () => {
                     formData.append("avatar", avatar);
                 }
 
-                let res = await Apis.post(endpoints["register"], formData);
+                let res = await authApi.register(formData);
 
                 if (res.status === HttpStatusCode.Created || res.status === HttpStatusCode.Ok) {
                     nav("/login");

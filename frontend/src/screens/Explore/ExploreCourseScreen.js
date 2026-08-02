@@ -6,6 +6,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom'; // Bổ sung us
 import DocumentCard from '../../components/DocumentCard';
 import CourseCard from '../../components/CourseCard';
 import { MyUserContext } from '../../configs/Contexts';
+import documentApi from '../../configs/api/documentApi';
+import categoryApi from '../../configs/api/categoryApi';
+import courseApi from '../../configs/api/courseApi';
 
 const ExploreCourseScreen = () => {
     const nav = useNavigate();
@@ -48,9 +51,9 @@ const ExploreCourseScreen = () => {
         const fetchMetadata = async () => {
             try {
                 const [resSub, resLev, resTop] = await Promise.all([
-                    Apis.get(endpoints['subject']),
-                    Apis.get(endpoints['level']),
-                    Apis.get(endpoints['topic'])
+                    categoryApi.getSubjects(),
+                    categoryApi.getLevels(),
+                    categoryApi.getTopics()
                 ]);
                 setSubjects(resSub.data);
                 setLevels(resLev.data);
@@ -73,11 +76,11 @@ queryParams.append('page', page);
                 if (filters.topicId) queryParams.append('topicId', filters.topicId);
                 if (filters.levelId) queryParams.append('levelId', filters.levelId);
                 
-                const res = await Apis.get(`${endpoints.document}?${queryParams.toString()}`);
+                const res = await documentApi.getAll(queryParams.toString());
                 setDocuments(res.data);
             } else if (activeTab === 'course') {
                 queryParams.append("currentUserId", user.id);
-                const res = await Apis.get(`${endpoints['courses']}?${queryParams.toString()}`);
+                const res = await courseApi.getAll(queryParams.toString())
                 setCourses(res.data);
             }
         } catch (err) {

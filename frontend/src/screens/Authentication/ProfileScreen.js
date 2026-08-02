@@ -4,6 +4,7 @@ import { Person,  ShieldLock, PencilSquare, XCircle, Save, Camera } from 'react-
 import { MyUserContext } from '../../configs/Contexts';
 import Apis, { endpoints } from '../../configs/Apis';
 import { ACTION_TYPE } from '../../configs/constants';
+import authApi from '../../configs/api/authApi';
 
 const ProfileScreen = () => {
   const [user, dispatch] = useContext(MyUserContext);
@@ -64,7 +65,7 @@ const ProfileScreen = () => {
         form.append("avatar", avatarFile);
       }
 
-      const res = await Apis.patch(endpoints['profile'], form);
+      const res = await authApi.patchProfile(form);
       
       dispatch({ type: ACTION_TYPE.LOGIN, payload: res.data });
       setIsEditing(false);

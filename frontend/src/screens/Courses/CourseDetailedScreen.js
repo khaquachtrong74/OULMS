@@ -6,6 +6,8 @@ import Apis, { endpoints } from '../../configs/Apis';
 import { MyUserContext } from '../../configs/Contexts';
 import CourseCard from '../../components/CourseCard';
 import CourseHeader from '../../components/CourseHeader';
+import courseApi from '../../configs/api/courseApi';
+import paymentApi from '../../configs/api/paymentApi';
 
 const useCourseDetail = (courseId) => {
     const [course, setCourse] = useState(null);
@@ -17,7 +19,7 @@ const useCourseDetail = (courseId) => {
         setError(null);
 
         try {
-            const res = await Apis.get(`${endpoints['courses']}/${courseId}`);
+            const res = await courseApi.getDetail(courseId);
             setCourse(res.data);
         } catch (err) {
             console.error(err);
@@ -46,7 +48,8 @@ const useRelatedCourses = (subjectId, currentCourseId) => {
         const fetchRelated = async () => {
             setLoadingRelated(true);
             try {
-                const res = await Apis.get(`${endpoints['courses']}?subjectId=${subjectId}`);
+                const courseParams = `?subjectId=${subjectId}`;
+                const res = await courseApi.getAll(courseParams);
 
                 const filtered = res.data.data.filter(
                     c => c.id.toString() !== currentCourseId.toString()
@@ -274,15 +277,11 @@ const CourseDetailedScreen = () => {
 
         try {
             if (course.price > 0) {
-                const res = await Apis.post(
-                    endpoints['payZaloPay'],
-                    {
+                const res = await paymentApi.createZaloPay({
                         amount: course.price,
                         courseId,
                         userId: user.id
-                    }
-                );
-
+                    });
                 if (res.data?.order_url) {
                     window.location.href = res.data.order_url;
                     return;

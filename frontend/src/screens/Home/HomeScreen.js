@@ -21,6 +21,8 @@ import {
 } from "react-bootstrap-icons";
 import "./HomePage.css";
 import Apis, { endpoints } from '../../configs/Apis';
+import documentApi from '../../configs/api/documentApi';
+import categoryApi from '../../configs/api/categoryApi';
 
 const HomeScreen = () => {
     const [latestDocuments, setLatestDocuments] = useState([]);
@@ -43,7 +45,7 @@ const HomeScreen = () => {
             const params = {};
             if (searchKey.trim() !== '') params.kw = searchKey;
 
-            const response = await Apis.get(endpoints['document'], { params });
+            const response = await documentApi.getAll(params);
             if (response.data) {
                 setLatestDocuments(response.data.data || []);
             }
@@ -57,7 +59,7 @@ const HomeScreen = () => {
     const fetchSubjects = async () => {
         try {
             setLoadingSubjects(true);
-            const response = await Apis.get(endpoints['subject']);
+            const response = await categoryApi.getSubjects();
             if (response.data) {
                 setSubjects(Array.isArray(response.data) ? response.data : response.data.content || []);
             }

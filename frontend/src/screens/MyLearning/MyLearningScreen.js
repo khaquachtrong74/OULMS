@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Apis, { endpoints } from '../../configs/Apis';
 import { MyUserContext } from '../../configs/Contexts';
 import CourseCard from '../../components/CourseCard';
+import courseApi from '../../configs/api/courseApi';
 
 const MyLearningScreen = () => {
     const [user] = useContext(MyUserContext);
@@ -21,7 +22,7 @@ const MyLearningScreen = () => {
 
         const fetchMyCourses = async () => {
             try {
-                const res = await Apis.get(endpoints['myCourses']);
+                const res = await courseApi.getMyCourses();
                 setMyCourses(res.data);
             } catch (err) {
                 console.error("Lỗi khi tải khóa học của tôi:", err);

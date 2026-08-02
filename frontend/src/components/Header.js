@@ -7,13 +7,14 @@ import { ACTION_TYPE } from '../configs/constants';
 import { useNavigate, NavLink } from 'react-router-dom';
 
 import './Header.css'
+import authApi from '../configs/api/authApi';
 const Header = () => {
     const [user, dispatch] = useContext(MyUserContext);
     const nav = useNavigate();
 
     const handleLogout = async () => {
         try {
-            await Apis.post(endpoints['logout']);
+            await Apis.post(authApi["logout"]);
             dispatch({ type: ACTION_TYPE.LOGOUT });
             nav('/login');
         } catch (error) {

@@ -6,6 +6,8 @@ import './DocumentPage.css';
 import { MyUserContext } from '../../configs/Contexts';
 import Apis, { endpoints } from '../../configs/Apis';
 import { Pagination } from 'react-bootstrap';
+import categoryApi from '../../configs/api/categoryApi';
+import documentApi from '../../configs/api/documentApi';
 const DocumentScreen = () => {
   const [user] = useContext(MyUserContext);
 
@@ -49,8 +51,8 @@ const DocumentScreen = () => {
     const fetchMetadata = async () => {
       try {
         const [resTopic, resLevel] = await Promise.all([
-          Apis.get(endpoints['topic']),
-          Apis.get(endpoints['level'])
+          categoryApi.getTopics(),
+          categoryApi.getLevels()
         ]);
         setTopics(resTopic.data || []);
         setLevels(resLevel.data || []);
@@ -69,7 +71,7 @@ const DocumentScreen = () => {
       if (kw.trim() !== '') params.kw = kw;
       if (filterLevel !== '') params.levelId = filterLevel;
 
-      const response = await Apis.get(endpoints['secureDocuments'], { params });
+      const response = await documentApi.getSecureAll(params);
       if (response.data) {
         setDocuments(response.data);
       }
@@ -105,9 +107,7 @@ const DocumentScreen = () => {
       formData.append('levelId', newDoc.levelId);
       formData.append('file', newDoc.file);
 
-      await Apis.post(endpoints['createDocument'], formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await documentApi.create(formData);
 
       alert("Tải lên học liệu thành công! Đang chờ kiểm duyệt.");
       setShowUploadModal(false);
@@ -147,11 +147,7 @@ const DocumentScreen = () => {
         formData.append('file', editingDoc.file);
       }
 
-      await Apis.post(endpoints['secureDocument'](editingDoc.id), formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      await documentApi.updateSecure(editingDoc.id, formData);
 
       alert("Cập nhật thông tin học liệu thành công!");
       setShowEditModal(false);
@@ -168,7 +164,7 @@ const DocumentScreen = () => {
     const confirmed = window.confirm(`Bạn có chắc muốn xóa tài liệu "${title}" không?`);
     if (!confirmed) return;
     try {
-      await Apis.delete(endpoints['secureDocument'](docId));
+      await documentApi.deleteSecureDoc(docId);
 
       alert("Xóa tài liệu thành công!");
 

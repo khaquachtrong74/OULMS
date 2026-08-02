@@ -3,6 +3,8 @@ import { Container, Row, Col, Form, InputGroup, Button, Card, Spinner, Badge } f
 import { Search, Filter, Book } from 'react-bootstrap-icons';
 import Apis, { endpoints } from '../../configs/Apis'; // Import config API của bạn
 import { useNavigate } from 'react-router-dom';
+import documentApi from '../../configs/api/documentApi';
+import categoryApi from '../../configs/api/categoryApi';
 
 const ExploreScreen = () => {
     const nav = useNavigate();
@@ -37,9 +39,9 @@ const ExploreScreen = () => {
         const fetchMetadata = async () => {
             try {
                 const [resSub, resLev, resTop] = await Promise.all([
-                    Apis.get(endpoints['subject']),
-                    Apis.get(endpoints['level']),
-                    Apis.get(endpoints['topic']) 
+                    categoryApi.getSubjects(),
+                    categoryApi.getLevels(),
+                    categoryApi.getTopics()
                 ]);
 
                 setSubjects(resSub.data);
@@ -73,9 +75,7 @@ const ExploreScreen = () => {
             if (filters.levelId)
                 queryParams.append('levelId', filters.levelId);
 
-            const res = await Apis.get(
-                `${endpoints.document}?${queryParams.toString()}`
-            );
+            const res = await documentApi.getAll(queryParams.toString());
 
             setDocuments(res.data.data || []);
             setTotalPages(res.data.totalPages || 1);

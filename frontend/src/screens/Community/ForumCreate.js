@@ -3,6 +3,7 @@ import { Container, Card, Form, Button, Alert, Spinner } from "react-bootstrap";
 import { ArrowLeft, Send } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
 import Apis, { endpoints } from "../../configs/Apis";
+import forumApi from "../../configs/api/forumApi";
 
 const validatePost = (data) => {
     const errors = {};
@@ -67,7 +68,7 @@ const ForumCreate = () => {
                 content: formData.content.trim()
             };
 
-            await Apis.post(endpoints["createForumPost"], payload);
+            await forumApi.create(payload);
 
             nav("/forum");
         } catch (error) {
