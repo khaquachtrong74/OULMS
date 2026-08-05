@@ -1,5 +1,4 @@
 import { useContext, useState } from "react";
-import Apis, { endpoints } from "../../configs/Apis";
 import { ACTION_TYPE, COOKIE_KEYS } from "../../configs/constants";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MyUserContext } from "../../configs/Contexts";

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Container, Row, Col, Form, InputGroup, Button, Spinner, Nav } from 'react-bootstrap';
 import { Search, Filter } from 'react-bootstrap-icons';
-import Apis, { endpoints } from '../../configs/Apis'; 
 import { useNavigate, useSearchParams } from 'react-router-dom'; // Bổ sung useSearchParams
 import DocumentCard from '../../components/DocumentCard';
 import CourseCard from '../../components/CourseCard';

@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { Navbar, Container, Nav, Image, Button, Dropdown } from 'react-bootstrap';
 import { BookHalf } from 'react-bootstrap-icons';
 import { MyUserContext } from '../configs/Contexts';
-import Apis, { endpoints } from '../configs/Apis';
 import { ACTION_TYPE } from '../configs/constants';
 import { useNavigate, NavLink } from 'react-router-dom';
 

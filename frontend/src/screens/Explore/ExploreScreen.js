@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Form, InputGroup, Button, Card, Spinner, Badge } from 'react-bootstrap';
 import { Search, Filter, Book } from 'react-bootstrap-icons';
-import Apis, { endpoints } from '../../configs/Apis'; // Import config API của bạn
 import { useNavigate } from 'react-router-dom';
 import documentApi from '../../configs/api/documentApi';
 import categoryApi from '../../configs/api/categoryApi';

@@ -12,7 +12,6 @@ import {
   Alert,
 } from "react-bootstrap";
 
-import Apis, { endpoints } from "../../configs/Apis";
 import moment from "moment";
 import "moment/locale/vi";
 import { MyUserContext } from "../../configs/Contexts";

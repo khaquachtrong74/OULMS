@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { Book } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
-import Apis, { endpoints } from '../../configs/Apis';
 import { MyUserContext } from '../../configs/Contexts';
 import CourseCard from '../../components/CourseCard';
 import courseApi from '../../configs/api/courseApi';

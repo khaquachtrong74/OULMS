@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Alert, Button, Form, Spinner, Image } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import Apis, { endpoints } from "../../configs/Apis";
 import { HttpStatusCode } from "axios";
 import "./LoginPage.css"; 
 import authApi from "../../configs/api/authApi";

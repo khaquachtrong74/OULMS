@@ -4,7 +4,6 @@ import { Container, Row, Col, Table, Button, Form, Badge, InputGroup, Card, Spin
 import { Search, FileEarmarkPdf, PlayCircle, Files, FileEarmarkText, CloudUpload, PencilSquare, Trash } from 'react-bootstrap-icons';
 import './DocumentPage.css';
 import { MyUserContext } from '../../configs/Contexts';
-import Apis, { endpoints } from '../../configs/Apis';
 import { Pagination } from 'react-bootstrap';
 import categoryApi from '../../configs/api/categoryApi';
 import documentApi from '../../configs/api/documentApi';

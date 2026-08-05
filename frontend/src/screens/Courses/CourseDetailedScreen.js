@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Button, Spinner, Alert, Card, Pagination } from 'react-bootstrap';
 import { ShieldCheck, CheckCircleFill, Lightbulb } from 'react-bootstrap-icons';
-import Apis, { endpoints } from '../../configs/Apis';
 import { MyUserContext } from '../../configs/Contexts';
 import CourseCard from '../../components/CourseCard';
 import CourseHeader from '../../components/CourseHeader';

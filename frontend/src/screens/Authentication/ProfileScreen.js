@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Card, Form, Button, Spinner, Badge, Image } from 'react-bootstrap';
 import { Person,  ShieldLock, PencilSquare, XCircle, Save, Camera } from 'react-bootstrap-icons';
 import { MyUserContext } from '../../configs/Contexts';
-import Apis, { endpoints } from '../../configs/Apis';
 import { ACTION_TYPE } from '../../configs/constants';
 import authApi from '../../configs/api/authApi';
 

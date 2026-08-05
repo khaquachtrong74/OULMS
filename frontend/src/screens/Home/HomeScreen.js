@@ -20,7 +20,6 @@ import {
     Lightbulb
 } from "react-bootstrap-icons";
 import "./HomePage.css";
-import Apis, { endpoints } from '../../configs/Apis';
 import documentApi from '../../configs/api/documentApi';
 import categoryApi from '../../configs/api/categoryApi';
 
