@@ -13,7 +13,7 @@ const Header = () => {
 
     const handleLogout = async () => {
         try {
-            await Apis.post(authApi["logout"]);
+            authApi.logout();
             dispatch({ type: ACTION_TYPE.LOGOUT });
             nav('/login');
         } catch (error) {

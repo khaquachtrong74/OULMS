@@ -288,10 +288,7 @@ const CourseDetailedScreen = () => {
 
                 alert("Không thể khởi tạo cổng thanh toán ZaloPay lúc này.");
             } else {
-                await Apis.post(
-                    `/courses/${courseId}/enroll`,
-                    {}
-                );
+                courseApi.enroll(courseId,{})
 
                 alert("Ghi danh thành công!");
                 reloadCourse();
