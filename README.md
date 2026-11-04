@@ -3,7 +3,7 @@
 A learning-material management system: courses, subjects, levels, documents, a forum,
 quizzes and paid enrolment. Built as a university course project.
 
-- **Backend** — Java 21 · Spring MVC 6.2 on Jakarta EE 11 (WAR) · Hibernate · MySQL · JWT ·
+- **Backend** — Java 17 (`maven-compiler-plugin` source/target 17) · Spring MVC 6.2 on Jakarta EE 11 (WAR) · Hibernate · MySQL · JWT ·
   Spring Security · Thymeleaf for the admin/report pages · SpringDoc for OpenAPI
 - **Frontend** — React 19 (`react-scripts`) · react-router 7 · react-bootstrap · axios
 
@@ -22,7 +22,7 @@ backend/src/main/java/com/qtk/
                    ForumPost, Payment, User, Auth, Chart, Report) + MVC page controllers
   services/        interfaces          impl/   implementations
   repositories/    interfaces          impl/   implementations
-  pojo/            19 Hibernate entities (Course, Document, ForumPost, Quizzes, Transaction, …)
+  pojo/            18 Hibernate entities (Course, Document, ForumPost, Quizzes, Transaction, …)
   dto/             15 request/response records — entities never leave the API
   configs/         Security, JWT filter wiring, Hibernate, Thymeleaf, OpenAPI, Google Drive
   filters/         JwtFilter — authenticates each request from the bearer token
